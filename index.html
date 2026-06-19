@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo – Beekumsa Keessan Guddifadhaa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:   #1a6b3c;
+      --green-light: #2e9d5e;
+      --gold:    #d4a017;
+      --gold-light: #f0c040;
+      --cream:   #faf6ee;
+      --dark:    #0e1a14;
+      --mid:     #3a5244;
+      --muted:   #7a9585;
+      --card-bg: #ffffff;
+      --shadow:  0 4px 24px rgba(10,40,20,0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, serif;
+      background: var(--cream);
+      color: var(--dark);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(250,246,238,0.93);
+      backdrop-filter: blur(10px);
+      border-bottom: 1.5px solid rgba(212,160,23,0.18);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: var(--green);
+      letter-spacing: -0.02em;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nav-logo span { color: var(--gold); }
+    .nav-logo .leaf { font-size: 1.5rem; }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--mid);
+      font-size: 0.93rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--green); }
+    .nav-cta {
+      background: var(--green);
+      color: #fff !important;
+      padding: 8px 20px;
+      border-radius: 30px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--green-light) !important; color: #fff; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+      padding: 120px 5vw 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 70% at 80% 40%, rgba(46,157,94,0.10) 0%, transparent 70%),
+                  radial-gradient(ellipse 50% 50% at 10% 80%, rgba(212,160,23,0.08) 0%, transparent 60%);
+    }
+    .hero-pattern {
+      position: absolute; right: -60px; top: 80px;
+      width: 520px; height: 520px;
+      opacity: 0.06;
+      background-image: repeating-linear-gradient(45deg, var(--green) 0, var(--green) 2px, transparent 0, transparent 50%);
+      background-size: 24px 24px;
+      border-radius: 50%;
+      z-index: 0;
+    }
+    .hero-circle {
+      position: absolute; right: 5vw; top: 50%; transform: translateY(-50%);
+      width: 420px; height: 420px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(46,157,94,0.15), rgba(212,160,23,0.12));
+      border: 2px solid rgba(212,160,23,0.20);
+      z-index: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9rem;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(-50%) translateY(0); }
+      50%      { transform: translateY(-50%) translateY(-18px); }
+    }
+    .hero-content { position: relative; z-index: 1; max-width: 600px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(212,160,23,0.12);
+      border: 1px solid rgba(212,160,23,0.3);
+      border-radius: 30px;
+      padding: 6px 16px;
+      font-size: 0.82rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.6rem, 5vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.08;
+      color: var(--dark);
+      margin-bottom: 18px;
+      animation: fadeUp 0.9s 0.1s ease both;
+    }
+    .hero h1 em { color: var(--green); font-style: normal; }
+    .hero-sub {
+      font-size: 1.13rem;
+      color: var(--mid);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 480px;
+      animation: fadeUp 1s 0.2s ease both;
+    }
+    .hero-actions {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+    .btn-primary {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 40px;
+      font-family: 'Source Serif 4', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--green-light); transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--green);
+      border: 2px solid var(--green);
+      padding: 14px 32px;
+      border-radius: 40px;
+      font-family: 'Source Serif 4', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-secondary:hover { background: var(--green); color: #fff; transform: translateY(-2px); }
+    .hero-stats {
+      display: flex; gap: 36px; margin-top: 56px;
+      animation: fadeUp 1s 0.45s ease both;
+    }
+    .stat { text-align: left; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--green);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION HEADER ── */
+    .section { padding: 90px 5vw; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--gold);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 28px; height: 2px;
+      background: var(--gold);
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 900;
+      color: var(--dark);
+      line-height: 1.15;
+      margin-bottom: 14px;
+    }
+    .section-sub {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 48px;
+    }
+
+    /* ── SUBJECTS GRID ── */
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+    }
+    .subject-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 32px 28px;
+      box-shadow: var(--shadow);
+      border: 1.5px solid rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .subject-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--accent, var(--green));
+    }
+    .subject-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(10,40,20,0.14); }
+    .subject-icon { font-size: 2.5rem; margin-bottom: 18px; }
+    .subject-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .subject-subtitle {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .subject-desc {
+      font-size: 0.9rem;
+      color: var(--mid);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .subject-lessons {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .progress-bar {
+      height: 4px;
+      background: rgba(0,0,0,0.07);
+      border-radius: 10px;
+      margin-top: 14px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: var(--accent, var(--green));
+      transition: width 1s ease;
+    }
+
+    /* ── LESSON PREVIEW ── */
+    .lesson-section { background: var(--dark); }
+    .lesson-section .section-title { color: var(--cream); }
+    .lesson-section .section-sub { color: var(--muted); }
+    .lesson-section .section-label { color: var(--gold); }
+    .lessons-list { display: flex; flex-direction: column; gap: 16px; }
+    .lesson-item {
+      display: flex; align-items: center; gap: 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 20px 24px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .lesson-item:hover { background: rgba(255,255,255,0.09); border-color: rgba(212,160,23,0.3); }
+    .lesson-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--gold);
+      opacity: 0.5;
+      min-width: 48px;
+    }
+    .lesson-info { flex: 1; }
+    .lesson-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+    .lesson-meta { font-size: 0.82rem; color: var(--muted); }
+    .lesson-tag {
+      background: rgba(212,160,23,0.15);
+      color: var(--gold-light);
+      border: 1px solid rgba(212,160,23,0.25);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .lesson-tag.new { background: rgba(46,157,94,0.15); color: #6ee7a4; border-color: rgba(46,157,94,0.3); }
+
+    /* ── FEATURES ── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 28px;
+    }
+    .feature-item { display: flex; flex-direction: column; gap: 12px; }
+    .feature-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, rgba(46,157,94,0.12), rgba(212,160,23,0.10));
+      border: 1.5px solid rgba(46,157,94,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+    }
+    .feature-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .feature-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+
+    /* ── TESTIMONIAL ── */
+    .testimonial-section {
+      background: linear-gradient(135deg, var(--green) 0%, var(--dark) 100%);
+    }
+    .testimonial-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .testimonial-card {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 28px;
+    }
+    .testimonial-stars { color: var(--gold-light); font-size: 1rem; margin-bottom: 14px; }
+    .testimonial-text {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .testimonial-author { display: flex; align-items: center; gap: 12px; }
+    .author-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--green-light));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+    }
+    .author-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .author-loc { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+
+    /* ── ENROLL CTA ── */
+    .cta-section {
+      text-align: center;
+      padding: 100px 5vw;
+      background: var(--cream);
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '📚';
+      position: absolute; top: -30px; left: 5%; font-size: 8rem; opacity: 0.04;
+    }
+    .cta-section::after {
+      content: '🌿';
+      position: absolute; bottom: -20px; right: 5%; font-size: 8rem; opacity: 0.04;
+    }
+    .cta-section .section-title { font-size: clamp(2rem, 4vw, 3rem); }
+    .cta-section .section-sub { margin: 0 auto 36px; }
+    .cta-input-row {
+      display: flex; gap: 12px; max-width: 440px; margin: 0 auto;
+      flex-wrap: wrap; justify-content: center;
+    }
+    .cta-input {
+      flex: 1; min-width: 200px;
+      padding: 14px 20px;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 40px;
+      font-family: 'Source Serif 4', serif;
+      font-size: 0.95rem;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .cta-input:focus { border-color: var(--green); }
+    .cta-input::placeholder { color: var(--muted); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      color: rgba(255,255,255,0.5);
+      text-align: center;
+      padding: 36px 5vw;
+      font-size: 0.85rem;
+    }
+    footer .foot-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+    footer .foot-logo span { color: var(--gold); }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 60px; height: 3px;
+      background: linear-gradient(to right, var(--green), var(--gold));
+      border-radius: 10px;
+      margin-bottom: 40px;
+    }
+
+    /* scroll reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="leaf">🌿</span>
+    Kakuu <span>Oromoo</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#subjects">Barnoota</a></li>
+    <li><a href="#lessons">Ramaddii</a></li>
+    <li><a href="#features">Amaloota</a></li>
+    <li><a href="#enroll" class="nav-cta">Galmaa'i</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-pattern"></div>
+  <div class="hero-circle">📖</div>
+  <div class="hero-content">
+    <div class="hero-badge">✦ Afaan Oromootiin Barnoota</div>
+    <h1>Beekumsa Keessan<br/><em>Guddifadhaa</em></h1>
+    <p class="hero-sub">
+      Platform barnootaa kan afaan Oromootiin — Ogummaa, Seenaa, Saayinsii, fi Barreeffama keessan cimsuuf bakka tokkotti.
+    </p>
+    <div class="hero-actions">
+      <a href="#enroll" class="btn-primary">Barnoota Jalqabi →</a>
+      <a href="#subjects" class="btn-secondary">Kutaalee Ilaali</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Kutaalee Barnoota</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">200+</div>
+        <div class="stat-label">Ramaddiiwan</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5,000+</div>
+        <div class="stat-label">Barattoota</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBJECTS -->
+<section class="section" id="subjects">
+  <div class="section-label">Kutaalee Barnoota</div>
+  <h2 class="section-title">Maal Baratta?</h2>
+  <p class="section-sub">Barnoota guutuu afaan Oromootiin — kutaa tokko toko filadhaa, yeroo keessan irratti hunda'uun baraadhaa.</p>
+
+  <div class="subjects-grid">
+    <div class="subject-card" style="--accent:#1a6b3c">
+      <div class="subject-icon">📝</div>
+      <div class="subject-title">Afaan fi Barreeffama</div>
+      <div class="subject-subtitle">Language & Literacy</div>
+      <div class="subject-desc">Afaan Oromoo sirriitti dubbisuu, barreessuu fi hubachuu itti darbaa — lallaba hanga walaloon.</div>
+      <div class="subject-lessons">📚 42 Ramaddii</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div>
+    </div>
+
+    <div class="subject-card" style="--accent:#c0892a">
+      <div class="subject-icon">🔢</div>
+      <div class="subject-title">Herrega fi Saayinsii</div>
+      <div class="subject-subtitle">Math & Science</div>
+      <div class="subject-desc">Matamaatiksii adda addaa fi beekumsa uumama — haalaan salphaa irraa gara itti cimaa.</div>
+      <div class="subject-lessons">📚 58 Ramaddii</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
+    </div>
+
+    <div class="subject-card" style="--accent:#7b3fa0">
+      <div class="subject-icon">🏺</div>
+      <div class="subject-title">Seenaa fi Aadaa</div>
+      <div class="subject-subtitle">History & Culture</div>
+      <div class="subject-desc">Seenaa uummata Oromoo, aadaa fi duudhaa, sirna Gadaa fi dhalootaa to'atame.</div>
+      <div class="subject-lessons">📚 34 Ramaddii</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
+    </div>
+
+    <div class="subject-card" style="--accent:#1a7a8a">
+      <div class="subject-icon">🛠️</div>
+      <div class="subject-title">Ogummaa Hojii</div>
+      <div class="subject-subtitle">Vocational Skills</div>
+      <div class="subject-desc">Qonnaa ammayyaa, daldala, fayyaa uummataa fi teeknoloojii — ogummaa jireenya guyyuu ilaallatu.</div>
+      <div class="subject-lessons">📚 67 Ramaddii</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:30%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LESSONS PREVIEW -->
+<section class="section lesson-section" id="lessons">
+  <div class="section-label">Ramaddii Dhiyoo</div>
+  <h2 class="section-title" style="color:var(--cream)">Ramaddiiwan Filatamoo</h2>
+  <p class="section-sub">Kutaalee haaraa fi barattoota baay'een fayyadaman:</p>
+
+  <div class="lessons-list reveal">
+    <div class="lesson-item">
+      <div class="lesson-num">01</div>
+      <div class="lesson-info">
+        <div class="lesson-title">Afaan Oromoo: Qubee fi Dubbisa</div>
+        <div class="lesson-meta">Afaan fi Barreeffama · Daqiiqaa 25 · Sadarkaa Jalqabaa</div>
+      </div>
+      <div class="lesson-tag new">Haaraa</div>
+    </div>
+
+    <div class="lesson-item">
+      <div class="lesson-num">02</div>
+      <div class="lesson-info">
+        <div class="lesson-title">Sirna Gadaa: Dimokraasii Oromoo</div>
+        <div class="lesson-meta">Seenaa fi Aadaa · Daqiiqaa 40 · Sadarkaa Gidduu</div>
+      </div>
+      <div class="lesson-tag">Beekamaa</div>
+    </div>
+
+    <div class="lesson-item">
+      <div class="lesson-num">03</div>
+      <div class="lesson-info">
+        <div class="lesson-title">Qonnaa Ammayyaa: Lafa Fayyadamuu</div>
+        <div class="lesson-meta">Ogummaa Hojii · Daqiiqaa 35 · Sadarkaa Jalqabaa</div>
+      </div>
+      <div class="lesson-tag new">Haaraa</div>
+    </div>
+
+    <div class="lesson-item">
+      <div class="lesson-num">04</div>
+      <div class="lesson-info">
+        <div class="lesson-title">Herrega: Lakkoofsa fi Ida'uu</div>
+        <div class="lesson-meta">Herrega fi Saayinsii · Daqiiqaa 30 · Sadarkaa Jalqabaa</div>
+      </div>
+      <div class="lesson-tag">Beekamaa</div>
+    </div>
+
+    <div class="lesson-item">
+      <div class="lesson-num">05</div>
+      <div class="lesson-info">
+        <div class="lesson-title">Walaloo Oromoo: Geerarsa fi Hiika</div>
+        <div class="lesson-meta">Afaan fi Barreeffama · Daqiiqaa 45 · Sadarkaa Gidduu</div>
+      </div>
+      <div class="lesson-tag new">Haaraa</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-label">Amaloota Platformii</div>
+  <h2 class="section-title">Maaliif Kakuu Oromoo?</h2>
+  <div class="divider"></div>
+
+  <div class="features-grid reveal">
+    <div class="feature-item">
+      <div class="feature-icon">🗣️</div>
+      <div class="feature-title">Afaan Keessan</div>
+      <div class="feature-desc">Barnoota guutuu afaan Oromootiin — hiikaa alatti, si'a tokkottis hubatta.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">📱</div>
+      <div class="feature-title">Yeroo Kamiyyuu</div>
+      <div class="feature-desc">Moobaayila yookiin kompitara irratti — interneetii malee illee hojjeta.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🎯</div>
+      <div class="feature-title">Barnoota Kee Ilaallatu</div>
+      <div class="feature-desc">Filannoowwan barnoota sadarkaa keessaniif mijataa ta'e — salphaa hanga cimaa.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🏅</div>
+      <div class="feature-title">Ragaa Barumsaa</div>
+      <div class="feature-desc">Kutaa xumurtaniin booda ragaa barnoota argattu — hojii fi guddina keessaniif.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">👥</div>
+      <div class="feature-title">Hawaasa Barataa</div>
+      <div class="feature-desc">Barattoota kaan waliin mari'adhaa, gaaffii kaasaa, beekumsa qoodadhaa.</div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">💰</div>
+      <div class="feature-title">Bilisaan Jalqabi</div>
+      <div class="feature-desc">Ramaddiiwan hedduu bilisaan — ga'umsa guddifattu moo kan biraa filatta.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testimonial-section">
+  <div class="section-label" style="color:var(--gold)">Yaada Barattootaa</div>
+  <h2 class="section-title" style="color:#fff">Maal Jedhu?</h2>
+  <p class="section-sub">Barattoonni keenya maal jedhu:</p>
+
+  <div class="testimonial-grid reveal">
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <div class="testimonial-text">"Afaan Oromootiin barnoota akkanaa argachuun gammachuu guddaa dha. Daa'imman koo wajjin taa'uudhaan baradha — salphaa fi nama hawwatu."</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩</div>
+        <div>
+          <div class="author-name">Faaxumaa Tolaa</div>
+          <div class="author-loc">Jimma, Oromiyaa</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <div class="testimonial-text">"Herregaa fi saayinsii barnoota keessatti rakkachaa ture. Amma kutaalee kana keessatti sirritti barateera — galatoomaa!"</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">👨</div>
+        <div>
+          <div class="author-name">Caalaa Guutaa</div>
+          <div class="author-loc">Naqamtee, Oromiyaa</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <div class="testimonial-text">"Seenaa fi aadaa keenya barachuun of-beekumsa naaf kenne. Platform kana hundaaf nan gorfaa."</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">👩</div>
+        <div>
+          <div class="author-name">Aadde Cadha Biyyoo</div>
+          <div class="author-loc">Adaamaa, Oromiyaa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENROLL CTA -->
+<section class="cta-section" id="enroll">
+  <div class="section-label" style="justify-content:center">Itti Makamaa</div>
+  <h2 class="section-title">Barnoota Keessan Har'uma Jalqabaa</h2>
+  <p class="section-sub">Email keessan galchaa — yeroo muraasa keessatti koontii bilisaa banina.</p>
+
+  <div class="cta-input-row">
+    <input class="cta-input" type="email" placeholder="Email keessan galchaa…" />
+    <a href="#" class="btn-primary" onclick="alert('Galatoomaa! Yeroo dhiheessatti isin qunnamna.'); return false;">Galmaa\'i</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">Kakuu <span>Oromoo</span></div>
+  <p>© 2026 Kakuu Oromoo · Beekumsa Afaan Keessaniin · Oromiyaa, Itoophiyaa</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Animate progress bars on scroll
+  const bars = document.querySelectorAll('.progress-fill');
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.width = e.target.style.width; // trigger transition
+      }
+    });
+  }, { threshold: 0.3 });
+  bars.forEach(b => barObs.observe(b));
+</script>
+
+</body>
+</html>

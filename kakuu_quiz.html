@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:#1a6b3c; --green-light:#2e9d5e; --gold:#d4a017; --gold-light:#f0c040;
+      --cream:#faf6ee; --dark:#0e1a14; --mid:#3a5244; --muted:#7a9585;
+      --bg:#f3f6f4; --card:#ffffff; --shadow:0 4px 24px rgba(10,40,20,0.09);
+      --red:#c0392b; --red-light:#fadbd8;
+      --sidebar-w:240px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4','Noto Sans Ethiopic',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-family:'Source Serif 4',serif;font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-section-label{font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--dark);}
+    .topbar-right{display:flex;align-items:center;gap:14px;}
+    .lang-pill{display:flex;gap:3px;background:rgba(26,107,60,0.07);border:1.5px solid rgba(26,107,60,0.15);border-radius:30px;padding:3px 5px;}
+    .lp-btn{border:none;background:none;cursor:pointer;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;color:var(--mid);transition:all 0.18s;}
+    .lp-btn.active{background:var(--green);color:#fff;}
+
+    /* ── PAGES ── */
+    .page{display:none;padding:32px;}
+    .page.active{display:block;}
+
+    /* ── QUIZ INTRO ── */
+    .quiz-intro{max-width:600px;margin:0 auto;text-align:center;}
+    .qi-icon{font-size:5rem;margin-bottom:16px;animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+    .qi-subject{display:inline-flex;align-items:center;gap:6px;background:rgba(26,107,60,0.08);color:var(--green);border-radius:20px;padding:5px 16px;font-size:0.8rem;font-weight:700;margin-bottom:16px;}
+    .qi-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--dark);margin-bottom:8px;}
+    .qi-sub{font-size:0.95rem;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+    .qi-stats{display:flex;justify-content:center;gap:28px;margin-bottom:32px;}
+    .qi-stat{text-align:center;}
+    .qi-stat-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--green);}
+    .qi-stat-label{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+    .qi-rules{background:var(--card);border-radius:16px;padding:20px 24px;text-align:left;margin-bottom:28px;box-shadow:var(--shadow);}
+    .qi-rules h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:12px;}
+    .qi-rule{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:0.88rem;color:var(--mid);line-height:1.5;}
+    .qi-rule-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+    .btn-start{background:var(--green);color:#fff;border:none;padding:16px 48px;border-radius:40px;font-family:inherit;font-size:1.05rem;font-weight:700;cursor:pointer;transition:background 0.2s,transform 0.15s;width:100%;}
+    .btn-start:hover{background:var(--green-light);transform:translateY(-2px);}
+
+    /* ── QUIZ ACTIVE ── */
+    .quiz-active{max-width:680px;margin:0 auto;}
+
+    /* Progress bar top */
+    .quiz-progress-bar{height:6px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+    .quiz-progress-fill{height:100%;border-radius:10px;background:linear-gradient(to right,var(--green),var(--gold));transition:width 0.4s ease;}
+
+    /* Header row */
+    .quiz-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+    .quiz-counter{font-size:0.85rem;color:var(--muted);font-weight:600;}
+    .quiz-counter strong{color:var(--dark);}
+    .quiz-timer{display:flex;align-items:center;gap:6px;background:var(--card);border:1.5px solid rgba(0,0,0,0.08);border-radius:30px;padding:6px 16px;font-size:0.9rem;font-weight:700;color:var(--dark);}
+    .quiz-timer.warning{border-color:var(--gold);color:var(--gold);}
+    .quiz-timer.danger{border-color:var(--red);color:var(--red);animation:pulse 0.8s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+    .quiz-score-pill{display:flex;align-items:center;gap:6px;background:rgba(26,107,60,0.08);color:var(--green);border-radius:30px;padding:6px 14px;font-size:0.82rem;font-weight:700;}
+
+    /* Question card */
+    .question-card{background:var(--card);border-radius:20px;padding:32px;box-shadow:var(--shadow);margin-bottom:20px;border:1.5px solid rgba(0,0,0,0.05);}
+    .q-type-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(212,160,23,0.1);color:var(--gold);border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:700;margin-bottom:16px;}
+    .q-text{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--dark);line-height:1.4;margin-bottom:8px;}
+    .q-hint{font-size:0.82rem;color:var(--muted);margin-bottom:24px;font-style:italic;}
+
+    /* Options */
+    .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media(max-width:600px){.options-grid{grid-template-columns:1fr;}}
+    .option-btn{
+      display:flex;align-items:center;gap:14px;
+      padding:16px 18px;border-radius:14px;border:2px solid rgba(0,0,0,0.08);
+      background:#fff;cursor:pointer;transition:all 0.18s;text-align:left;
+      font-family:inherit;font-size:0.92rem;color:var(--dark);
+    }
+    .option-btn:hover:not(:disabled){border-color:var(--green);background:rgba(26,107,60,0.04);}
+    .option-letter{width:32px;height:32px;border-radius:8px;background:rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;transition:all 0.18s;}
+    .option-btn:hover:not(:disabled) .option-letter{background:var(--green);color:#fff;}
+    .option-btn.selected{border-color:var(--green);background:rgba(26,107,60,0.06);}
+    .option-btn.selected .option-letter{background:var(--green);color:#fff;}
+    .option-btn.correct{border-color:var(--green);background:rgba(26,107,60,0.1);}
+    .option-btn.correct .option-letter{background:var(--green);color:#fff;}
+    .option-btn.wrong{border-color:var(--red);background:var(--red-light);}
+    .option-btn.wrong .option-letter{background:var(--red);color:#fff;}
+    .option-btn:disabled{cursor:not-allowed;opacity:0.7;}
+
+    /* True/False options */
+    .tf-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .tf-btn{padding:24px 16px;border-radius:16px;border:2px solid rgba(0,0,0,0.08);background:#fff;cursor:pointer;transition:all 0.18s;font-family:inherit;font-size:1rem;font-weight:700;color:var(--dark);text-align:center;}
+    .tf-btn:hover:not(:disabled){border-color:var(--green);background:rgba(26,107,60,0.04);}
+    .tf-btn.selected,.tf-btn.correct{border-color:var(--green);background:rgba(26,107,60,0.1);color:var(--green);}
+    .tf-btn.wrong{border-color:var(--red);background:var(--red-light);color:var(--red);}
+    .tf-btn:disabled{cursor:not-allowed;}
+    .tf-icon{font-size:2rem;display:block;margin-bottom:8px;}
+
+    /* Fill blank */
+    .fill-input{width:100%;padding:14px 18px;border:2px solid rgba(0,0,0,0.1);border-radius:12px;font-family:inherit;font-size:1rem;color:var(--dark);outline:none;transition:border-color 0.2s;background:#fff;}
+    .fill-input:focus{border-color:var(--green);}
+    .fill-input.correct{border-color:var(--green);background:rgba(26,107,60,0.06);}
+    .fill-input.wrong{border-color:var(--red);background:var(--red-light);}
+
+    /* Feedback banner */
+    .feedback-banner{border-radius:14px;padding:14px 20px;margin-top:16px;display:flex;align-items:flex-start;gap:12px;font-size:0.9rem;line-height:1.5;}
+    .feedback-banner.correct-fb{background:rgba(26,107,60,0.1);border:1.5px solid rgba(26,107,60,0.2);color:var(--green);}
+    .feedback-banner.wrong-fb{background:var(--red-light);border:1.5px solid rgba(192,57,43,0.2);color:var(--red);}
+    .fb-icon{font-size:1.3rem;flex-shrink:0;}
+    .fb-text strong{display:block;font-weight:700;margin-bottom:2px;}
+
+    /* Next button */
+    .btn-next-q{width:100%;background:var(--green);color:#fff;border:none;padding:14px;border-radius:40px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:background 0.2s,transform 0.15s;margin-top:16px;}
+    .btn-next-q:hover{background:var(--green-light);transform:translateY(-2px);}
+
+    /* Streak indicator */
+    .streak-row{display:flex;justify-content:center;gap:6px;margin-bottom:20px;}
+    .streak-dot{width:10px;height:10px;border-radius:50%;background:rgba(0,0,0,0.1);transition:background 0.3s;}
+    .streak-dot.correct{background:var(--green);}
+    .streak-dot.wrong{background:var(--red);}
+    .streak-dot.current{background:var(--gold);box-shadow:0 0 0 3px rgba(212,160,23,0.2);}
+
+    /* ── RESULT PAGE ── */
+    .result-page{max-width:600px;margin:0 auto;text-align:center;}
+    .result-icon-big{font-size:6rem;margin-bottom:8px;animation:bounce 0.6s ease;}
+    @keyframes bounce{0%{transform:scale(0);}60%{transform:scale(1.15);}100%{transform:scale(1);}}
+    .result-grade{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;margin-bottom:4px;}
+    .result-grade.excellent{color:var(--green);}
+    .result-grade.good{color:var(--gold);}
+    .result-grade.try-again{color:var(--red);}
+    .result-label{font-size:1rem;color:var(--muted);margin-bottom:28px;}
+    .result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+    .rs-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);}
+    .rs-val{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;}
+    .rs-val.green{color:var(--green);}
+    .rs-val.red{color:var(--red);}
+    .rs-val.gold{color:var(--gold);}
+    .rs-label{font-size:0.75rem;color:var(--muted);margin-top:4px;}
+
+    /* Review list */
+    .review-list{background:var(--card);border-radius:16px;padding:20px 24px;box-shadow:var(--shadow);margin-bottom:24px;text-align:left;}
+    .review-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:16px;}
+    .review-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(0,0,0,0.05);}
+    .review-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+    .review-icon{font-size:1.1rem;flex-shrink:0;margin-top:2px;}
+    .review-q{font-size:0.85rem;font-weight:600;color:var(--dark);margin-bottom:2px;}
+    .review-a{font-size:0.8rem;color:var(--muted);}
+    .review-a .correct-ans{color:var(--green);font-weight:600;}
+    .review-a .your-ans{color:var(--red);}
+
+    /* Certificate unlock */
+    .cert-unlock{background:linear-gradient(135deg,var(--gold),#8b6000);border-radius:18px;padding:24px;color:#fff;margin-bottom:20px;display:flex;align-items:center;gap:16px;}
+    .cert-unlock-icon{font-size:3rem;flex-shrink:0;}
+    .cert-unlock h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;}
+    .cert-unlock p{font-size:0.82rem;opacity:0.85;}
+
+    .result-actions{display:flex;gap:12px;}
+    .btn-retry{flex:1;background:transparent;color:var(--green);border:2px solid var(--green);padding:14px;border-radius:40px;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;}
+    .btn-retry:hover{background:var(--green);color:#fff;}
+    .btn-next-lesson{flex:2;background:var(--green);color:#fff;border:none;padding:14px;border-radius:40px;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+    .btn-next-lesson:hover{background:var(--green-light);}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Mana</div>
+    <a class="nav-item" href="#"><span class="icon">🏠</span> <span>Dashboard</span></a>
+    <a class="nav-item" href="#"><span class="icon">📖</span> <span>Ramaddiiwan</span></a>
+    <a class="nav-item active" href="#"><span class="icon">🧠</span> <span>Quiz</span></a>
+    <a class="nav-item" href="#"><span class="icon">🏅</span> <span>Ragaalee</span></a>
+    <div class="nav-section-label">Koontii</div>
+    <a class="nav-item" href="#"><span class="icon">👤</span> <span>Profile</span></a>
+    <a class="nav-item" href="#"><span class="icon">🚪</span> <span>Ba'i</span></a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩</div>
+    <div class="user-info">
+      <div class="user-name">Faaxumaa T.</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">🧠 Quiz</div>
+    <div class="topbar-right">
+      <div class="lang-pill">
+        <button class="lp-btn active" onclick="setLang('om')">OM</button>
+        <button class="lp-btn" onclick="setLang('am')">አማ</button>
+        <button class="lp-btn" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 1: INTRO ══ -->
+  <div class="page active" id="page-intro" style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);">
+    <div class="quiz-intro">
+      <div class="qi-icon">🧠</div>
+      <div class="qi-subject">📝 <span id="intro-subject">Afaan fi Barreeffama</span></div>
+      <h1 class="qi-title" id="intro-title">Qubee fi Dubbisa — Quiz</h1>
+      <p class="qi-sub" id="intro-sub">Beekumsa kee mirkaneessi! Gaaffii 7 deebisi — yeroo daqiiqaa 1 gaaffii tokkoof qabda.</p>
+      <div class="qi-stats">
+        <div class="qi-stat"><div class="qi-stat-val">7</div><div class="qi-stat-label" id="lbl-questions">Gaaffii</div></div>
+        <div class="qi-stat"><div class="qi-stat-val">60s</div><div class="qi-stat-label" id="lbl-per-q">Gaaffii Tokkoof</div></div>
+        <div class="qi-stat"><div class="qi-stat-val">70%</div><div class="qi-stat-label" id="lbl-pass">Darbuuf</div></div>
+      </div>
+      <div class="qi-rules">
+        <h3 id="rules-title">📋 Seera Quiz</h3>
+        <div class="qi-rule"><span class="qi-rule-icon">⏱️</span><span id="rule1">Gaaffii tokko tokko irratti yeroo 60 sekondii qabda.</span></div>
+        <div class="qi-rule"><span class="qi-rule-icon">✅</div><span id="rule2">Deebii tokko filadhu — sirrii yoo ta'e qufa'a, dogoggoraa yoo ta'e deebii sirrii argatta.</span></div>
+        <div class="qi-rule"><span class="qi-rule-icon">🏅</span><span id="rule3">70% fi ol yoo argatte ragaa barnoota argatta!</span></div>
+        <div class="qi-rule"><span class="qi-rule-icon">🔄</span><span id="rule4">Xumuree booda irra deebi'uu dandeessa.</span></div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()" id="btn-start-lbl">🚀 Quiz Jalqabi</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: QUIZ ACTIVE ══ -->
+  <div class="page" id="page-quiz" style="padding:32px;">
+    <div class="quiz-active">
+
+      <!-- Streak dots -->
+      <div class="streak-row" id="streak-row"></div>
+
+      <!-- Progress bar -->
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="progress-fill" style="width:0%"></div></div>
+
+      <!-- Header row -->
+      <div class="quiz-header-row">
+        <div class="quiz-counter"><strong id="q-num">1</strong> / <span id="q-total">7</span> &nbsp;·&nbsp; <span id="q-type-label">Filadhaa</span></div>
+        <div class="quiz-timer" id="timer-display">⏱ <span id="timer-val">60</span>s</div>
+        <div class="quiz-score-pill">⭐ <span id="score-display">0</span> pt</div>
+      </div>
+
+      <!-- Question card -->
+      <div class="question-card">
+        <div class="q-type-badge" id="q-badge">🎯 Deebii Tokko Filadhu</div>
+        <div class="q-text" id="q-text">Gaaffii as kaa'ama...</div>
+        <div class="q-hint" id="q-hint"></div>
+        <div id="options-container"></div>
+        <div id="feedback-container"></div>
+      </div>
+
+      <button class="btn-next-q" id="btn-next" onclick="nextQuestion()" style="display:none" id="btn-next-lbl">Itti Aanee →</button>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 3: RESULTS ══ -->
+  <div class="page" id="page-result" style="padding:32px;display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 64px);">
+    <div class="result-page">
+      <div class="result-icon-big" id="result-emoji">🏆</div>
+      <div class="result-grade" id="result-pct">0%</div>
+      <div class="result-label" id="result-label">Milkaa'eera!</div>
+
+      <div class="result-stats">
+        <div class="rs-card"><div class="rs-val green" id="rs-correct">0</div><div class="rs-label" id="lbl-correct">Sirrii</div></div>
+        <div class="rs-card"><div class="rs-val red" id="rs-wrong">0</div><div class="rs-label" id="lbl-wrong">Dogoggoraa</div></div>
+        <div class="rs-card"><div class="rs-val gold" id="rs-score">0</div><div class="rs-label" id="lbl-score">Qabxii</div></div>
+      </div>
+
+      <div id="cert-unlock-container"></div>
+
+      <div class="review-list">
+        <div class="review-title" id="lbl-review">📋 Deebii Keessan</div>
+        <div id="review-items"></div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-retry" onclick="restartQuiz()" id="btn-retry-lbl">🔄 Irra Deebi'i</button>
+        <button class="btn-next-lesson" id="btn-next-lesson-lbl">📖 Ramaddii Itti Aanu →</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════
+// TRANSLATIONS
+// ══════════════════════════════════════
+const T = {
+  om:{
+    intro_subject:'Afaan fi Barreeffama',
+    intro_title:'Qubee fi Dubbisa — Quiz',
+    intro_sub:'Beekumsa kee mirkaneessi! Gaaffii 7 deebisi — daqiiqaa 1 gaaffii tokkoof qabda.',
+    lbl_questions:'Gaaffii', lbl_per_q:'Gaaffii Tokkoof', lbl_pass:'Darbuuf',
+    rules_title:'📋 Seera Quiz',
+    rule1:'Gaaffii tokko tokko irratti yeroo 60 sekondii qabda.',
+    rule2:'Deebii tokko filadhu — sirrii yoo ta\'e qufa\'a, dogoggoraa yoo ta\'e deebii sirrii argatta.',
+    rule3:'70% fi ol yoo argatte ragaa barnoota argatta!',
+    rule4:'Xumuree booda irra deebi\'uu dandeessa.',
+    btn_start:'🚀 Quiz Jalqabi',
+    lbl_correct:'Sirrii', lbl_wrong:'Dogoggoraa', lbl_score:'Qabxii',
+    lbl_review:'📋 Deebii Keessan',
+    btn_retry:'🔄 Irra Deebi\'i', btn_next_lesson:'📖 Ramaddii Itti Aanu →',
+    badge_mc:'🎯 Deebii Tokko Filadhu',
+    badge_tf:'⚡ Dhugaa ykn Sobaa?',
+    badge_fill:'✏️ Bakka Guuti',
+    btn_next:'Itti Aanee →',
+    fb_correct:'Sirrii dha! 🎉', fb_wrong:'Dogoggoraa! Deebiin sirrii:',
+    timer_label:'Yeroon Dhumee! ⏰',
+    grade_excellent:'Baay\'ee Gaarii! 🏆',
+    grade_good:'Gaarii! 👍',
+    grade_try:'Yaali Irra Deebi\'i 💪',
+    cert_title:'Ragaa Argatte! 🏅',
+    cert_sub:'Bu\'aa baay\'ee gaarii — ragaa barnoota kee download gochuu dandeessa!',
+    type_mc:'Filannoo', type_tf:'Dhugaa/Sobaa', type_fill:'Guuti'
+  },
+  am:{
+    intro_subject:'ቋንቋ እና ጽሑፍ',
+    intro_title:'ፊደል እና ንባብ — ፈተና',
+    intro_sub:'እውቀትዎን ያረጋግጡ! 7 ጥያቄዎችን ይመልሱ — ለእያንዳንዱ ጥያቄ 60 ሰከንድ ጊዜ አለዎት።',
+    lbl_questions:'ጥያቄዎች', lbl_per_q:'ለእያንዳንዱ', lbl_pass:'ለማለፍ',
+    rules_title:'📋 የፈተና ደንቦች',
+    rule1:'ለእያንዳንዱ ጥያቄ 60 ሰከንድ ጊዜ አለዎት።',
+    rule2:'አንድ መልስ ይምረጡ — ትክክል ከሆነ ያሸንፋሉ፣ ስህተት ከሆነ ትክክለኛውን ያያሉ።',
+    rule3:'70% እና ከዚያ በላይ ካገኙ ሰርቲፊኬት ያገኛሉ!',
+    rule4:'ከጨረሱ በኋላ ደግመው መሞከር ይችላሉ።',
+    btn_start:'🚀 ፈተና ጀምር',
+    lbl_correct:'ትክክል', lbl_wrong:'ስህተት', lbl_score:'ነጥብ',
+    lbl_review:'📋 መልሶችዎ',
+    btn_retry:'🔄 እንደገና ሞክር', btn_next_lesson:'📖 ቀጣይ ትምህርት →',
+    badge_mc:'🎯 አንድ መልስ ይምረጡ',
+    badge_tf:'⚡ እውነት ወይስ ሐሰት?',
+    badge_fill:'✏️ ቦታ ይሙሉ',
+    btn_next:'ቀጣይ →',
+    fb_correct:'ትክክል ነው! 🎉', fb_wrong:'ስህተት! ትክክለኛው መልስ:',
+    timer_label:'ጊዜ አልቋል! ⏰',
+    grade_excellent:'በጣም ጥሩ! 🏆',
+    grade_good:'ጥሩ! 👍',
+    grade_try:'እንደገና ሞክር 💪',
+    cert_title:'ሰርቲፊኬት አግኝተዋል! 🏅',
+    cert_sub:'በጣም ጥሩ ውጤት — ሰርቲፊኬትዎን ማውረድ ይችላሉ!',
+    type_mc:'ምርጫ', type_tf:'እውነት/ሐሰት', type_fill:'ይሙሉ'
+  },
+  en:{
+    intro_subject:'Language & Literacy',
+    intro_title:'Alphabet & Reading — Quiz',
+    intro_sub:'Test your knowledge! Answer 7 questions — you have 60 seconds per question.',
+    lbl_questions:'Questions', lbl_per_q:'Per Question', lbl_pass:'To Pass',
+    rules_title:'📋 Quiz Rules',
+    rule1:'You have 60 seconds per question.',
+    rule2:'Choose one answer — if correct you score, if wrong you\'ll see the right answer.',
+    rule3:'Score 70% or above to earn your certificate!',
+    rule4:'You can retry after finishing.',
+    btn_start:'🚀 Start Quiz',
+    lbl_correct:'Correct', lbl_wrong:'Wrong', lbl_score:'Score',
+    lbl_review:'📋 Your Answers',
+    btn_retry:'🔄 Try Again', btn_next_lesson:'📖 Next Lesson →',
+    badge_mc:'🎯 Choose One Answer',
+    badge_tf:'⚡ True or False?',
+    badge_fill:'✏️ Fill in the Blank',
+    btn_next:'Next →',
+    fb_correct:'Correct! 🎉', fb_wrong:'Wrong! The correct answer is:',
+    timer_label:'Time\'s Up! ⏰',
+    grade_excellent:'Excellent! 🏆',
+    grade_good:'Good Job! 👍',
+    grade_try:'Try Again 💪',
+    cert_title:'Certificate Unlocked! 🏅',
+    cert_sub:'Great score — you can now download your certificate!',
+    type_mc:'Multiple Choice', type_tf:'True/False', type_fill:'Fill Blank'
+  }
+};
+
+// ══════════════════════════════════════
+// QUIZ QUESTIONS (trilingual)
+// ══════════════════════════════════════
+const QUESTIONS = {
+  om:[
+    { type:'mc', text:'Afaan Oromoo qubee kam fayyadama?', hint:'Bara 1991 irraa kaasee itti fayyadamna.', options:['Qubee Latin','Qubee Arabii','Qubee Ethiopic','Qubee Chaayinaa'], correct:0, explain:'Afaan Oromoon Qubee Latin fayyadama — bara 1991 irraa official ta\'eera.' },
+    { type:'tf', text:'"Nagaa" jechuun "Thank you" jechuudha.', hint:'Jechoota Afaan Oromoo salphaa yaadhu.', correct:false, explain:'"Nagaa" jechuun "Peace/Hello" jechuudha. "Thank you" jechuun "Galatoomaa" dha.' },
+    { type:'mc', text:'Jechoota kanneen keessaa Afaan Oromoo keessatti "yes" jechuun kami?', hint:'Deebii waliigaltuu yaadhu.', options:['Lakki','Eeyyee','Maaloo','Nagaa'], correct:1, explain:'"Eeyyee" jechuun "Yes" dha. "Lakki" jechuun "No" dha.' },
+    { type:'fill', text:'Afaan Oromoon qubee _____ of keessaa qaba.', hint:'Lakkoofsa qubee yaadhu — Ingliffaa wajjin wal-fakkaata.', correct:'26', explain:'Afaan Oromoon qubee 26 of keessaa qaba, kan Ingliffaa wajjin wal-fakkaatu.' },
+    { type:'mc', text:'"Fayyaa" jechuun hiikni isaa maalii?', hint:'Fayyaan jireenya keessatti baay\'ee barbaachisaadha.', options:['Education','Culture','Health','Child'], correct:2, explain:'"Fayyaa" jechuun "Health" dha. Fakkeenya: "Fayyaan Qabeenya".' },
+    { type:'tf', text:'Qubee "A a" sagalee "a" ni qabaata.', hint:'Qubee jalqabaa Afaan Oromoo.', correct:true, explain:'Dhugaa dha! Qubee "A a" sagalee "a" qaba — fakkeenya: Aadaa, Abbaa.' },
+    { type:'mc', text:'"Galatoomaa" jechuun hiikni isaa Ingliffaatiin maalii?', hint:'Yommuu namni waan gaarii sitti godhu itti fayyadamta.', options:['Please','Hello','Thank you','Goodbye'], correct:2, explain:'"Galatoomaa" jechuun "Thank you" dha — kan baay\'ee fayyadaman.' }
+  ],
+  am:[
+    { type:'mc', text:'አፋን ኦሮሞ የትኛውን ፊደል ይጠቀማል?', hint:'ከ1991 ዓ.ም ጀምሮ ጥቅም ላይ ውሏል።', options:['ላቲን ፊደል','አረብ ፊደል','ኢትዮጵያዊ ፊደል','ቻይናዊ ፊደል'], correct:0, explain:'አፋን ኦሮሞ ላቲን ፊደልን ይጠቀማል — ቁቤ ኦሮሞ ይባላል — ከ1991 ዓ.ም ጀምሮ ይፋዊ ሆኗል።' },
+    { type:'tf', text:'"Nagaa" ማለት "Thank you" ማለት ነው።', hint:'ቀላል የኦሮሞ ቃላትን አስቡ።', correct:false, explain:'"Nagaa" ማለት "Peace/Hello" ማለት ነው። "Thank you" ማለት "Galatoomaa" ነው።' },
+    { type:'mc', text:'ከዚህ ቃላት መካከል በአፋን ኦሮሞ "አዎ" የሚለው የትኛው ነው?', hint:'የስምምነት መልስ አስቡ።', options:['Lakki','Eeyyee','Maaloo','Nagaa'], correct:1, explain:'"Eeyyee" ማለት "አዎ" ነው። "Lakki" ማለት "አይ" ነው።' },
+    { type:'fill', text:'አፋን ኦሮሞ _____ ፊደሎች አሉት።', hint:'ቁጥሩን አስቡ — ከእንግሊዝኛ ጋር ተመሳሳይ ነው።', correct:'26', explain:'አፋን ኦሮሞ 26 ፊደሎች አሉት፣ ልክ እንደ እንግሊዝኛ።' },
+    { type:'mc', text:'"Fayyaa" ምን ማለት ነው?', hint:'ለሕይወት አስፈላጊ የሆነ ነገር።', options:['ትምህርት','ባህል','ጤና','ልጅ'], correct:2, explain:'"Fayyaa" ማለት "ጤና" ነው። ምሳሌ: "Fayyaan Qabeenya" = ጤና ሀብት ነው።' },
+    { type:'tf', text:'ፊደል "A a" "a" የሚል ድምጽ አለው።', hint:'የኦሮሞ የመጀመሪያ ፊደል።', correct:true, explain:'맞아요! ፊደል "A a" "a" ድምጽ አለው — ምሳሌ: Aadaa, Abbaa።' },
+    { type:'mc', text:'"Galatoomaa" በእንግሊዝኛ ምን ማለት ነው?', hint:'ሰው ጥሩ ነገር ሲያደርግልዎ የሚሉት።', options:['Please','Hello','Thank you','Goodbye'], correct:2, explain:'"Galatoomaa" ማለት "Thank you" ነው — በጣም የሚያስፈልግ ቃል።' }
+  ],
+  en:[
+    { type:'mc', text:'Which script does Afaan Oromo use?', hint:'It has been used officially since 1991.', options:['Latin script','Arabic script','Ethiopic script','Chinese script'], correct:0, explain:'Afaan Oromo uses the Latin script — called Qubee Oromoo — officially since 1991.' },
+    { type:'tf', text:'"Nagaa" means "Thank you" in Afaan Oromo.', hint:'Think of simple Afaan Oromo words.', correct:false, explain:'"Nagaa" means "Peace/Hello". "Thank you" in Afaan Oromo is "Galatoomaa".' },
+    { type:'mc', text:'Which of these means "yes" in Afaan Oromo?', hint:'Think of an agreement response.', options:['Lakki','Eeyyee','Maaloo','Nagaa'], correct:1, explain:'"Eeyyee" means "Yes". "Lakki" means "No".' },
+    { type:'fill', text:'Afaan Oromo has _____ letters in its alphabet.', hint:'Think of the count — same as English.', correct:'26', explain:'Afaan Oromo has 26 letters, the same number as the English alphabet.' },
+    { type:'mc', text:'What does "Fayyaa" mean?', hint:'Something essential for life.', options:['Education','Culture','Health','Child'], correct:2, explain:'"Fayyaa" means "Health". Example: "Fayyaan Qabeenya" = Health is wealth.' },
+    { type:'tf', text:'The letter "A a" makes the "a" sound in Afaan Oromo.', hint:'The first letter of the Oromo alphabet.', correct:true, explain:'True! The letter "A a" makes the "a" sound — examples: Aadaa, Abbaa.' },
+    { type:'mc', text:'What does "Galatoomaa" mean in English?', hint:'What you say when someone does something nice for you.', options:['Please','Hello','Thank you','Goodbye'], correct:2, explain:'"Galatoomaa" means "Thank you" — one of the most used words.' }
+  ]
+};
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let currentLang = localStorage.getItem('kakuu_lang') || 'om';
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let timerInterval = null;
+let timeLeft = 60;
+let answered = false;
+let userAnswers = [];
+
+// ══════════════════════════════════════
+// LANG
+// ══════════════════════════════════════
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('kakuu_lang', lang);
+  document.querySelectorAll('.lp-btn').forEach((b,i) => b.classList.toggle('active', ['om','am','en'][i]===lang));
+  document.body.style.fontFamily = lang==='am' ? "'Noto Sans Ethiopic',sans-serif" : "'Source Serif 4','Noto Sans Ethiopic',Georgia,serif";
+  applyIntroText();
+}
+
+function applyIntroText() {
+  const t = T[currentLang];
+  document.getElementById('intro-subject').textContent = t.intro_subject;
+  document.getElementById('intro-title').textContent   = t.intro_title;
+  document.getElementById('intro-sub').textContent     = t.intro_sub;
+  document.getElementById('lbl-questions').textContent = t.lbl_questions;
+  document.getElementById('lbl-per-q').textContent     = t.lbl_per_q;
+  document.getElementById('lbl-pass').textContent      = t.lbl_pass;
+  document.getElementById('rules-title').textContent   = t.rules_title;
+  document.getElementById('rule1').textContent         = t.rule1;
+  document.getElementById('rule2').textContent         = t.rule2;
+  document.getElementById('rule3').textContent         = t.rule3;
+  document.getElementById('rule4').textContent         = t.rule4;
+  document.getElementById('btn-start-lbl').textContent = t.btn_start;
+}
+
+// ══════════════════════════════════════
+// QUIZ LOGIC
+// ══════════════════════════════════════
+function startQuiz() {
+  questions = QUESTIONS[currentLang];
+  currentQ = 0; score = 0; correctCount = 0; wrongCount = 0; userAnswers = [];
+  showPage('quiz');
+  buildStreakDots();
+  renderQuestion();
+}
+
+function buildStreakDots() {
+  const row = document.getElementById('streak-row');
+  row.innerHTML = questions.map((_,i) => `<div class="streak-dot" id="dot-${i}"></div>`).join('');
+  document.getElementById(`dot-0`).classList.add('current');
+}
+
+function renderQuestion() {
+  answered = false;
+  const q = questions[currentQ];
+  const t = T[currentLang];
+
+  // progress
+  const pct = (currentQ / questions.length) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('q-num').textContent   = currentQ + 1;
+  document.getElementById('q-total').textContent = questions.length;
+  document.getElementById('score-display').textContent = score;
+
+  // badge + text
+  const badges = { mc: t.badge_mc, tf: t.badge_tf, fill: t.badge_fill };
+  document.getElementById('q-badge').textContent = badges[q.type];
+  document.getElementById('q-text').textContent  = q.text;
+  document.getElementById('q-hint').textContent  = q.hint ? '💡 ' + q.hint : '';
+  document.getElementById('feedback-container').innerHTML = '';
+  document.getElementById('btn-next').style.display = 'none';
+
+  // options
+  const cont = document.getElementById('options-container');
+  if (q.type === 'mc') {
+    cont.innerHTML = `<div class="options-grid">${q.options.map((o,i)=>`
+      <button class="option-btn" onclick="answerMC(${i})" id="opt-${i}">
+        <div class="option-letter">${['A','B','C','D'][i]}</div>
+        <span>${o}</span>
+      </button>`).join('')}</div>`;
+  } else if (q.type === 'tf') {
+    cont.innerHTML = `<div class="tf-grid">
+      <button class="tf-btn" onclick="answerTF(true)" id="tf-true"><span class="tf-icon">✅</span>${currentLang==='om'?'Dhugaa':currentLang==='am'?'እውነት':'True'}</button>
+      <button class="tf-btn" onclick="answerTF(false)" id="tf-false"><span class="tf-icon">❌</span>${currentLang==='om'?'Sobaa':currentLang==='am'?'ሐሰት':'False'}</button>
+    </div>`;
+  } else {
+    cont.innerHTML = `<input class="fill-input" id="fill-input" placeholder="${currentLang==='om'?'Deebii barreessi...':currentLang==='am'?'መልስ ይጻፉ...':'Type your answer...'}" onkeydown="if(event.key==='Enter')answerFill()"/>
+    <button class="btn-next-q" onclick="answerFill()" style="margin-top:12px">${currentLang==='om'?'Deebii Ergi':currentLang==='am'?'ይላኩ':'Submit'}</button>`;
+    setTimeout(()=>document.getElementById('fill-input')?.focus(),100);
+  }
+
+  // timer
+  clearInterval(timerInterval);
+  timeLeft = 60;
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){ clearInterval(timerInterval); timeExpired(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  document.getElementById('timer-val').textContent = timeLeft;
+  el.className = 'quiz-timer' + (timeLeft<=10?' danger':timeLeft<=20?' warning':'');
+}
+
+function timeExpired() {
+  if(answered) return;
+  answered = true;
+  const q = questions[currentQ];
+  userAnswers.push({ q: q.text, your: T[currentLang].timer_label, correct: q.type==='tf'? (q.correct?'Dhugaa/True':'Sobaa/False') : q.type==='fill'? q.correct : q.options?.[q.correct], ok: false });
+  wrongCount++;
+  showFeedback(false, q);
+  disableAll();
+  markDot(false);
+  document.getElementById('btn-next').style.display = 'block';
+  document.getElementById('btn-next').textContent = T[currentLang].btn_next;
+}
+
+function answerMC(idx) {
+  if(answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  const q = questions[currentQ];
+  const ok = idx === q.correct;
+  document.querySelectorAll('.option-btn').forEach((b,i)=>{
+    b.disabled = true;
+    if(i===q.correct) b.classList.add('correct');
+    if(i===idx && !ok) b.classList.add('wrong');
+  });
+  recordAnswer(q, q.options[idx], ok);
+  afterAnswer(ok, q);
+}
+
+function answerTF(val) {
+  if(answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  const q = questions[currentQ];
+  const ok = val === q.correct;
+  document.getElementById('tf-true').disabled = true;
+  document.getElementById('tf-false').disabled = true;
+  document.getElementById(q.correct ? 'tf-true' : 'tf-false').classList.add('correct');
+  if(!ok) document.getElementById(val ? 'tf-true' : 'tf-false').classList.add('wrong');
+  const valLabel = val ? (currentLang==='om'?'Dhugaa':currentLang==='am'?'እውነት':'True') : (currentLang==='om'?'Sobaa':currentLang==='am'?'ሐሰት':'False');
+  recordAnswer(q, valLabel, ok);
+  afterAnswer(ok, q);
+}
+
+function answerFill() {
+  if(answered) return;
+  const inp = document.getElementById('fill-input');
+  if(!inp) return;
+  const val = inp.value.trim();
+  if(!val) return;
+  answered = true;
+  clearInterval(timerInterval);
+  const q = questions[currentQ];
+  const ok = val.toLowerCase() === q.correct.toLowerCase();
+  inp.disabled = true;
+  inp.classList.add(ok ? 'correct' : 'wrong');
+  // hide submit btn
+  inp.nextElementSibling && (inp.nextElementSibling.style.display='none');
+  recordAnswer(q, val, ok);
+  afterAnswer(ok, q);
+}
+
+function recordAnswer(q, userAns, ok) {
+  const correctAns = q.type==='tf' ? (q.correct?(currentLang==='om'?'Dhugaa':currentLang==='am'?'እውነት':'True'):(currentLang==='om'?'Sobaa':currentLang==='am'?'ሐሰት':'False')) : q.type==='fill' ? q.correct : q.options[q.correct];
+  userAnswers.push({ q: q.text, your: userAns, correct: correctAns, ok });
+}
+
+function afterAnswer(ok, q) {
+  if(ok){ score += 10; correctCount++; } else { wrongCount++; }
+  document.getElementById('score-display').textContent = score;
+  showFeedback(ok, q);
+  markDot(ok);
+  document.getElementById('btn-next').style.display = 'block';
+  document.getElementById('btn-next').textContent = currentQ < questions.length-1 ? T[currentLang].btn_next : (currentLang==='om'?'Xumuuri ✅':currentLang==='am'?'ጨርስ ✅':'Finish ✅');
+}
+
+function showFeedback(ok, q) {
+  const t = T[currentLang];
+  const cont = document.getElementById('feedback-container');
+  cont.innerHTML = `<div class="feedback-banner ${ok?'correct-fb':'wrong-fb'}">
+    <span class="fb-icon">${ok?'✅':'❌'}</span>
+    <div class="fb-text">
+      <strong>${ok ? t.fb_correct : t.fb_wrong}</strong>
+      ${!ok ? `<span>${q.type==='tf'?(q.correct?(currentLang==='om'?'Dhugaa':currentLang==='am'?'እውነት':'True'):(currentLang==='om'?'Sobaa':currentLang==='am'?'ሐሰት':'False')):q.type==='fill'?q.correct:q.options[q.correct]}</span>` : ''}
+      <br/><small style="opacity:0.8;margin-top:4px;display:block">${q.explain}</small>
+    </div>
+  </div>`;
+}
+
+function markDot(ok) {
+  const dot = document.getElementById(`dot-${currentQ}`);
+  dot.classList.remove('current');
+  dot.classList.add(ok ? 'correct' : 'wrong');
+  if(currentQ+1 < questions.length) document.getElementById(`dot-${currentQ+1}`).classList.add('current');
+}
+
+function disableAll() {
+  document.querySelectorAll('.option-btn, .tf-btn, .fill-input').forEach(el => el.disabled = true);
+}
+
+function nextQuestion() {
+  currentQ++;
+  if(currentQ < questions.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+// ══════════════════════════════════════
+// RESULTS
+// ══════════════════════════════════════
+function showResults() {
+  clearInterval(timerInterval);
+  showPage('result');
+  const pct = Math.round((correctCount / questions.length) * 100);
+  const t = T[currentLang];
+
+  // Grade
+  let emoji, gradeClass, gradeLabel;
+  if(pct >= 90)      { emoji='🏆'; gradeClass='excellent'; gradeLabel=t.grade_excellent; }
+  else if(pct >= 70) { emoji='⭐'; gradeClass='good';      gradeLabel=t.grade_good; }
+  else               { emoji='💪'; gradeClass='try-again'; gradeLabel=t.grade_try; }
+
+  document.getElementById('result-emoji').textContent      = emoji;
+  document.getElementById('result-pct').textContent        = pct + '%';
+  document.getElementById('result-pct').className          = 'result-grade ' + gradeClass;
+  document.getElementById('result-label').textContent      = gradeLabel;
+  document.getElementById('rs-correct').textContent        = correctCount;
+  document.getElementById('rs-wrong').textContent          = wrongCount;
+  document.getElementById('rs-score').textContent          = score;
+  document.getElementById('lbl-correct').textContent       = t.lbl_correct;
+  document.getElementById('lbl-wrong').textContent         = t.lbl_wrong;
+  document.getElementById('lbl-score').textContent         = t.lbl_score;
+  document.getElementById('lbl-review').textContent        = t.lbl_review;
+  document.getElementById('btn-retry-lbl').textContent     = t.btn_retry;
+  document.getElementById('btn-next-lesson-lbl').textContent = t.btn_next_lesson;
+
+  // Certificate
+  const certCont = document.getElementById('cert-unlock-container');
+  if(pct >= 70) {
+    certCont.innerHTML = `<div class="cert-unlock"><div class="cert-unlock-icon">🏅</div><div><h3>${t.cert_title}</h3><p>${t.cert_sub}</p></div></div>`;
+  } else { certCont.innerHTML = ''; }
+
+  // Review
+  const reviewCont = document.getElementById('review-items');
+  reviewCont.innerHTML = userAnswers.map(a => `
+    <div class="review-item">
+      <span class="review-icon">${a.ok?'✅':'❌'}</span>
+      <div>
+        <div class="review-q">${a.q}</div>
+        <div class="review-a">
+          ${a.ok
+            ? `<span class="correct-ans">${a.your}</span>`
+            : `<span class="your-ans">${a.your}</span> → <span class="correct-ans">${a.correct}</span>`}
+        </div>
+      </div>
+    </div>`).join('');
+
+  // progress fill to 100
+  document.getElementById('progress-fill').style.width = '100%';
+}
+
+function restartQuiz() { startQuiz(); }
+
+// ══════════════════════════════════════
+// PAGE SWITCH
+// ══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => { p.style.display='none'; p.classList.remove('active'); });
+  const el = document.getElementById('page-'+id);
+  el.style.display = 'flex';
+  el.classList.add('active');
+  const titles = { intro:{om:'🧠 Quiz',am:'🧠 ፈተና',en:'🧠 Quiz'}, quiz:{om:'🧠 Quiz — Adeemaa jira',am:'🧠 ፈተና — በሂደት ላይ',en:'🧠 Quiz — In Progress'}, result:{om:'✅ Bu\'aa Quiz',am:'✅ የፈተና ውጤት',en:'✅ Quiz Results'} };
+  document.getElementById('page-title').textContent = titles[id]?.[currentLang] || '';
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+setLang(currentLang);
+showPage('intro');
+</script>
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:#1a6b3c; --green-light:#2e9d5e; --gold:#d4a017; --gold-light:#f0c040;
+      --cream:#faf6ee; --dark:#0e1a14; --mid:#3a5244; --muted:#7a9585;
+      --bg:#f3f6f4; --card:#ffffff; --shadow:0 4px 24px rgba(10,40,20,0.09);
+      --sidebar-w:240px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4','Noto Sans Ethiopic',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+
+    /* ── SIDEBAR ── */
+    .sidebar{
+      width:var(--sidebar-w);min-height:100vh;background:var(--dark);
+      display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;
+    }
+    .sidebar-logo{
+      padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);
+      font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;
+    }
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-family:'Source Serif 4',serif;font-weight:400;margin-top:2px;letter-spacing:0.05em;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-section-label{font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;padding:11px 24px;
+      color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;
+      transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;
+    }
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{
+      padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);
+      display:flex;align-items:center;gap:10px;
+    }
+    .user-avatar{
+      width:36px;height:36px;border-radius:50%;
+      background:linear-gradient(135deg,var(--gold),var(--green-light));
+      display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;
+    }
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+
+    /* ── MAIN ── */
+    .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+    /* ── TOPBAR ── */
+    .topbar{
+      background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);
+      padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:40;
+    }
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--dark);}
+    .topbar-title span{color:var(--muted);font-size:0.85rem;font-weight:400;margin-left:8px;font-family:'Source Serif 4',serif;}
+    .topbar-right{display:flex;align-items:center;gap:14px;}
+    .notif-btn{
+      width:38px;height:38px;border-radius:50%;border:1.5px solid rgba(0,0,0,0.1);
+      background:#fff;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:1.1rem;position:relative;transition:border-color 0.2s;
+    }
+    .notif-btn:hover{border-color:var(--green);}
+    .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--gold);border:2px solid #fff;}
+    .lang-pill{
+      display:flex;gap:3px;background:rgba(26,107,60,0.07);
+      border:1.5px solid rgba(26,107,60,0.15);border-radius:30px;padding:3px 5px;
+    }
+    .lp-btn{border:none;background:none;cursor:pointer;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;color:var(--mid);transition:all 0.18s;}
+    .lp-btn.active{background:var(--green);color:#fff;}
+
+    /* ── PAGE ── */
+    .page{padding:28px 32px;display:none;}
+    .page.active{display:block;}
+
+    /* ── DASHBOARD PAGE ── */
+    .greeting{margin-bottom:24px;}
+    .greeting h1{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--dark);}
+    .greeting h1 em{color:var(--green);font-style:normal;}
+    .greeting p{color:var(--muted);font-size:0.92rem;margin-top:4px;}
+
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
+    .stat-card{
+      background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);
+      border:1.5px solid rgba(0,0,0,0.05);position:relative;overflow:hidden;
+    }
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--sc-color,var(--green));}
+    .stat-card .sc-icon{font-size:1.6rem;margin-bottom:10px;}
+    .stat-card .sc-val{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--dark);}
+    .stat-card .sc-label{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+
+    .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;}
+    @media(max-width:900px){.dash-grid{grid-template-columns:1fr;}}
+
+    .card{background:var(--card);border-radius:18px;padding:24px;box-shadow:var(--shadow);border:1.5px solid rgba(0,0,0,0.05);}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+    .card-title span{margin-left:auto;font-size:0.75rem;color:var(--green);font-family:'Source Serif 4',serif;cursor:pointer;}
+
+    /* progress items */
+    .prog-item{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+    .prog-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+    .prog-info{flex:1;}
+    .prog-name{font-size:0.88rem;font-weight:600;color:var(--dark);margin-bottom:4px;}
+    .prog-bar-wrap{height:5px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;}
+    .prog-bar-fill{height:100%;border-radius:10px;transition:width 1s ease;}
+    .prog-pct{font-size:0.75rem;color:var(--muted);min-width:32px;text-align:right;}
+
+    /* activity */
+    .activity-item{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+    .act-dot{width:10px;height:10px;border-radius:50%;background:var(--green);margin-top:4px;flex-shrink:0;}
+    .act-dot.gold{background:var(--gold);}
+    .act-text{font-size:0.85rem;color:var(--mid);line-height:1.5;}
+    .act-time{font-size:0.72rem;color:var(--muted);}
+
+    /* continue learning */
+    .continue-card{
+      background:linear-gradient(135deg,var(--green),#0d4a28);
+      border-radius:18px;padding:24px;color:#fff;margin-bottom:28px;
+      display:flex;align-items:center;gap:20px;
+    }
+    .continue-icon{font-size:3rem;flex-shrink:0;}
+    .continue-info{flex:1;}
+    .continue-info h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;margin-bottom:4px;}
+    .continue-info p{font-size:0.82rem;opacity:0.75;margin-bottom:14px;}
+    .btn-white{background:#fff;color:var(--green);border:none;padding:10px 24px;border-radius:30px;font-size:0.88rem;font-weight:700;cursor:pointer;transition:transform 0.15s;font-family:inherit;}
+    .btn-white:hover{transform:translateY(-2px);}
+
+    /* ── SUBJECTS GRID ── */
+    .subjects-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;}
+    .subj-card{
+      background:var(--card);border-radius:16px;padding:22px;box-shadow:var(--shadow);
+      border:1.5px solid rgba(0,0,0,0.05);cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;
+      position:relative;overflow:hidden;
+    }
+    .subj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--sc,var(--green));}
+    .subj-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(10,40,20,0.13);}
+    .subj-icon{font-size:2rem;margin-bottom:12px;}
+    .subj-name{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:4px;}
+    .subj-count{font-size:0.78rem;color:var(--muted);margin-bottom:12px;}
+    .subj-prog{height:4px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;}
+    .subj-prog-fill{height:100%;border-radius:10px;background:var(--sc,var(--green));}
+    .subj-badge{
+      position:absolute;top:14px;right:14px;
+      background:rgba(212,160,23,0.13);color:var(--gold);
+      border:1px solid rgba(212,160,23,0.25);border-radius:20px;
+      padding:2px 10px;font-size:0.68rem;font-weight:700;
+    }
+
+    /* ── LESSON PAGE ── */
+    .lesson-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;}
+    @media(max-width:900px){.lesson-layout{grid-template-columns:1fr;}}
+
+    .lesson-main{}
+    .lesson-header{margin-bottom:20px;}
+    .lesson-breadcrumb{font-size:0.78rem;color:var(--muted);margin-bottom:8px;}
+    .lesson-breadcrumb span{color:var(--green);cursor:pointer;}
+    .lesson-title-row{display:flex;align-items:flex-start;gap:14px;}
+    .lesson-icon-big{font-size:2.5rem;}
+    .lesson-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--dark);margin-bottom:4px;}
+    .lesson-meta-row{display:flex;gap:12px;flex-wrap:wrap;}
+    .lesson-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(26,107,60,0.08);color:var(--green);border-radius:20px;padding:3px 12px;font-size:0.75rem;font-weight:600;}
+    .lesson-tag.gold{background:rgba(212,160,23,0.1);color:var(--gold);}
+
+    .lesson-video{
+      background:var(--dark);border-radius:16px;aspect-ratio:16/9;
+      display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+      position:relative;overflow:hidden;cursor:pointer;
+    }
+    .lesson-video-thumb{position:absolute;inset:0;background:linear-gradient(135deg,rgba(26,107,60,0.8),rgba(14,26,20,0.9));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;}
+    .play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:transform 0.2s,background 0.2s;}
+    .play-btn:hover{transform:scale(1.1);background:rgba(255,255,255,0.25);}
+    .video-title{color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+    .video-dur{color:rgba(255,255,255,0.5);font-size:0.8rem;}
+
+    .lesson-body{background:var(--card);border-radius:16px;padding:28px;box-shadow:var(--shadow);margin-bottom:20px;}
+    .lesson-body h2{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin:0 0 12px;}
+    .lesson-body p{font-size:0.92rem;color:var(--mid);line-height:1.8;margin-bottom:14px;}
+    .lesson-body ul{padding-left:20px;margin-bottom:14px;}
+    .lesson-body ul li{font-size:0.92rem;color:var(--mid);line-height:1.8;margin-bottom:6px;}
+    .key-word{background:rgba(26,107,60,0.08);color:var(--green);border-radius:4px;padding:1px 6px;font-weight:600;}
+
+    .lesson-nav-row{display:flex;gap:12px;margin-bottom:20px;}
+    .btn-prev{background:transparent;color:var(--green);border:2px solid var(--green);padding:11px 24px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;flex:1;}
+    .btn-prev:hover{background:var(--green);color:#fff;}
+    .btn-next{background:var(--green);color:#fff;border:none;padding:11px 24px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;flex:2;}
+    .btn-next:hover{background:var(--green-light);}
+
+    /* lesson sidebar */
+    .lesson-sidebar{}
+    .lesson-list-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .lc-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:14px;}
+    .ll-item{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+      cursor:pointer;transition:background 0.18s;margin-bottom:4px;
+    }
+    .ll-item:hover{background:rgba(26,107,60,0.06);}
+    .ll-item.active{background:rgba(26,107,60,0.1);}
+    .ll-num{font-size:0.72rem;font-weight:700;color:var(--muted);min-width:20px;}
+    .ll-name{font-size:0.83rem;color:var(--mid);flex:1;line-height:1.4;}
+    .ll-item.active .ll-name{color:var(--green);font-weight:600;}
+    .ll-done{font-size:0.9rem;}
+    .ll-item.done .ll-name{color:var(--muted);}
+
+    /* quiz card */
+    .quiz-card{background:linear-gradient(135deg,var(--gold),#b8860b);border-radius:16px;padding:20px;color:#fff;}
+    .quiz-card h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:6px;}
+    .quiz-card p{font-size:0.8rem;opacity:0.85;margin-bottom:14px;line-height:1.5;}
+    .btn-quiz{background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.4);padding:9px 20px;border-radius:30px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;width:100%;transition:background 0.2s;}
+    .btn-quiz:hover{background:rgba(255,255,255,0.3);}
+
+    /* certificate */
+    .cert-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);text-align:center;}
+    .cert-icon{font-size:2.5rem;margin-bottom:8px;}
+    .cert-card h4{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:4px;}
+    .cert-card p{font-size:0.78rem;color:var(--muted);line-height:1.5;margin-bottom:12px;}
+    .cert-prog{height:6px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;margin-bottom:6px;}
+    .cert-prog-fill{height:100%;border-radius:10px;background:linear-gradient(to right,var(--green),var(--gold));width:45%;}
+    .cert-pct{font-size:0.75rem;color:var(--muted);}
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    🌿 Kakuu <span>Oromoo</span>
+    <small>Beekumsa Afaan Keessaniin</small>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label" data-i18n="nav_main">Mana</div>
+    <a class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="icon">🏠</span> <span data-i18n="nav_dashboard">Dashboard</span>
+    </a>
+    <a class="nav-item" onclick="showPage('lesson',this)">
+      <span class="icon">📖</span> <span data-i18n="nav_lessons">Ramaddiiwan</span>
+    </a>
+    <a class="nav-item" onclick="">
+      <span class="icon">🏺</span> <span data-i18n="nav_subjects">Kutaalee</span>
+    </a>
+    <a class="nav-item" onclick="">
+      <span class="icon">🏅</span> <span data-i18n="nav_certs">Ragaalee</span>
+    </a>
+    <div class="nav-section-label" data-i18n="nav_account">Koontii</div>
+    <a class="nav-item" onclick="">
+      <span class="icon">👤</span> <span data-i18n="nav_profile">Profile</span>
+    </a>
+    <a class="nav-item" onclick="">
+      <span class="icon">⚙️</span> <span data-i18n="nav_settings">Qindaa'ina</span>
+    </a>
+    <a class="nav-item" onclick="">
+      <span class="icon">🚪</span> <span data-i18n="nav_logout">Ba'i</span>
+    </a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">👩</div>
+    <div class="user-info">
+      <div class="user-name">Faaxumaa T.</div>
+      <div class="user-role" data-i18n="user_role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════════════════════════════════════
+     MAIN
+══════════════════════════════════════ -->
+<div class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">
+      Dashboard <span data-i18n="topbar_sub">Baga nagaan dhufte!</span>
+    </div>
+    <div class="topbar-right">
+      <div class="lang-pill">
+        <button class="lp-btn active" onclick="setLang('om')">OM</button>
+        <button class="lp-btn" onclick="setLang('am')">አማ</button>
+        <button class="lp-btn" onclick="setLang('en')">EN</button>
+      </div>
+      <div class="notif-btn">🔔<div class="notif-dot"></div></div>
+    </div>
+  </div>
+
+  <!-- ══ DASHBOARD PAGE ══ -->
+  <div class="page active" id="page-dashboard">
+    <div style="padding:28px 32px;">
+
+      <!-- Greeting -->
+      <div class="greeting">
+        <h1 data-i18n="greet">Baga nagaan dhufte, <em>Faaxumaa!</em> 🌿</h1>
+        <p data-i18n="greet_sub">Har'a maal baratta? Itti fufi!</p>
+      </div>
+
+      <!-- Continue Learning -->
+      <div class="continue-card">
+        <div class="continue-icon">📖</div>
+        <div class="continue-info">
+          <h3 data-i18n="cont_title">Itti Fufi — Afaan Oromoo: Qubee fi Dubbisa</h3>
+          <p data-i18n="cont_sub">Ramaddii 3 keessaa 1 xumurteetta — itti fufi!</p>
+          <button class="btn-white" onclick="showPage('lesson', document.querySelector('.nav-item:nth-child(3)'))">
+            <span data-i18n="cont_btn">Itti Fufi →</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card" style="--sc-color:var(--green)">
+          <div class="sc-icon">📚</div>
+          <div class="sc-val">7</div>
+          <div class="sc-label" data-i18n="stat_lessons">Ramaddii Xumuraman</div>
+        </div>
+        <div class="stat-card" style="--sc-color:var(--gold)">
+          <div class="sc-icon">⏱️</div>
+          <div class="sc-val">4.5h</div>
+          <div class="sc-label" data-i18n="stat_time">Yeroo Baratame</div>
+        </div>
+        <div class="stat-card" style="--sc-color:#7b3fa0">
+          <div class="sc-icon">🔥</div>
+          <div class="sc-val">5</div>
+          <div class="sc-label" data-i18n="stat_streak">Guyyaa Itti Fufe</div>
+        </div>
+        <div class="stat-card" style="--sc-color:#1a7a8a">
+          <div class="sc-icon">🏅</div>
+          <div class="sc-val">1</div>
+          <div class="sc-label" data-i18n="stat_cert">Ragaa Argame</div>
+        </div>
+      </div>
+
+      <!-- Dash Grid -->
+      <div class="dash-grid">
+        <!-- Progress -->
+        <div class="card">
+          <div class="card-title">📊 <span data-i18n="prog_title">Guddinni Kee</span> <span data-i18n="prog_all">Hunda Ilaali</span></div>
+          <div class="prog-item">
+            <div class="prog-icon" style="background:rgba(26,107,60,0.1)">📝</div>
+            <div class="prog-info">
+              <div class="prog-name" data-i18n="s1">Afaan fi Barreeffama</div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:72%;background:var(--green)"></div></div>
+            </div>
+            <div class="prog-pct">72%</div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-icon" style="background:rgba(192,137,42,0.1)">🔢</div>
+            <div class="prog-info">
+              <div class="prog-name" data-i18n="s2">Herrega fi Saayinsii</div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:45%;background:#c0892a"></div></div>
+            </div>
+            <div class="prog-pct">45%</div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-icon" style="background:rgba(123,63,160,0.1)">🏺</div>
+            <div class="prog-info">
+              <div class="prog-name" data-i18n="s3">Seenaa fi Aadaa</div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:60%;background:#7b3fa0"></div></div>
+            </div>
+            <div class="prog-pct">60%</div>
+          </div>
+          <div class="prog-item">
+            <div class="prog-icon" style="background:rgba(26,122,138,0.1)">🛠️</div>
+            <div class="prog-info">
+              <div class="prog-name" data-i18n="s4">Dandeettii Hojii</div>
+              <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:30%;background:#1a7a8a"></div></div>
+            </div>
+            <div class="prog-pct">30%</div>
+          </div>
+        </div>
+
+        <!-- Activity -->
+        <div class="card">
+          <div class="card-title">⚡ <span data-i18n="act_title">Hojii Dhiyoo</span></div>
+          <div class="activity-item">
+            <div class="act-dot"></div>
+            <div>
+              <div class="act-text" data-i18n="act1">Ramaddii "Qubee fi Dubbisa" xumurte</div>
+              <div class="act-time">Har'a, 9:30 WD</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot gold"></div>
+            <div>
+              <div class="act-text" data-i18n="act2">Quiz "Sirna Gadaa" keessatti 85% argatte</div>
+              <div class="act-time">Kaleessa, 3:15 WB</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot"></div>
+            <div>
+              <div class="act-text" data-i18n="act3">Ramaddii "Herrega: Lakkoofsa" jalqabde</div>
+              <div class="act-time">Kaleessa, 10:00 WD</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="act-dot gold"></div>
+            <div>
+              <div class="act-text" data-i18n="act4">Ragaa barnoota "Afaan fi Barreeffama" argatte 🏅</div>
+              <div class="act-time">Dura-kaleessa</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subjects -->
+      <div class="card-title" style="margin-bottom:16px">📚 <span data-i18n="subj_continue">Itti Fufi — Kutaalee</span></div>
+      <div class="subjects-grid">
+        <div class="subj-card" style="--sc:var(--green)" onclick="showPage('lesson',document.querySelector('.nav-item:nth-child(3)'))">
+          <div class="subj-badge" data-i18n="badge_active">Hojjechaa jirta</div>
+          <div class="subj-icon">📝</div>
+          <div class="subj-name" data-i18n="s1">Afaan fi Barreeffama</div>
+          <div class="subj-count" data-i18n="s1c">30/42 Ramaddii</div>
+          <div class="subj-prog"><div class="subj-prog-fill" style="width:72%"></div></div>
+        </div>
+        <div class="subj-card" style="--sc:#c0892a">
+          <div class="subj-icon">🔢</div>
+          <div class="subj-name" data-i18n="s2">Herrega fi Saayinsii</div>
+          <div class="subj-count" data-i18n="s2c">26/58 Ramaddii</div>
+          <div class="subj-prog"><div class="subj-prog-fill" style="width:45%"></div></div>
+        </div>
+        <div class="subj-card" style="--sc:#7b3fa0">
+          <div class="subj-icon">🏺</div>
+          <div class="subj-name" data-i18n="s3">Seenaa fi Aadaa</div>
+          <div class="subj-count" data-i18n="s3c">20/34 Ramaddii</div>
+          <div class="subj-prog"><div class="subj-prog-fill" style="width:60%"></div></div>
+        </div>
+        <div class="subj-card" style="--sc:#1a7a8a">
+          <div class="subj-icon">🛠️</div>
+          <div class="subj-name" data-i18n="s4">Dandeettii Hojii</div>
+          <div class="subj-count" data-i18n="s4c">20/67 Ramaddii</div>
+          <div class="subj-prog"><div class="subj-prog-fill" style="width:30%"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /dashboard -->
+
+  <!-- ══ LESSON PAGE ══ -->
+  <div class="page" id="page-lesson">
+    <div style="padding:28px 32px;">
+      <div class="lesson-layout">
+
+        <!-- LEFT: Main content -->
+        <div class="lesson-main">
+          <div class="lesson-header">
+            <div class="lesson-breadcrumb">
+              <span onclick="showPage('dashboard',document.querySelector('.nav-item'))">Dashboard</span>
+              › Afaan fi Barreeffama › <strong data-i18n="l_current">Qubee fi Dubbisa</strong>
+            </div>
+            <div class="lesson-title-row">
+              <div class="lesson-icon-big">📝</div>
+              <div>
+                <div class="lesson-title" data-i18n="l_title">Afaan Oromoo: Qubee fi Dubbisa</div>
+                <div class="lesson-meta-row">
+                  <div class="lesson-tag">⏱️ <span data-i18n="l_dur">Daqiiqaa 25</span></div>
+                  <div class="lesson-tag" data-i18n="l_level">Sadarkaa Jalqabaa</div>
+                  <div class="lesson-tag gold" data-i18n="l_subject">Afaan fi Barreeffama</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video -->
+          <div class="lesson-video">
+            <div class="lesson-video-thumb">
+              <div class="play-btn">▶</div>
+              <div class="video-title" data-i18n="vid_title">Qubee Oromoo — Viidiyoo Barnoota</div>
+              <div class="video-dur" data-i18n="vid_dur">⏱ Daqiiqaa 12:30</div>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="lesson-body">
+            <h2 data-i18n="lb_h1">Qubee Afaan Oromoo Maali?</h2>
+            <p data-i18n="lb_p1">Afaan Oromoon qubee Latin fayyadama — Qubee Oromoo jedhama. Bara 1991 irraa kaasee barreeffama official ta'e. Qubee 26 of keessaa qaba, kan Ingliffaa wajjin wal-fakkaatu, garuu sagalee adda addaa qaba.</p>
+
+            <h2 data-i18n="lb_h2">Qubeelee Gurguddoo</h2>
+            <p data-i18n="lb_p2">Qubeelee Afaan Oromoo kanneen barnoota jalqabaatiif barbaachisan:</p>
+            <ul>
+              <li><span class="key-word">A a</span> — <span data-i18n="q1">sagalee "a" — fakkeenya: <strong>Aadaa</strong> (culture)</span></li>
+              <li><span class="key-word">B b</span> — <span data-i18n="q2">sagalee "b" — fakkeenya: <strong>Barnoota</strong> (education)</span></li>
+              <li><span class="key-word">D d</span> — <span data-i18n="q3">sagalee "d" — fakkeenya: <strong>Daa'ima</strong> (child)</span></li>
+              <li><span class="key-word">E e</span> — <span data-i18n="q4">sagalee "e" — fakkeenya: <strong>Eegaa</strong> (wait)</span></li>
+              <li><span class="key-word">F f</span> — <span data-i18n="q5">sagalee "f" — fakkeenya: <strong>Fayyaa</strong> (health)</span></li>
+            </ul>
+
+            <h2 data-i18n="lb_h3">Jechoota Furtuu</h2>
+            <p data-i18n="lb_p3">Jechoota Afaan Oromoo salphaa kanneen barbaachisaa ta'an:</p>
+            <ul>
+              <li><span class="key-word">Nagaa</span> — <span data-i18n="w1">Peace / Hello</span></li>
+              <li><span class="key-word">Galatoomaa</span> — <span data-i18n="w2">Thank you</span></li>
+              <li><span class="key-word">Maaloo</span> — <span data-i18n="w3">Please</span></li>
+              <li><span class="key-word">Eeyyee</span> — <span data-i18n="w4">Yes</span></li>
+              <li><span class="key-word">Lakki</span> — <span data-i18n="w5">No</span></li>
+            </ul>
+          </div>
+
+          <!-- Nav -->
+          <div class="lesson-nav-row">
+            <button class="btn-prev" data-i18n="btn_prev">← Dura</button>
+            <button class="btn-next" data-i18n="btn_next">Ramaddii Itti Aanu →</button>
+          </div>
+        </div>
+
+        <!-- RIGHT: Sidebar -->
+        <div class="lesson-sidebar">
+          <!-- Lesson list -->
+          <div class="lesson-list-card">
+            <div class="lc-title" data-i18n="ll_title">📚 Ramaddiiwan Kutaa Kanaa</div>
+            <div class="ll-item done"><div class="ll-num">01</div><div class="ll-name" data-i18n="ll1">Seensa Afaan Oromoo</div><div class="ll-done">✅</div></div>
+            <div class="ll-item active"><div class="ll-num">02</div><div class="ll-name" data-i18n="ll2">Qubee fi Dubbisa</div><div class="ll-done">▶</div></div>
+            <div class="ll-item"><div class="ll-num">03</div><div class="ll-name" data-i18n="ll3">Jecha Barreessuu</div><div class="ll-done">🔒</div></div>
+            <div class="ll-item"><div class="ll-num">04</div><div class="ll-name" data-i18n="ll4">Galmee Jechootaa</div><div class="ll-done">🔒</div></div>
+            <div class="ll-item"><div class="ll-num">05</div><div class="ll-name" data-i18n="ll5">Barreeffama Gabaabaa</div><div class="ll-done">🔒</div></div>
+          </div>
+
+          <!-- Quiz -->
+          <div class="quiz-card" style="margin-bottom:16px">
+            <h4 data-i18n="quiz_title">🧠 Quiz Qophaa'eera!</h4>
+            <p data-i18n="quiz_sub">Ramaddii kana xumurtee beekumsa kee mirkaneessi — gaaffii 10 qofa!</p>
+            <button class="btn-quiz" data-i18n="quiz_btn">Quiz Jalqabi →</button>
+          </div>
+
+          <!-- Certificate -->
+          <div class="cert-card">
+            <div class="cert-icon">🏅</div>
+            <h4 data-i18n="cert_title">Ragaa Barnoota</h4>
+            <p data-i18n="cert_sub">Kutaa "Afaan fi Barreeffama" xumuri ragaa argadhu!</p>
+            <div class="cert-prog"><div class="cert-prog-fill"></div></div>
+            <div class="cert-pct" data-i18n="cert_pct">72% — Ramaddii 13 hafan</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /lesson -->
+
+</div><!-- /main -->
+
+<script>
+// ── PAGE SWITCHING
+function showPage(id, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  const titles = { dashboard: { om:'Dashboard', am:'ዳሽቦርድ', en:'Dashboard' }, lesson: { om:'Ramaddii', am:'ትምህርት', en:'Lesson' } };
+  document.getElementById('page-title').childNodes[0].textContent = (titles[id]?.[currentLang] || id) + ' ';
+}
+
+// ── TRANSLATIONS
+const T = {
+  om:{
+    nav_main:'Mana', nav_dashboard:'Dashboard', nav_lessons:'Ramaddiiwan',
+    nav_subjects:'Kutaalee', nav_certs:'Ragaalee', nav_account:'Koontii',
+    nav_profile:'Profile', nav_settings:'Qindaa\'ina', nav_logout:'Ba\'i',
+    user_role:'Barattuun',
+    topbar_sub:'Baga nagaan dhufte!',
+    greet:'Baga nagaan dhufte, <em>Faaxumaa!</em> 🌿',
+    greet_sub:'Har\'a maal baratta? Itti fufi!',
+    cont_title:'Itti Fufi — Afaan Oromoo: Qubee fi Dubbisa',
+    cont_sub:'Ramaddii 3 keessaa 1 xumurteetta — itti fufi!',
+    cont_btn:'Itti Fufi →',
+    stat_lessons:'Ramaddii Xumuraman', stat_time:'Yeroo Baratame',
+    stat_streak:'Guyyaa Itti Fufe', stat_cert:'Ragaa Argame',
+    prog_title:'Guddinni Kee', prog_all:'Hunda Ilaali',
+    act_title:'Hojii Dhiyoo',
+    act1:'Ramaddii "Qubee fi Dubbisa" xumurte',
+    act2:'Quiz "Sirna Gadaa" keessatti 85% argatte',
+    act3:'Ramaddii "Herrega: Lakkoofsa" jalqabde',
+    act4:'Ragaa barnoota "Afaan fi Barreeffama" argatte 🏅',
+    subj_continue:'Itti Fufi — Kutaalee',
+    badge_active:'Hojjechaa jirta',
+    s1:'Afaan fi Barreeffama', s2:'Herrega fi Saayinsii',
+    s3:'Seenaa fi Aadaa', s4:'Dandeettii Hojii',
+    s1c:'30/42 Ramaddii', s2c:'26/58 Ramaddii',
+    s3c:'20/34 Ramaddii', s4c:'20/67 Ramaddii',
+    l_current:'Qubee fi Dubbisa', l_title:'Afaan Oromoo: Qubee fi Dubbisa',
+    l_dur:'Daqiiqaa 25', l_level:'Sadarkaa Jalqabaa', l_subject:'Afaan fi Barreeffama',
+    vid_title:'Qubee Oromoo — Viidiyoo Barnoota', vid_dur:'⏱ Daqiiqaa 12:30',
+    lb_h1:'Qubee Afaan Oromoo Maali?',
+    lb_p1:'Afaan Oromoon qubee Latin fayyadama — Qubee Oromoo jedhama. Bara 1991 irraa kaasee barreeffama official ta\'e. Qubee 26 of keessaa qaba.',
+    lb_h2:'Qubeelee Gurguddoo', lb_p2:'Qubeelee Afaan Oromoo kanneen barnoota jalqabaatiif barbaachisan:',
+    q1:'sagalee "a" — fakkeenya: <strong>Aadaa</strong> (culture)',
+    q2:'sagalee "b" — fakkeenya: <strong>Barnoota</strong> (education)',
+    q3:'sagalee "d" — fakkeenya: <strong>Daa\'ima</strong> (child)',
+    q4:'sagalee "e" — fakkeenya: <strong>Eegaa</strong> (wait)',
+    q5:'sagalee "f" — fakkeenya: <strong>Fayyaa</strong> (health)',
+    lb_h3:'Jechoota Furtuu', lb_p3:'Jechoota Afaan Oromoo salphaa kanneen barbaachisaa ta\'an:',
+    w1:'Nagaa — Nageenyaa / Akkam',
+    w2:'Galatoomaa — Galatoomaa',
+    w3:'Maaloo — Maaloo',
+    w4:'Eeyyee — Eeyyee',
+    w5:'Lakki — Lakki',
+    btn_prev:'← Dura', btn_next:'Ramaddii Itti Aanu →',
+    ll_title:'📚 Ramaddiiwan Kutaa Kanaa',
+    ll1:'Seensa Afaan Oromoo', ll2:'Qubee fi Dubbisa',
+    ll3:'Jecha Barreessuu', ll4:'Galmee Jechootaa', ll5:'Barreeffama Gabaabaa',
+    quiz_title:'🧠 Quiz Qophaa\'eera!',
+    quiz_sub:'Ramaddii kana xumurtee beekumsa kee mirkaneessi — gaaffii 10 qofa!',
+    quiz_btn:'Quiz Jalqabi →',
+    cert_title:'Ragaa Barnoota',
+    cert_sub:'Kutaa "Afaan fi Barreeffama" xumuri ragaa argadhu!',
+    cert_pct:'72% — Ramaddii 13 hafan'
+  },
+  am:{
+    nav_main:'ዋና', nav_dashboard:'ዳሽቦርድ', nav_lessons:'ትምህርቶች',
+    nav_subjects:'ዓይነቶች', nav_certs:'ሰርቲፊኬቶች', nav_account:'መለያ',
+    nav_profile:'መገለጫ', nav_settings:'ቅንብሮች', nav_logout:'ውጣ',
+    user_role:'ተማሪ',
+    topbar_sub:'እንኳን ደህና መጡ!',
+    greet:'እንኳን ደህና መጡ, <em>ፋጡማ!</em> 🌿',
+    greet_sub:'ዛሬ ምን ይማራሉ? ይቀጥሉ!',
+    cont_title:'ይቀጥሉ — አፋን ኦሮሞ: ፊደል እና ንባብ',
+    cont_sub:'ከ3 ትምህርቶች 1ኛውን ጨርሰዋል — ይቀጥሉ!',
+    cont_btn:'ይቀጥሉ →',
+    stat_lessons:'የተጠናቀቁ ትምህርቶች', stat_time:'የተማሩበት ጊዜ',
+    stat_streak:'ተከታታይ ቀናት', stat_cert:'የተገኙ ሰርቲፊኬቶች',
+    prog_title:'እድገትዎ', prog_all:'ሁሉንም ይመልከቱ',
+    act_title:'የቅርብ ጊዜ ተግባራት',
+    act1:'"ፊደል እና ንባብ" ትምህርት ጨርሰዋል',
+    act2:'በ"የጋዳ ሥርዓት" ፈተና 85% አግኝተዋል',
+    act3:'"ሂሳብ: ቁጥሮች" ትምህርት ጀምረዋል',
+    act4:'"ቋንቋ እና ጽሑፍ" ሰርቲፊኬት አግኝተዋል 🏅',
+    subj_continue:'ይቀጥሉ — ዓይነቶች',
+    badge_active:'በሂደት ላይ',
+    s1:'ቋንቋ እና ጽሑፍ', s2:'ሂሳብ እና ሳይንስ',
+    s3:'ታሪክ እና ባህል', s4:'የሙያ ክህሎቶች',
+    s1c:'30/42 ትምህርቶች', s2c:'26/58 ትምህርቶች',
+    s3c:'20/34 ትምህርቶች', s4c:'20/67 ትምህርቶች',
+    l_current:'ፊደል እና ንባብ', l_title:'አፋን ኦሮሞ: ፊደል እና ንባብ',
+    l_dur:'25 ደቂቃ', l_level:'ጀማሪ', l_subject:'ቋንቋ እና ጽሑፍ',
+    vid_title:'የኦሮሞ ፊደላት — የቪዲዮ ትምህርት', vid_dur:'⏱ 12:30 ደቂቃ',
+    lb_h1:'የኦሮሞ ፊደላት ምንድናቸው?',
+    lb_p1:'አፋን ኦሮሞ የላቲን ፊደላት ይጠቀማል — ቁቤ ኦሮሞ ይባላል። ከ1991 ዓ.ም ጀምሮ ይፋዊ ፊደላት ሆኗል። 26 ፊደላት አሉት።',
+    lb_h2:'ዋና ፊደላት', lb_p2:'ለጀማሪ ትምህርት አስፈላጊ የኦሮሞ ፊደላት:',
+    q1:'"a" ድምጽ — ምሳሌ: <strong>Aadaa</strong> (ባህል)',
+    q2:'"b" ድምጽ — ምሳሌ: <strong>Barnoota</strong> (ትምህርት)',
+    q3:'"d" ድምጽ — ምሳሌ: <strong>Daa\'ima</strong> (ልጅ)',
+    q4:'"e" ድምጽ — ምሳሌ: <strong>Eegaa</strong> (ጠብቅ)',
+    q5:'"f" ድምጽ — ምሳሌ: <strong>Fayyaa</strong> (ጤና)',
+    lb_h3:'ቁልፍ ቃላት', lb_p3:'አስፈላጊ ቀላል የኦሮሞ ቃላት:',
+    w1:'Nagaa — ሰላም / ሰላም ነው',
+    w2:'Galatoomaa — እናመሰግናለን',
+    w3:'Maaloo — እባክዎ',
+    w4:'Eeyyee — አዎ',
+    w5:'Lakki — አይ',
+    btn_prev:'← ቀዳሚ', btn_next:'ቀጣይ ትምህርት →',
+    ll_title:'📚 የዚህ ዓይነት ትምህርቶች',
+    ll1:'መግቢያ አፋን ኦሮሞ', ll2:'ፊደል እና ንባብ',
+    ll3:'ቃላት መጻፍ', ll4:'መዝገበ ቃላት', ll5:'አጭር ጽሑፍ',
+    quiz_title:'🧠 ፈተና ዝግጁ ነው!',
+    quiz_sub:'ትምህርቱን ጨርሰው እውቀትዎን ያረጋግጡ — 10 ጥያቄዎች ብቻ!',
+    quiz_btn:'ፈተና ጀምር →',
+    cert_title:'የምስክር ወረቀት',
+    cert_sub:'"ቋንቋ እና ጽሑፍ" ዓይነት ጨርሰው ሰርቲፊኬት ያግኙ!',
+    cert_pct:'72% — 13 ትምህርቶች ቀርተዋል'
+  },
+  en:{
+    nav_main:'Main', nav_dashboard:'Dashboard', nav_lessons:'Lessons',
+    nav_subjects:'Subjects', nav_certs:'Certificates', nav_account:'Account',
+    nav_profile:'Profile', nav_settings:'Settings', nav_logout:'Log Out',
+    user_role:'Learner',
+    topbar_sub:'Welcome back!',
+    greet:'Welcome back, <em>Faaxumaa!</em> 🌿',
+    greet_sub:'What will you learn today? Keep going!',
+    cont_title:'Continue — Afaan Oromo: Alphabet & Reading',
+    cont_sub:'You completed 1 of 3 lessons — keep going!',
+    cont_btn:'Continue →',
+    stat_lessons:'Lessons Completed', stat_time:'Time Spent Learning',
+    stat_streak:'Day Streak', stat_cert:'Certificates Earned',
+    prog_title:'Your Progress', prog_all:'View All',
+    act_title:'Recent Activity',
+    act1:'Completed lesson "Alphabet & Reading"',
+    act2:'Scored 85% on "Gadaa System" quiz',
+    act3:'Started lesson "Math: Numbers"',
+    act4:'Earned "Language & Literacy" certificate 🏅',
+    subj_continue:'Continue — Subjects',
+    badge_active:'In Progress',
+    s1:'Language & Literacy', s2:'Math & Science',
+    s3:'History & Culture', s4:'Vocational Skills',
+    s1c:'30/42 Lessons', s2c:'26/58 Lessons',
+    s3c:'20/34 Lessons', s4c:'20/67 Lessons',
+    l_current:'Alphabet & Reading', l_title:'Afaan Oromo: Alphabet & Reading',
+    l_dur:'25 minutes', l_level:'Beginner', l_subject:'Language & Literacy',
+    vid_title:'Oromo Alphabet — Video Lesson', vid_dur:'⏱ 12:30 minutes',
+    lb_h1:'What is the Oromo Alphabet?',
+    lb_p1:'Afaan Oromo uses the Latin script — called Qubee Oromoo. It became the official writing system in 1991. It has 26 letters, similar to English but with distinct sounds.',
+    lb_h2:'Key Letters', lb_p2:'Essential Afaan Oromo letters for beginners:',
+    q1:'"a" sound — example: <strong>Aadaa</strong> (culture)',
+    q2:'"b" sound — example: <strong>Barnoota</strong> (education)',
+    q3:'"d" sound — example: <strong>Daa\'ima</strong> (child)',
+    q4:'"e" sound — example: <strong>Eegaa</strong> (wait)',
+    q5:'"f" sound — example: <strong>Fayyaa</strong> (health)',
+    lb_h3:'Key Vocabulary', lb_p3:'Essential simple Afaan Oromo words:',
+    w1:'Nagaa — Peace / Hello',
+    w2:'Galatoomaa — Thank you',
+    w3:'Maaloo — Please',
+    w4:'Eeyyee — Yes',
+    w5:'Lakki — No',
+    btn_prev:'← Previous', btn_next:'Next Lesson →',
+    ll_title:'📚 Lessons in This Subject',
+    ll1:'Introduction to Afaan Oromo', ll2:'Alphabet & Reading',
+    ll3:'Writing Words', ll4:'Vocabulary', ll5:'Short Writing',
+    quiz_title:'🧠 Quiz Ready!',
+    quiz_sub:'Test your knowledge after finishing this lesson — only 10 questions!',
+    quiz_btn:'Start Quiz →',
+    cert_title:'Certificate',
+    cert_sub:'Complete "Language & Literacy" to earn your certificate!',
+    cert_pct:'72% — 13 lessons remaining'
+  }
+};
+
+let currentLang = localStorage.getItem('kakuu_lang') || 'om';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('kakuu_lang', lang);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (T[lang][k] !== undefined) el.innerHTML = T[lang][k];
+  });
+  document.querySelectorAll('.lp-btn').forEach(b => b.classList.remove('active'));
+  const map = { om:0, am:1, en:2 };
+  document.querySelectorAll('.lp-btn')[map[lang]]?.classList.add('active');
+  document.body.style.fontFamily = lang === 'am'
+    ? "'Noto Sans Ethiopic',sans-serif"
+    : "'Source Serif 4','Noto Sans Ethiopic',Georgia,serif";
+}
+
+setLang(currentLang);
+</script>
+</body>
+</html>
