@@ -474,7 +474,7 @@
     <li><a href="#subjects">Barnoota</a></li>
     <li><a href="#lessons">Ramaddii</a></li>
     <li><a href="#features">Amaloota</a></li>
-    <li><a href="#enroll" class="nav-cta">Galmaa'i</a></li>
+    <li><a href="#enroll" class="nav-cta" onclick="showComingSoon(event)">Galmaa'i</a></li>
   </ul>
 </nav>
 
@@ -490,7 +490,7 @@
       Platform barnootaa kan afaan Oromootiin — Ogummaa, Seenaa, Saayinsii, fi Barreeffama keessan cimsuuf bakka tokkotti.
     </p>
     <div class="hero-actions">
-      <a href="#enroll" class="btn-primary">Barnoota Jalqabi →</a>
+      <a href="#enroll" class="btn-primary" onclick="showComingSoon(event)">Barnoota Jalqabi →</a>
       <a href="#subjects" class="btn-secondary">Kutaalee Ilaali</a>
     </div>
     <div class="hero-stats">
@@ -702,9 +702,28 @@
 
   <div class="cta-input-row">
     <input class="cta-input" type="email" placeholder="Email keessan galchaa…" />
-    <a href="#" class="btn-primary" onclick="alert('Galatoomaa! Yeroo dhiheessatti isin qunnamna.'); return false;">Galmaa\'i</a>
+    <a href="#" class="btn-primary" onclick="showComingSoon(event)">Galmaa'i</a>
   </div>
+  <p style="margin-top:18px; font-size:0.85rem; color:var(--gold); font-weight:600;">
+    🚧 Dhiyootti ni banama — Coming Soon!
+  </p>
 </section>
+
+<!-- COMING SOON MODAL -->
+<div id="coming-soon-modal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(14,26,20,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center;">
+  <div style="background:var(--cream); border-radius:24px; padding:48px 40px; max-width:420px; width:90%; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.3);">
+    <div style="font-size:3.5rem; margin-bottom:16px;">🚧</div>
+    <div style="font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color:var(--dark); margin-bottom:10px;">
+      Dhiyootti Ni Banama!
+    </div>
+    <p style="font-size:0.95rem; color:var(--muted); line-height:1.7; margin-bottom:28px;">
+      Galmaa'uun fi seenuun ammaaf qophaa'aa jira. Dhiyootti Kakuu Oromoo guutummaatti banama — eegaa!
+    </p>
+    <button onclick="closeComingSoon()" style="background:var(--green); color:#fff; border:none; padding:14px 36px; border-radius:40px; font-family:inherit; font-size:1rem; font-weight:600; cursor:pointer;">
+      Tole, Eegaa ✓
+    </button>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -730,6 +749,15 @@
     });
   }, { threshold: 0.3 });
   bars.forEach(b => barObs.observe(b));
+
+  // Coming Soon Modal
+  function showComingSoon(e) {
+    if (e) e.preventDefault();
+    document.getElementById('coming-soon-modal').style.display = 'flex';
+  }
+  function closeComingSoon() {
+    document.getElementById('coming-soon-modal').style.display = 'none';
+  }
 </script>
 
 </body>
