@@ -474,7 +474,7 @@
     <li><a href="#subjects">Barnoota</a></li>
     <li><a href="#lessons">Ramaddii</a></li>
     <li><a href="#features">Amaloota</a></li>
-    <li><a href="#enroll" class="nav-cta" onclick="showComingSoon(event)">Galmaa'i</a></li>
+    <li><a href="#enroll" class="nav-cta">Galmaa'i</a></li>
   </ul>
 </nav>
 
@@ -487,10 +487,10 @@
     <div class="hero-badge">✦ Afaan Oromootiin Barnoota</div>
     <h1>Beekumsa Keessan<br/><em>Guddifadhaa</em></h1>
     <p class="hero-sub">
-      Platform barnootaa kan afaan Oromootiin — Ogummaa, Seenaa, Saayinsii, fi Barreeffama keessan cimsuuf bakka tokkotti.
+      Platform barnootaa kan afaan Oromootiin — Ogummaa, Seenaa, Saayinsii fi barreeffama keessan cimsuuf bakka tokkotti.
     </p>
     <div class="hero-actions">
-      <a href="#enroll" class="btn-primary" onclick="showComingSoon(event)">Barnoota Jalqabi →</a>
+      <a href="#enroll" class="btn-primary">Barnoota Jalqabi →</a>
       <a href="#subjects" class="btn-secondary">Kutaalee Ilaali</a>
     </div>
     <div class="hero-stats">
@@ -500,7 +500,7 @@
       </div>
       <div class="stat">
         <div class="stat-num">200+</div>
-        <div class="stat-label">Ramaddiiwan</div>
+        <div class="stat-label">Ramaddiiwwan</div>
       </div>
       <div class="stat">
         <div class="stat-num">5,000+</div>
@@ -514,12 +514,12 @@
 <section class="section" id="subjects">
   <div class="section-label">Kutaalee Barnoota</div>
   <h2 class="section-title">Maal Baratta?</h2>
-  <p class="section-sub">Barnoota guutuu afaan Oromootiin — kutaa tokko toko filadhaa, yeroo keessan irratti hunda'uun baraadhaa.</p>
+  <p class="section-sub">Gosa barnootaa hunda afaan Oromootiin — kutaa tokko tokko filadhaa, yeroo keessan irratti hundaa'un baradhaa.</p>
 
   <div class="subjects-grid">
     <div class="subject-card" style="--accent:#1a6b3c">
       <div class="subject-icon">📝</div>
-      <div class="subject-title">Afaan fi Barreeffama</div>
+      <div class="subject-title">Afaanii fi Barreeffama</div>
       <div class="subject-subtitle">Language & Literacy</div>
       <div class="subject-desc">Afaan Oromoo sirriitti dubbisuu, barreessuu fi hubachuu itti darbaa — lallaba hanga walaloon.</div>
       <div class="subject-lessons">📚 42 Ramaddii</div>
@@ -528,9 +528,9 @@
 
     <div class="subject-card" style="--accent:#c0892a">
       <div class="subject-icon">🔢</div>
-      <div class="subject-title">Herrega fi Saayinsii</div>
+      <div class="subject-title">Herregaa fi Saayinsii</div>
       <div class="subject-subtitle">Math & Science</div>
-      <div class="subject-desc">Matamaatiksii adda addaa fi beekumsa uumama — haalaan salphaa irraa gara itti cimaa.</div>
+      <div class="subject-desc">Qooyyaboota herrega  adda addaa fi beekumsa uumamaa — haala salphaa irraa gara cimaa.</div>
       <div class="subject-lessons">📚 58 Ramaddii</div>
       <div class="progress-bar"><div class="progress-fill" style="width:45%"></div></div>
     </div>
@@ -698,32 +698,38 @@
 <section class="cta-section" id="enroll">
   <div class="section-label" style="justify-content:center">Itti Makamaa</div>
   <h2 class="section-title">Barnoota Keessan Har'uma Jalqabaa</h2>
-  <p class="section-sub">Email keessan galchaa — yeroo muraasa keessatti koontii bilisaa banina.</p>
+  <p class="section-sub" id="auth-sub">Email keessan galchaa — yeroo muraasa keessatti koontii bilisaa banina.</p>
 
-  <div class="cta-input-row">
-    <input class="cta-input" type="email" placeholder="Email keessan galchaa…" />
-    <a href="#" class="btn-primary" onclick="showComingSoon(event)">Galmaa'i</a>
+  <div style="max-width:420px; margin:0 auto;">
+
+    <!-- Tabs -->
+    <div style="display:flex; gap:8px; margin-bottom:20px; justify-content:center;">
+      <button id="tab-register" onclick="switchAuthTab('register')" style="background:var(--green); color:#fff; border:none; padding:10px 28px; border-radius:30px; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer;">Galmaa'i</button>
+      <button id="tab-login" onclick="switchAuthTab('login')" style="background:transparent; color:var(--green); border:2px solid var(--green); padding:8px 28px; border-radius:30px; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer;">Seeni</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form">
+      <input class="cta-input" type="text" id="reg-name" placeholder="Maqaa keessan…" style="width:100%; margin-bottom:12px;" />
+      <input class="cta-input" type="email" id="reg-email" placeholder="Email keessan galchaa…" style="width:100%; margin-bottom:12px;" />
+      <input class="cta-input" type="password" id="reg-password" placeholder="Jecha-darbii (password)…" style="width:100%; margin-bottom:14px;" />
+      <button onclick="doRegister()" class="btn-primary" style="width:100%; border:none; cursor:pointer;" id="reg-btn">Galmaa'i →</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form" style="display:none;">
+      <input class="cta-input" type="email" id="login-email" placeholder="Email keessan…" style="width:100%; margin-bottom:12px;" />
+      <input class="cta-input" type="password" id="login-password" placeholder="Jecha-darbii (password)…" style="width:100%; margin-bottom:14px;" />
+      <button onclick="doLogin()" class="btn-primary" style="width:100%; border:none; cursor:pointer;" id="login-btn">Seeni →</button>
+    </div>
+
+    <!-- Message area -->
+    <div id="auth-message" style="margin-top:16px; font-size:0.88rem; font-weight:600; display:none; padding:12px 16px; border-radius:12px;"></div>
+
   </div>
-  <p style="margin-top:18px; font-size:0.85rem; color:var(--gold); font-weight:600;">
-    🚧 Dhiyootti ni banama — Coming Soon!
-  </p>
 </section>
 
-<!-- COMING SOON MODAL -->
-<div id="coming-soon-modal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(14,26,20,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center;">
-  <div style="background:var(--cream); border-radius:24px; padding:48px 40px; max-width:420px; width:90%; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.3);">
-    <div style="font-size:3.5rem; margin-bottom:16px;">🚧</div>
-    <div style="font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; color:var(--dark); margin-bottom:10px;">
-      Dhiyootti Ni Banama!
-    </div>
-    <p style="font-size:0.95rem; color:var(--muted); line-height:1.7; margin-bottom:28px;">
-      Galmaa'uun fi seenuun ammaaf qophaa'aa jira. Dhiyootti Kakuu Oromoo guutummaatti banama — eegaa!
-    </p>
-    <button onclick="closeComingSoon()" style="background:var(--green); color:#fff; border:none; padding:14px 36px; border-radius:40px; font-family:inherit; font-size:1rem; font-weight:600; cursor:pointer;">
-      Tole, Eegaa ✓
-    </button>
-  </div>
-</div>
+
 
 <!-- FOOTER -->
 <footer>
@@ -750,13 +756,134 @@
   }, { threshold: 0.3 });
   bars.forEach(b => barObs.observe(b));
 
-  // Coming Soon Modal
-  function showComingSoon(e) {
-    if (e) e.preventDefault();
-    document.getElementById('coming-soon-modal').style.display = 'flex';
+  // ════════════════════════════════════════
+  // BACKEND CONNECTION — Kakuu Oromoo API
+  // ════════════════════════════════════════
+  const API_BASE = 'https://kakuu-oromoo-backend--kakuuoromoo.replit.app';
+
+  function switchAuthTab(tab) {
+    const regForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+    const tabReg = document.getElementById('tab-register');
+    const tabLogin = document.getElementById('tab-login');
+    hideAuthMessage();
+
+    if (tab === 'register') {
+      regForm.style.display = 'block';
+      loginForm.style.display = 'none';
+      tabReg.style.background = 'var(--green)';
+      tabReg.style.color = '#fff';
+      tabReg.style.border = 'none';
+      tabLogin.style.background = 'transparent';
+      tabLogin.style.color = 'var(--green)';
+      tabLogin.style.border = '2px solid var(--green)';
+    } else {
+      regForm.style.display = 'none';
+      loginForm.style.display = 'block';
+      tabLogin.style.background = 'var(--green)';
+      tabLogin.style.color = '#fff';
+      tabLogin.style.border = 'none';
+      tabReg.style.background = 'transparent';
+      tabReg.style.color = 'var(--green)';
+      tabReg.style.border = '2px solid var(--green)';
+    }
   }
-  function closeComingSoon() {
-    document.getElementById('coming-soon-modal').style.display = 'none';
+
+  function showAuthMessage(text, isError) {
+    const msg = document.getElementById('auth-message');
+    msg.textContent = text;
+    msg.style.display = 'block';
+    if (isError) {
+      msg.style.background = 'rgba(192,57,43,0.1)';
+      msg.style.color = '#c0392b';
+      msg.style.border = '1.5px solid rgba(192,57,43,0.2)';
+    } else {
+      msg.style.background = 'rgba(26,107,60,0.1)';
+      msg.style.color = 'var(--green)';
+      msg.style.border = '1.5px solid rgba(26,107,60,0.2)';
+    }
+  }
+
+  function hideAuthMessage() {
+    document.getElementById('auth-message').style.display = 'none';
+  }
+
+  async function doRegister() {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const btn = document.getElementById('reg-btn');
+
+    if (!name || !email || !password) {
+      showAuthMessage('⚠️ Maaloo, dirree hunda guuti.', true);
+      return;
+    }
+
+    btn.textContent = 'Eegaa...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        showAuthMessage('✅ ' + (data.message || "Galmaa'uun milkaa'eera!"), false);
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-password').value = '';
+      } else {
+        showAuthMessage('❌ ' + (data.error || 'Dogoggora uumame.'), true);
+      }
+    } catch (err) {
+      showAuthMessage('❌ Server waliin walitti hidhamuu hin dandeenye. Booda yaali.', true);
+    }
+
+    btn.textContent = "Galmaa'i →";
+    btn.disabled = false;
+  }
+
+  async function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('login-btn');
+
+    if (!email || !password) {
+      showAuthMessage('⚠️ Maaloo, email fi jecha-darbii galchi.', true);
+      return;
+    }
+
+    btn.textContent = 'Eegaa...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        showAuthMessage('✅ ' + (data.message || 'Simat!'), false);
+        // Save token & user for dashboard use
+        if (data.token) localStorage.setItem('kakuu_token', data.token);
+        if (data.user) localStorage.setItem('kakuu_user', JSON.stringify(data.user));
+        setTimeout(() => {
+          window.location.href = 'kakuu_dashboard.html';
+        }, 1200);
+      } else {
+        showAuthMessage('❌ ' + (data.error || 'Email ykn jecha-darbii dogoggoraa dha.'), true);
+      }
+    } catch (err) {
+      showAuthMessage('❌ Server waliin walitti hidhamuu hin dandeenye. Booda yaali.', true);
+    }
+
+    btn.textContent = 'Seeni →';
+    btn.disabled = false;
   }
 </script>
 
