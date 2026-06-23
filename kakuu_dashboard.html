@@ -239,7 +239,7 @@
       <span class="icon">🏠</span> <span data-i18n="nav_dashboard">Dashboard</span>
     </a>
     <a class="nav-item" onclick="showPage('lesson',this)">
-      <span class="icon">📖</span> <span data-i18n="nav_lessons">Ramaddiiwwan</span>
+      <span class="icon">📖</span> <span data-i18n="nav_lessons">Ramaddiiwan</span>
     </a>
     <a class="nav-item" onclick="">
       <span class="icon">🏺</span> <span data-i18n="nav_subjects">Kutaalee</span>
@@ -254,14 +254,14 @@
     <a class="nav-item" onclick="">
       <span class="icon">⚙️</span> <span data-i18n="nav_settings">Qindaa'ina</span>
     </a>
-    <a class="nav-item" onclick="">
+    <a class="nav-item" onclick="doLogout()" style="cursor:pointer;">
       <span class="icon">🚪</span> <span data-i18n="nav_logout">Ba'i</span>
     </a>
   </nav>
   <div class="sidebar-user">
-    <div class="user-avatar">👩</div>
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
     <div class="user-info">
-      <div class="user-name">Faaxumaa T.</div>
+      <div class="user-name" id="sidebar-username">Barataa</div>
       <div class="user-role" data-i18n="user_role">Barattuun</div>
     </div>
   </div>
@@ -293,7 +293,7 @@
 
       <!-- Greeting -->
       <div class="greeting">
-        <h1 data-i18n="greet">Baga nagaan dhufte, <em>Faaxumaa!</em> 🌿</h1>
+        <h1 id="greeting-text" data-i18n="greet">Baga nagaan dhufte, <em id="greeting-name">Barataa</em>! 🌿</h1>
         <p data-i18n="greet_sub">Har'a maal baratta? Itti fufi!</p>
       </div>
 
@@ -529,7 +529,7 @@
           <div class="cert-card">
             <div class="cert-icon">🏅</div>
             <h4 data-i18n="cert_title">Ragaa Barnoota</h4>
-            <p data-i18n="cert_sub">Kutaa "Afaanii fi Barreeffama" xumuri ragaa argadhu!</p>
+            <p data-i18n="cert_sub">Kutaa "Afaan fi Barreeffama" xumuri ragaa argadhu!</p>
             <div class="cert-prog"><div class="cert-prog-fill"></div></div>
             <div class="cert-pct" data-i18n="cert_pct">72% — Ramaddii 13 hafan</div>
           </div>
@@ -597,7 +597,7 @@ const T = {
     w4:'Eeyyee — Eeyyee',
     w5:'Lakki — Lakki',
     btn_prev:'← Dura', btn_next:'Ramaddii Itti Aanu →',
-    ll_title:'📚 Ramaddiiwwan Kutaa Kanaa',
+    ll_title:'📚 Ramaddiiwan Kutaa Kanaa',
     ll1:'Seensa Afaan Oromoo', ll2:'Qubee fi Dubbisa',
     ll3:'Jecha Barreessuu', ll4:'Galmee Jechootaa', ll5:'Barreeffama Gabaabaa',
     quiz_title:'🧠 Quiz Qophaa\'eera!',
@@ -733,6 +733,48 @@ function setLang(lang) {
 }
 
 setLang(currentLang);
+
+// ════════════════════════════════════════
+// REAL USER AUTH — Load from localStorage
+// ════════════════════════════════════════
+(function loadRealUser() {
+  const userJson = localStorage.getItem('kakuu_user');
+  const token = localStorage.getItem('kakuu_token');
+
+  // If not logged in, redirect to homepage to login
+  if (!userJson || !token) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const user = JSON.parse(userJson);
+    const displayName = user.name || user.email?.split('@')[0] || 'Barataa';
+    const firstName = displayName.split(' ')[0];
+
+    // Update sidebar
+    const sidebarName = document.getElementById('sidebar-username');
+    if (sidebarName) sidebarName.textContent = displayName;
+
+    // Update greeting
+    const greetingName = document.getElementById('greeting-name');
+    if (greetingName) greetingName.textContent = firstName;
+
+    // Update avatar initial
+    const avatar = document.getElementById('sidebar-avatar');
+    if (avatar) avatar.textContent = firstName.charAt(0).toUpperCase();
+
+  } catch (e) {
+    console.error('Error loading user:', e);
+    window.location.href = 'index.html';
+  }
+})();
+
+function doLogout() {
+  localStorage.removeItem('kakuu_token');
+  localStorage.removeItem('kakuu_user');
+  window.location.href = 'index.html';
+}
 </script>
 </body>
 </html>
