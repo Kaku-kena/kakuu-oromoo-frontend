@@ -239,19 +239,19 @@
       <span class="icon">🏠</span> <span data-i18n="nav_dashboard">Dashboard</span>
     </a>
     <a class="nav-item" onclick="showPage('lesson',this)">
-      <span class="icon">📖</span> <span data-i18n="nav_lessons">Ramaddiiwan</span>
+      <span class="icon">📖</span> <span data-i18n="nav_lessons">Ramaddiiwwan</span>
     </a>
-    <a class="nav-item" onclick="showSubjectComingSoon()" style="cursor:pointer;">
+    <a class="nav-item" onclick="">
       <span class="icon">🏺</span> <span data-i18n="nav_subjects">Kutaalee</span>
     </a>
-    <a class="nav-item" onclick="showSubjectComingSoon()" style="cursor:pointer;">
+    <a class="nav-item" onclick="">
       <span class="icon">🏅</span> <span data-i18n="nav_certs">Ragaalee</span>
     </a>
     <div class="nav-section-label" data-i18n="nav_account">Koontii</div>
-    <a class="nav-item" onclick="showSubjectComingSoon()" style="cursor:pointer;">
+    <a class="nav-item" onclick="">
       <span class="icon">👤</span> <span data-i18n="nav_profile">Profile</span>
     </a>
-    <a class="nav-item" onclick="showSubjectComingSoon()" style="cursor:pointer;">
+    <a class="nav-item" onclick="">
       <span class="icon">⚙️</span> <span data-i18n="nav_settings">Qindaa'ina</span>
     </a>
     <a class="nav-item" onclick="doLogout()" style="cursor:pointer;">
@@ -303,7 +303,7 @@
         <div class="continue-info">
           <h3 data-i18n="cont_title">Itti Fufi — Afaan Oromoo: Qubee fi Dubbisa</h3>
           <p data-i18n="cont_sub">Ramaddii 3 keessaa 1 xumurteetta — itti fufi!</p>
-          <button class="btn-white" onclick="goToLesson()">
+          <button class="btn-white" onclick="showPage('lesson', document.querySelector('.nav-item:nth-child(3)'))">
             <span data-i18n="cont_btn">Itti Fufi →</span>
           </button>
         </div>
@@ -337,7 +337,7 @@
       <div class="dash-grid">
         <!-- Progress -->
         <div class="card">
-          <div class="card-title">📊 <span data-i18n="prog_title">Guddinni Kee</span> <span data-i18n="prog_all" onclick="showSubjectComingSoon()" style="cursor:pointer;">Hunda Ilaali</span></div>
+          <div class="card-title">📊 <span data-i18n="prog_title">Guddinni Kee</span> <span data-i18n="prog_all">Hunda Ilaali</span></div>
           <div class="prog-item">
             <div class="prog-icon" style="background:rgba(26,107,60,0.1)">📝</div>
             <div class="prog-info">
@@ -349,7 +349,7 @@
           <div class="prog-item">
             <div class="prog-icon" style="background:rgba(192,137,42,0.1)">🔢</div>
             <div class="prog-info">
-              <div class="prog-name" data-i18n="s2">Herrega fi Saayinsii</div>
+              <div class="prog-name" data-i18n="s2">Herregaa fi Saayinsii</div>
               <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:45%;background:#c0892a"></div></div>
             </div>
             <div class="prog-pct">45%</div>
@@ -409,26 +409,26 @@
       <!-- Subjects -->
       <div class="card-title" style="margin-bottom:16px">📚 <span data-i18n="subj_continue">Itti Fufi — Kutaalee</span></div>
       <div class="subjects-grid">
-        <div class="subj-card" style="--sc:var(--green)" onclick="goToLesson()">
+        <div class="subj-card" style="--sc:var(--green)" onclick="showPage('lesson',document.querySelector('.nav-item:nth-child(3)'))">
           <div class="subj-badge" data-i18n="badge_active">Hojjechaa jirta</div>
           <div class="subj-icon">📝</div>
           <div class="subj-name" data-i18n="s1">Afaan fi Barreeffama</div>
           <div class="subj-count" data-i18n="s1c">30/42 Ramaddii</div>
           <div class="subj-prog"><div class="subj-prog-fill" style="width:72%"></div></div>
         </div>
-        <div class="subj-card" style="--sc:#c0892a" onclick="showSubjectComingSoon()">
+        <div class="subj-card" style="--sc:#c0892a">
           <div class="subj-icon">🔢</div>
           <div class="subj-name" data-i18n="s2">Herrega fi Saayinsii</div>
           <div class="subj-count" data-i18n="s2c">26/58 Ramaddii</div>
           <div class="subj-prog"><div class="subj-prog-fill" style="width:45%"></div></div>
         </div>
-        <div class="subj-card" style="--sc:#7b3fa0" onclick="showSubjectComingSoon()">
+        <div class="subj-card" style="--sc:#7b3fa0">
           <div class="subj-icon">🏺</div>
           <div class="subj-name" data-i18n="s3">Seenaa fi Aadaa</div>
           <div class="subj-count" data-i18n="s3c">20/34 Ramaddii</div>
           <div class="subj-prog"><div class="subj-prog-fill" style="width:60%"></div></div>
         </div>
-        <div class="subj-card" style="--sc:#1a7a8a" onclick="showSubjectComingSoon()">
+        <div class="subj-card" style="--sc:#1a7a8a">
           <div class="subj-icon">🛠️</div>
           <div class="subj-name" data-i18n="s4">Dandeettii Hojii</div>
           <div class="subj-count" data-i18n="s4c">20/67 Ramaddii</div>
@@ -482,10 +482,10 @@
             <p data-i18n="lb_p2">Qubeelee Afaan Oromoo kanneen barnoota jalqabaatiif barbaachisan:</p>
             <ul>
               <li><span class="key-word">A a</span> — <span data-i18n="q1">sagalee "a" — fakkeenya: <strong>Aadaa</strong> (culture)</span></li>
-              <li><span class="key-word">B b</span> — <span data-i18n="q2">sagalee "b" — fakkeenya: <strong>Barnoota</strong> (education)</span></li>
-              <li><span class="key-word">D d</span> — <span data-i18n="q3">sagalee "d" — fakkeenya: <strong>Daa'ima</strong> (child)</span></li>
+              <li><span class="key-word">B a</span> — <span data-i18n="q2">sagalee "b" — fakkeenya: <strong>Barnoota</strong> (education)</span></li>
+              <li><span class="key-word">D a</span> — <span data-i18n="q3">sagalee "d" — fakkeenya: <strong>Daa'ima</strong> (child)</span></li>
               <li><span class="key-word">E e</span> — <span data-i18n="q4">sagalee "e" — fakkeenya: <strong>Eegaa</strong> (wait)</span></li>
-              <li><span class="key-word">F f</span> — <span data-i18n="q5">sagalee "f" — fakkeenya: <strong>Fayyaa</strong> (health)</span></li>
+              <li><span class="key-word">F a</span> — <span data-i18n="q5">sagalee "f" — fakkeenya: <strong>Fayyaa</strong> (health)</span></li>
             </ul>
 
             <h2 data-i18n="lb_h3">Jechoota Furtuu</h2>
@@ -522,7 +522,7 @@
           <div class="quiz-card" style="margin-bottom:16px">
             <h4 data-i18n="quiz_title">🧠 Quiz Qophaa'eera!</h4>
             <p data-i18n="quiz_sub">Ramaddii kana xumurtee beekumsa kee mirkaneessi — gaaffii 10 qofa!</p>
-            <button class="btn-quiz" data-i18n="quiz_btn" onclick="window.location.href='kakuu_quiz.html'">Quiz Jalqabi →</button>
+            <button class="btn-quiz" data-i18n="quiz_btn">Quiz Jalqabi →</button>
           </div>
 
           <!-- Certificate -->
@@ -560,7 +560,7 @@ const T = {
     nav_profile:'Profile', nav_settings:'Qindaa\'ina', nav_logout:'Ba\'i',
     user_role:'Barattuun',
     topbar_sub:'Baga nagaan dhufte!',
-    greet:'Baga nagaan dhufte, <em id="greeting-name">Barataa</em>! 🌿',
+    greet:'Baga nagaan dhufte, <em>Faaxumaa!</em> 🌿',
     greet_sub:'Har\'a maal baratta? Itti fufi!',
     cont_title:'Itti Fufi — Afaan Oromoo: Qubee fi Dubbisa',
     cont_sub:'Ramaddii 3 keessaa 1 xumurteetta — itti fufi!',
@@ -613,7 +613,7 @@ const T = {
     nav_profile:'መገለጫ', nav_settings:'ቅንብሮች', nav_logout:'ውጣ',
     user_role:'ተማሪ',
     topbar_sub:'እንኳን ደህና መጡ!',
-    greet:'እንኳን ደህና መጡ, <em id="greeting-name">ተማሪ</em>! 🌿',
+    greet:'እንኳን ደህና መጡ, <em>ፋጡማ!</em> 🌿',
     greet_sub:'ዛሬ ምን ይማራሉ? ይቀጥሉ!',
     cont_title:'ይቀጥሉ — አፋን ኦሮሞ: ፊደል እና ንባብ',
     cont_sub:'ከ3 ትምህርቶች 1ኛውን ጨርሰዋል — ይቀጥሉ!',
@@ -666,7 +666,7 @@ const T = {
     nav_profile:'Profile', nav_settings:'Settings', nav_logout:'Log Out',
     user_role:'Learner',
     topbar_sub:'Welcome back!',
-    greet:'Welcome back, <em id="greeting-name">Learner</em>! 🌿',
+    greet:'Welcome back, <em>Faaxumaa!</em> 🌿',
     greet_sub:'What will you learn today? Keep going!',
     cont_title:'Continue — Afaan Oromo: Alphabet & Reading',
     cont_sub:'You completed 1 of 3 lessons — keep going!',
@@ -775,35 +775,6 @@ function doLogout() {
   localStorage.removeItem('kakuu_user');
   window.location.href = 'index.html';
 }
-
-// Navigate to the one real lesson available
-function goToLesson() {
-  showPage('lesson', document.querySelector('.nav-item:nth-child(2)'));
-}
-
-// Show "coming soon" message for features not built yet
-function showSubjectComingSoon() {
-  document.getElementById('subject-coming-soon-modal').style.display = 'flex';
-}
-function closeSubjectComingSoon() {
-  document.getElementById('subject-coming-soon-modal').style.display = 'none';
-}
 </script>
-
-<!-- COMING SOON MODAL (for unfinished sections) -->
-<div id="subject-coming-soon-modal" style="display:none; position:fixed; inset:0; z-index:999; background:rgba(14,26,20,0.85); backdrop-filter:blur(8px); align-items:center; justify-content:center;">
-  <div style="background:var(--cream); border-radius:24px; padding:48px 40px; max-width:400px; width:90%; text-align:center; box-shadow:0 24px 80px rgba(0,0,0,0.3);">
-    <div style="font-size:3.2rem; margin-bottom:14px;">🚧</div>
-    <div style="font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; color:var(--dark); margin-bottom:10px;">
-      Dhiyootti Ni Banama!
-    </div>
-    <p style="font-size:0.9rem; color:var(--muted); line-height:1.6; margin-bottom:24px;">
-      Kutaa kana irratti hojjechaa jirra — dhiyootti ni banama. Ammaaf "Afaan fi Barreeffama" ramaddii jalqabaa yaali!
-    </p>
-    <button onclick="closeSubjectComingSoon()" style="background:var(--green); color:#fff; border:none; padding:13px 32px; border-radius:40px; font-family:inherit; font-size:0.95rem; font-weight:600; cursor:pointer;">
-      Tole ✓
-    </button>
-  </div>
-</div>
 </body>
 </html>
