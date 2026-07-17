@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Herrega fi Saayinsii</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--gold-light:#f0c040;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;--accent:#c0892a;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-family:'Source Serif 4',serif;font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(192,137,42,0.15);border-left-color:var(--accent);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);}
+    .lang-pill{display:flex;gap:3px;background:rgba(192,137,42,0.07);border:1.5px solid rgba(192,137,42,0.15);border-radius:30px;padding:3px 5px;}
+    .lp-btn{border:none;background:none;cursor:pointer;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;color:var(--mid);transition:all 0.18s;}
+    .lp-btn.active{background:var(--accent);color:#fff;}
+    .content{padding:28px 32px;}
+    /* Breadcrumb */
+    .breadcrumb{font-size:0.78rem;color:var(--muted);margin-bottom:16px;}
+    .breadcrumb a{color:var(--accent);cursor:pointer;text-decoration:none;}
+    /* Hero banner */
+    .lesson-hero{background:linear-gradient(135deg,var(--accent),#8b5e1a);border-radius:20px;padding:32px;color:#fff;margin-bottom:28px;display:flex;align-items:center;gap:20px;}
+    .lesson-hero-icon{font-size:4rem;flex-shrink:0;}
+    .lesson-hero h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:6px;}
+    .lesson-hero p{font-size:0.88rem;opacity:0.85;line-height:1.6;}
+    .lesson-hero-meta{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;}
+    .hero-tag{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:600;}
+    /* Layout */
+    .lesson-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;}
+    @media(max-width:900px){.lesson-layout{grid-template-columns:1fr;}}
+    /* Card */
+    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;border:1.5px solid rgba(0,0,0,0.05);}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:16px;}
+    /* Video */
+    .video-box{background:var(--dark);border-radius:16px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;margin-bottom:20px;cursor:pointer;position:relative;overflow:hidden;}
+    .video-inner{display:flex;flex-direction:column;align-items:center;gap:12px;}
+    .play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:transform 0.2s;}
+    .play-btn:hover{transform:scale(1.1);}
+    .video-title{color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+    .video-dur{color:rgba(255,255,255,0.5);font-size:0.8rem;}
+    /* Lesson body */
+    .lesson-body h2{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin:0 0 12px;}
+    .lesson-body p{font-size:0.92rem;color:var(--mid);line-height:1.8;margin-bottom:14px;}
+    .lesson-body ul{padding-left:20px;margin-bottom:14px;}
+    .lesson-body ul li{font-size:0.92rem;color:var(--mid);line-height:1.8;margin-bottom:8px;}
+    .key-word{background:rgba(192,137,42,0.1);color:var(--accent);border-radius:4px;padding:1px 8px;font-weight:600;}
+    .example-box{background:rgba(192,137,42,0.06);border:1.5px solid rgba(192,137,42,0.15);border-radius:12px;padding:16px 20px;margin:14px 0;}
+    .example-box .ex-label{font-size:0.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+    .example-box p{margin:0;font-size:0.9rem;color:var(--mid);}
+    /* Nav buttons */
+    .lesson-nav{display:flex;gap:12px;margin-top:8px;}
+    .btn-back{background:transparent;color:var(--accent);border:2px solid var(--accent);padding:12px 24px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-back:hover{background:var(--accent);color:#fff;}
+    .btn-quiz{background:var(--accent);color:#fff;border:none;padding:12px 32px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;flex:2;}
+    .btn-quiz:hover{background:#a07020;}
+    /* Sidebar */
+    .lesson-list-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .ll-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background 0.18s;margin-bottom:4px;}
+    .ll-item:hover{background:rgba(192,137,42,0.06);}
+    .ll-item.active{background:rgba(192,137,42,0.1);}
+    .ll-num{font-size:0.72rem;font-weight:700;color:var(--muted);min-width:20px;}
+    .ll-name{font-size:0.83rem;color:var(--mid);flex:1;line-height:1.4;}
+    .ll-item.active .ll-name{color:var(--accent);font-weight:600;}
+    .ll-done{font-size:0.9rem;}
+    /* Quiz card sidebar */
+    .quiz-card-side{background:linear-gradient(135deg,var(--accent),#8b5e1a);border-radius:16px;padding:20px;color:#fff;margin-bottom:16px;}
+    .quiz-card-side h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:6px;}
+    .quiz-card-side p{font-size:0.8rem;opacity:0.85;margin-bottom:14px;line-height:1.5;}
+    .btn-quiz-side{background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.4);padding:9px 20px;border-radius:30px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;width:100%;transition:background 0.2s;}
+    .btn-quiz-side:hover{background:rgba(255,255,255,0.3);}
+    /* Progress */
+    .prog-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);}
+    .prog-bar{height:6px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;margin:10px 0 6px;}
+    .prog-fill{height:100%;border-radius:10px;background:var(--accent);}
+    .prog-pct{font-size:0.75rem;color:var(--muted);}
+
+    /* QUIZ SECTION */
+    .quiz-section{display:none;}
+    .quiz-section.active{display:block;}
+    .q-card{background:var(--card);border-radius:16px;padding:28px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .q-num{font-size:0.75rem;color:var(--muted);font-weight:600;margin-bottom:8px;}
+    .q-text{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:20px;line-height:1.4;}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media(max-width:600px){.options{grid-template-columns:1fr;}}
+    .opt-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);background:#fff;cursor:pointer;transition:all 0.18s;font-family:inherit;font-size:0.9rem;color:var(--dark);text-align:left;}
+    .opt-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(192,137,42,0.04);}
+    .opt-letter{width:30px;height:30px;border-radius:8px;background:rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;}
+    .opt-btn:hover:not(:disabled) .opt-letter{background:var(--accent);color:#fff;}
+    .opt-btn.correct{border-color:var(--green);background:rgba(26,107,60,0.08);}
+    .opt-btn.correct .opt-letter{background:var(--green);color:#fff;}
+    .opt-btn.wrong{border-color:#c0392b;background:rgba(192,57,43,0.06);}
+    .opt-btn.wrong .opt-letter{background:#c0392b;color:#fff;}
+    .feedback{border-radius:12px;padding:12px 16px;margin-top:14px;font-size:0.88rem;font-weight:600;}
+    .feedback.ok{background:rgba(26,107,60,0.1);color:var(--green);}
+    .feedback.err{background:rgba(192,57,43,0.08);color:#c0392b;}
+    .btn-next-q{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:30px;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:14px;transition:background 0.2s;}
+    .btn-next-q:hover{background:#a07020;}
+    /* Result */
+    .result-box{background:var(--card);border-radius:20px;padding:40px;text-align:center;box-shadow:var(--shadow);}
+    .result-emoji{font-size:4rem;margin-bottom:12px;}
+    .result-score{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--accent);}
+    .result-label{font-size:1rem;color:var(--muted);margin-bottom:24px;}
+    .btn-retry{background:transparent;color:var(--accent);border:2px solid var(--accent);padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;margin-right:10px;}
+    .btn-dashboard{background:var(--green);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">📖</span> Ramaddiiwan</a>
+    <a class="nav-item active"><span class="icon">🔢</span> Herrega fi Saayinsii</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">🔢 Herrega fi Saayinsii</div>
+    <div style="display:flex;gap:14px;align-items:center;">
+      <div class="lang-pill">
+        <button class="lp-btn active" onclick="setLang('om')">OM</button>
+        <button class="lp-btn" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      <a href="kakuu_dashboard.html">Dashboard</a> › <span id="bc-subject">Herrega fi Saayinsii</span> › <span id="bc-lesson">Lakkoofsa fi Ida'uu</span>
+    </div>
+
+    <!-- Hero Banner -->
+    <div class="lesson-hero">
+      <div class="lesson-hero-icon">🔢</div>
+      <div>
+        <h1 id="lesson-main-title">Herrega: Lakkoofsa fi Ida'uu</h1>
+        <p id="lesson-main-desc">Lakkoofsa Afaan Oromoo baradhu — Ida'uu, Hir'isuu, Baay'isuu fi Hiruu jalqabaa irraa!</p>
+        <div class="lesson-hero-meta">
+          <span class="hero-tag" id="hero-tag1">⏱ Daqiiqaa 30</span>
+          <span class="hero-tag" id="hero-tag2">📊 Sadarkaa Jalqabaa</span>
+          <span class="hero-tag" id="hero-tag3">🔢 Herrega fi Saayinsii</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-layout">
+
+      <!-- LEFT: Lesson Content -->
+      <div>
+        <!-- LESSON SECTION -->
+        <div id="lesson-section">
+          <!-- Video -->
+          <div class="video-box">
+            <div class="video-inner">
+              <div class="play-btn">▶</div>
+              <div class="video-title" id="vid-title">Herrega Afaan Oromoo — Viidiyoo Barnoota</div>
+              <div class="video-dur">⏱ Daqiiqaa 15:00</div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="card lesson-body">
+            <h2 id="lb-h1">Lakkoofsa Afaan Oromoo</h2>
+            <p id="lb-p1">Afaan Oromoo keessatti lakkoofsi maqaa ofii qaba. Lakkoofsa 1 hanga 10 baruun jalqabna — kun bu'uura herrega hundaa dha.</p>
+
+            <div class="example-box">
+              <div class="ex-label">📚 Lakkoofsa 1–10 / Numbers 1–10</div>
+              <p>
+                <strong>1</strong> = Tokko &nbsp;|&nbsp;
+                <strong>2</strong> = Lama &nbsp;|&nbsp;
+                <strong>3</strong> = Sadii &nbsp;|&nbsp;
+                <strong>4</strong> = Afur &nbsp;|&nbsp;
+                <strong>5</strong> = Shan<br/>
+                <strong>6</strong> = Ja'a &nbsp;|&nbsp;
+                <strong>7</strong> = Torba &nbsp;|&nbsp;
+                <strong>8</strong> = Saddeet &nbsp;|&nbsp;
+                <strong>9</strong> = Sagal &nbsp;|&nbsp;
+                <strong>10</strong> = Kudhan
+              </p>
+            </div>
+
+            <h2 id="lb-h2">Ida'uu (Addition / +)</h2>
+            <p id="lb-p2">Ida'uun lakkoofsota lama walitti dabaluu dha. Afaan Oromoo keessatti "ida'uu" ykn "dabaluu" jedhama.</p>
+            <ul>
+              <li><span class="key-word">Tokko + Lama = Sadii</span> → 1 + 2 = 3</li>
+              <li><span class="key-word">Afur + Shan = Sagal</span> → 4 + 5 = 9</li>
+              <li><span class="key-word">Kudhan + Kudhan = Digdama</span> → 10 + 10 = 20</li>
+            </ul>
+
+            <h2 id="lb-h3">Hir'isuu (Subtraction / −)</h2>
+            <p id="lb-p3">Hir'isuun lakkoofsa tokkoo irraa biraa kaasuu dha. "Hir'isuu" ykn "baasuu" jedhama.</p>
+            <ul>
+              <li><span class="key-word">Kudhan − Afur = Ja'a</span> → 10 − 4 = 6</li>
+              <li><span class="key-word">Sagal − Sadii = Ja'a</span> → 9 − 3 = 6</li>
+            </ul>
+
+            <h2 id="lb-h4">Baay'isuu (Multiplication / ×)</h2>
+            <p id="lb-p4">Baay'isuun lakkoofsa yeroo murtaa'ame dabaluu dha. "Baay'isuu" jedhama.</p>
+            <ul>
+              <li><span class="key-word">Lama × Sadii = Ja'a</span> → 2 × 3 = 6</li>
+              <li><span class="key-word">Afur × Shan = Digdama</span> → 4 × 5 = 20</li>
+            </ul>
+
+            <h2 id="lb-h5">Hiruu (Division / ÷)</h2>
+            <p id="lb-p5">Hiruun lakkoofsa qoqqooduu dha. "Hiruu" jedhama.</p>
+            <ul>
+              <li><span class="key-word">Kudhan ÷ Lama = Shan</span> → 10 ÷ 2 = 5</li>
+              <li><span class="key-word">Sagal ÷ Sadii = Sadii</span> → 9 ÷ 3 = 3</li>
+            </ul>
+
+            <div class="example-box">
+              <div class="ex-label">💡 Lakkoofsa Guguddaa / Bigger Numbers</div>
+              <p>
+                <strong>20</strong> = Digdama &nbsp;|&nbsp;
+                <strong>30</strong> = Soddomaa &nbsp;|&nbsp;
+                <strong>40</strong> = Afurtamaa &nbsp;|&nbsp;
+                <strong>50</strong> = Shantamaa<br/>
+                <strong>100</strong> = Dhibba &nbsp;|&nbsp;
+                <strong>1000</strong> = Kuma
+              </p>
+            </div>
+          </div>
+
+          <!-- Nav buttons -->
+          <div class="lesson-nav">
+            <button class="btn-back" onclick="window.location.href='kakuu_dashboard.html'">← Dashboard</button>
+            <button class="btn-quiz" onclick="startQuiz()" id="btn-quiz-lbl">🧠 Quiz Jalqabi →</button>
+          </div>
+        </div>
+
+        <!-- QUIZ SECTION -->
+        <div class="quiz-section" id="quiz-section">
+          <div id="quiz-content"></div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: Sidebar -->
+      <div>
+        <div class="lesson-list-card">
+          <div class="card-title" id="ll-title">📚 Ramaddiiwan Kutaa Kanaa</div>
+          <div class="ll-item active"><div class="ll-num">01</div><div class="ll-name" id="ll1">Lakkoofsa fi Ida'uu</div><div class="ll-done">▶</div></div>
+          <div class="ll-item"><div class="ll-num">02</div><div class="ll-name" id="ll2">Hir'isuu fi Baay'isuu</div><div class="ll-done">🔒</div></div>
+          <div class="ll-item"><div class="ll-num">03</div><div class="ll-name" id="ll3">Herrega Guyyaa Guyyaa</div><div class="ll-done">🔒</div></div>
+          <div class="ll-item"><div class="ll-num">04</div><div class="ll-name" id="ll4">Saayinsii: Uumama</div><div class="ll-done">🔒</div></div>
+        </div>
+
+        <div class="quiz-card-side">
+          <h4 id="qc-title">🧠 Quiz Qophaa'eera!</h4>
+          <p id="qc-sub">Barnoota kana xumurtee beekumsa kee mirkaneessi — gaaffii 5 qofa!</p>
+          <button class="btn-quiz-side" onclick="startQuiz()" id="qc-btn">Quiz Jalqabi →</button>
+        </div>
+
+        <div class="prog-card">
+          <div class="card-title" id="prog-title">📊 Guddinni Kee</div>
+          <div style="font-size:0.85rem;color:var(--mid);" id="prog-sub">Herrega fi Saayinsii</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:45%"></div></div>
+          <div class="prog-pct" id="prog-pct">45% — Ramaddii 26/58</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ TRANSLATIONS ══
+const T = {
+  om:{
+    topbar:'🔢 Herrega fi Saayinsii',
+    bc_subject:'Herrega fi Saayinsii', bc_lesson:'Lakkoofsa fi Ida\'uu',
+    main_title:'Herrega: Lakkoofsa fi Ida\'uu',
+    main_desc:'Lakkoofsa Afaan Oromoo baradhu — Ida\'uu, Hir\'isuu, Baay\'isuu fi Hiruu jalqabaa irraa!',
+    tag1:'⏱ Daqiiqaa 30', tag2:'📊 Sadarkaa Jalqabaa', tag3:'🔢 Herrega fi Saayinsii',
+    vid:'Herrega Afaan Oromoo — Viidiyoo Barnoota',
+    lb_h1:'Lakkoofsa Afaan Oromoo', lb_p1:'Afaan Oromoo keessatti lakkoofsi maqaa ofii qaba. Lakkoofsa 1 hanga 10 baruun jalqabna — kun bu\'uura herrega hundaa dha.',
+    lb_h2:'Ida\'uu (Addition / +)', lb_p2:'Ida\'uun lakkoofsota lama walitti dabaluu dha. Afaan Oromoo keessatti "ida\'uu" ykn "dabaluu" jedhama.',
+    lb_h3:'Hir\'isuu (Subtraction / −)', lb_p3:'Hir\'isuun lakkoofsa tokkoo irraa biraa kaasuu dha.',
+    lb_h4:'Baay\'isuu (Multiplication / ×)', lb_p4:'Baay\'isuun lakkoofsa yeroo murtaa\'ame dabaluu dha.',
+    lb_h5:'Hiruu (Division / ÷)', lb_p5:'Hiruun lakkoofsa qoqqooduu dha.',
+    btn_quiz:'🧠 Quiz Jalqabi →',
+    ll_title:'📚 Ramaddiiwan Kutaa Kanaa',
+    ll1:'Lakkoofsa fi Ida\'uu', ll2:'Hir\'isuu fi Baay\'isuu', ll3:'Herrega Guyyaa Guyyaa', ll4:'Saayinsii: Uumama',
+    qc_title:'🧠 Quiz Qophaa\'eera!', qc_sub:'Barnoota kana xumurtee beekumsa kee mirkaneessi — gaaffii 5 qofa!', qc_btn:'Quiz Jalqabi →',
+    prog_title:'📊 Guddinni Kee', prog_sub:'Herrega fi Saayinsii', prog_pct:'45% — Ramaddii 26/58',
+    user_role:'Barattuun',
+    q_next:'Itti Aanee →', q_finish:'Xumuri ✅',
+    fb_correct:'✅ Sirrii dha! 🎉', fb_wrong:'❌ Dogoggoraa! Deebiin sirrii: ',
+    result_excellent:'Baay\'ee Gaarii! 🏆', result_good:'Gaarii! 👍', result_try:'Yaali Irra Deebi\'i 💪',
+    btn_retry:'🔄 Irra Deebi\'i', btn_dashboard:'🏠 Dashboard',
+    questions:[
+      {text:'Afaan Oromoo keessatti lakkoofsi 5 akkamiin jedhama?', opts:['Afur','Shan','Ja\'a','Torba'], ans:1, exp:'"Shan" jechuun 5 dha.'},
+      {text:'Ida\'uun maal jechuudha?', opts:['Kaasuu','Qoqqooduu','Walitti dabaluu','Baay\'isuu'], ans:2, exp:'Ida\'uun lakkoofsota walitti dabaluu dha (+).'},
+      {text:'Kudhan (10) + Kudhan (10) = ?', opts:['Digdama (20)','Soddomaa (30)','Shan (5)','Kudhan (10)'], ans:0, exp:'10 + 10 = 20 = Digdama.'},
+      {text:'Lakkoofsi 100 Afaan Oromoo keessatti maal jedhama?', opts:['Kuma','Dhibba','Digdama','Soddomaa'], ans:1, exp:'"Dhibba" jechuun 100 dha.'},
+      {text:'Sagal (9) ÷ Sadii (3) = ?', opts:['Lama (2)','Afur (4)','Sadii (3)','Shan (5)'], ans:2, exp:'9 ÷ 3 = 3 = Sadii.'}
+    ]
+  },
+  en:{
+    topbar:'🔢 Math & Science',
+    bc_subject:'Math & Science', bc_lesson:'Numbers & Addition',
+    main_title:'Math: Numbers & Addition',
+    main_desc:'Learn Oromo numbers — Addition, Subtraction, Multiplication and Division from scratch!',
+    tag1:'⏱ 30 minutes', tag2:'📊 Beginner', tag3:'🔢 Math & Science',
+    vid:'Oromo Math — Video Lesson',
+    lb_h1:'Oromo Numbers', lb_p1:'In Afaan Oromo, numbers have their own names. We start by learning numbers 1 to 10 — the foundation of all math.',
+    lb_h2:'Addition (Ida\'uu / +)', lb_p2:'Addition means combining two numbers together. In Afaan Oromo it is called "ida\'uu" or "dabaluu".',
+    lb_h3:'Subtraction (Hir\'isuu / −)', lb_p3:'Subtraction means taking one number away from another.',
+    lb_h4:'Multiplication (Baay\'isuu / ×)', lb_p4:'Multiplication means adding a number a set number of times.',
+    lb_h5:'Division (Hiruu / ÷)', lb_p5:'Division means splitting a number into equal parts.',
+    btn_quiz:'🧠 Start Quiz →',
+    ll_title:'📚 Lessons in This Subject',
+    ll1:'Numbers & Addition', ll2:'Subtraction & Multiplication', ll3:'Everyday Math', ll4:'Science: Nature',
+    qc_title:'🧠 Quiz Ready!', qc_sub:'Test your knowledge after this lesson — only 5 questions!', qc_btn:'Start Quiz →',
+    prog_title:'📊 Your Progress', prog_sub:'Math & Science', prog_pct:'45% — Lesson 26/58',
+    user_role:'Learner',
+    q_next:'Next →', q_finish:'Finish ✅',
+    fb_correct:'✅ Correct! 🎉', fb_wrong:'❌ Wrong! The correct answer is: ',
+    result_excellent:'Excellent! 🏆', result_good:'Good Job! 👍', result_try:'Try Again 💪',
+    btn_retry:'🔄 Try Again', btn_dashboard:'🏠 Dashboard',
+    questions:[
+      {text:'How do you say the number 5 in Afaan Oromo?', opts:['Afur','Shan','Ja\'a','Torba'], ans:1, exp:'"Shan" means 5 in Afaan Oromo.'},
+      {text:'What does "Ida\'uu" mean?', opts:['Subtract','Divide','Add','Multiply'], ans:2, exp:'Ida\'uu means addition (+).'},
+      {text:'Kudhan (10) + Kudhan (10) = ?', opts:['Digdama (20)','Soddomaa (30)','Shan (5)','Kudhan (10)'], ans:0, exp:'10 + 10 = 20 = Digdama.'},
+      {text:'What is 100 called in Afaan Oromo?', opts:['Kuma','Dhibba','Digdama','Soddomaa'], ans:1, exp:'"Dhibba" means 100.'},
+      {text:'Sagal (9) ÷ Sadii (3) = ?', opts:['Lama (2)','Afur (4)','Sadii (3)','Shan (5)'], ans:2, exp:'9 ÷ 3 = 3 = Sadii.'}
+    ]
+  }
+};
+
+// ══ STATE ══
+let currentLang = localStorage.getItem('kakuu_lang') || 'om';
+if(currentLang==='am') currentLang='om';
+let currentQ = 0, score = 0, answered = false;
+
+// ══ LANG ══
+function setLang(lang){
+  currentLang = lang;
+  localStorage.setItem('kakuu_lang', lang);
+  const t = T[lang];
+  document.getElementById('topbar-title').textContent = t.topbar;
+  document.getElementById('bc-subject').textContent = t.bc_subject;
+  document.getElementById('bc-lesson').textContent = t.bc_lesson;
+  document.getElementById('lesson-main-title').textContent = t.main_title;
+  document.getElementById('lesson-main-desc').textContent = t.main_desc;
+  document.getElementById('hero-tag1').textContent = t.tag1;
+  document.getElementById('hero-tag2').textContent = t.tag2;
+  document.getElementById('hero-tag3').textContent = t.tag3;
+  document.getElementById('vid-title').textContent = t.vid;
+  document.getElementById('lb-h1').textContent = t.lb_h1;
+  document.getElementById('lb-p1').textContent = t.lb_p1;
+  document.getElementById('lb-h2').textContent = t.lb_h2;
+  document.getElementById('lb-p2').textContent = t.lb_p2;
+  document.getElementById('lb-h3').textContent = t.lb_h3;
+  document.getElementById('lb-p3').textContent = t.lb_p3;
+  document.getElementById('lb-h4').textContent = t.lb_h4;
+  document.getElementById('lb-p4').textContent = t.lb_p4;
+  document.getElementById('lb-h5').textContent = t.lb_h5;
+  document.getElementById('lb-p5').textContent = t.lb_p5;
+  document.getElementById('btn-quiz-lbl').textContent = t.btn_quiz;
+  document.getElementById('ll-title').textContent = t.ll_title;
+  document.getElementById('ll1').textContent = t.ll1;
+  document.getElementById('ll2').textContent = t.ll2;
+  document.getElementById('ll3').textContent = t.ll3;
+  document.getElementById('ll4').textContent = t.ll4;
+  document.getElementById('qc-title').textContent = t.qc_title;
+  document.getElementById('qc-sub').textContent = t.qc_sub;
+  document.getElementById('qc-btn').textContent = t.qc_btn;
+  document.getElementById('prog-title').textContent = t.prog_title;
+  document.getElementById('prog-sub').textContent = t.prog_sub;
+  document.getElementById('prog-pct').textContent = t.prog_pct;
+  document.querySelectorAll('.lp-btn').forEach((b,i)=>b.classList.toggle('active',['om','en'][i]===lang));
+}
+
+// ══ QUIZ ══
+function startQuiz(){
+  currentQ=0; score=0; answered=false;
+  document.getElementById('lesson-section').style.display='none';
+  document.getElementById('quiz-section').classList.add('active');
+  renderQ();
+}
+
+function renderQ(){
+  const t=T[currentLang];
+  const q=t.questions[currentQ];
+  const isLast=currentQ===t.questions.length-1;
+  document.getElementById('quiz-content').innerHTML=`
+    <div class="q-card">
+      <div class="q-num">${currentLang==='om'?'Gaaffii':'Question'} ${currentQ+1} / ${t.questions.length}</div>
+      <div class="q-text">${q.text}</div>
+      <div class="options">
+        ${q.opts.map((o,i)=>`
+          <button class="opt-btn" id="opt-${i}" onclick="answer(${i})">
+            <div class="opt-letter">${['A','B','C','D'][i]}</div>
+            <span>${o}</span>
+          </button>`).join('')}
+      </div>
+      <div id="feedback"></div>
+    </div>
+    <button class="btn-next-q" id="btn-next" style="display:none" onclick="nextQ()">${isLast?t.q_finish:t.q_next}</button>
+  `;
+}
+
+function answer(idx){
+  if(answered)return;
+  answered=true;
+  const t=T[currentLang];
+  const q=t.questions[currentQ];
+  const ok=idx===q.ans;
+  if(ok)score++;
+  document.querySelectorAll('.opt-btn').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ans)b.classList.add('correct');
+    if(i===idx&&!ok)b.classList.add('wrong');
+  });
+  document.getElementById('feedback').innerHTML=`
+    <div class="feedback ${ok?'ok':'err'}">
+      ${ok?t.fb_correct:t.fb_wrong+'<strong>'+q.opts[q.ans]+'</strong>'}<br/>
+      <small>${q.exp}</small>
+    </div>`;
+  document.getElementById('btn-next').style.display='block';
+}
+
+function nextQ(){
+  const t=T[currentLang];
+  if(currentQ<t.questions.length-1){
+    currentQ++;
+    answered=false;
+    renderQ();
+  } else { showResult(); }
+}
+
+function showResult(){
+  const t=T[currentLang];
+  const pct=Math.round((score/t.questions.length)*100);
+  let emoji,label;
+  if(pct>=80){emoji='🏆';label=t.result_excellent;}
+  else if(pct>=60){emoji='⭐';label=t.result_good;}
+  else{emoji='💪';label=t.result_try;}
+  document.getElementById('quiz-content').innerHTML=`
+    <div class="result-box">
+      <div class="result-emoji">${emoji}</div>
+      <div class="result-score">${pct}%</div>
+      <div class="result-label">${label} — ${score}/${t.questions.length}</div>
+      <button class="btn-retry" onclick="startQuiz()">${t.btn_retry}</button>
+      <button class="btn-dashboard" onclick="window.location.href='kakuu_dashboard.html'">${t.btn_dashboard}</button>
+    </div>`;
+}
+
+// ══ USER ══
+(function(){
+  const u=localStorage.getItem('kakuu_user');
+  const tok=localStorage.getItem('kakuu_token');
+  if(!u||!tok){window.location.href='index.html';return;}
+  try{
+    const user=JSON.parse(u);
+    const name=user.name||user.email?.split('@')[0]||'Barataa';
+    document.getElementById('sidebar-username').textContent=name;
+    document.getElementById('sidebar-avatar').textContent=name.charAt(0).toUpperCase();
+  }catch(e){window.location.href='index.html';}
+})();
+
+setLang(currentLang);
+</script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Seenaa fi Aadaa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--gold-light:#f0c040;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;--accent:#7b3fa0;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-family:'Source Serif 4',serif;font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(123,63,160,0.15);border-left-color:var(--accent);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);}
+    .lang-pill{display:flex;gap:3px;background:rgba(123,63,160,0.07);border:1.5px solid rgba(123,63,160,0.15);border-radius:30px;padding:3px 5px;}
+    .lp-btn{border:none;background:none;cursor:pointer;padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;color:var(--mid);transition:all 0.18s;}
+    .lp-btn.active{background:var(--accent);color:#fff;}
+    .content{padding:28px 32px;}
+    .breadcrumb{font-size:0.78rem;color:var(--muted);margin-bottom:16px;}
+    .breadcrumb a{color:var(--accent);cursor:pointer;text-decoration:none;}
+    .lesson-hero{background:linear-gradient(135deg,var(--accent),#4a1a6a);border-radius:20px;padding:32px;color:#fff;margin-bottom:28px;display:flex;align-items:center;gap:20px;}
+    .lesson-hero-icon{font-size:4rem;flex-shrink:0;}
+    .lesson-hero h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:6px;}
+    .lesson-hero p{font-size:0.88rem;opacity:0.85;line-height:1.6;}
+    .lesson-hero-meta{display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;}
+    .hero-tag{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:600;}
+    .lesson-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;}
+    @media(max-width:900px){.lesson-layout{grid-template-columns:1fr;}}
+    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;border:1.5px solid rgba(0,0,0,0.05);}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:16px;}
+    .video-box{background:var(--dark);border-radius:16px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;margin-bottom:20px;cursor:pointer;}
+    .video-inner{display:flex;flex-direction:column;align-items:center;gap:12px;}
+    .play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:transform 0.2s;}
+    .play-btn:hover{transform:scale(1.1);}
+    .video-title{color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;}
+    .video-dur{color:rgba(255,255,255,0.5);font-size:0.8rem;}
+    .lesson-body h2{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin:0 0 12px;}
+    .lesson-body p{font-size:0.92rem;color:var(--mid);line-height:1.8;margin-bottom:14px;}
+    .lesson-body ul{padding-left:20px;margin-bottom:14px;}
+    .lesson-body ul li{font-size:0.92rem;color:var(--mid);line-height:1.8;margin-bottom:8px;}
+    .key-word{background:rgba(123,63,160,0.1);color:var(--accent);border-radius:4px;padding:1px 8px;font-weight:600;}
+    .example-box{background:rgba(123,63,160,0.06);border:1.5px solid rgba(123,63,160,0.15);border-radius:12px;padding:16px 20px;margin:14px 0;}
+    .example-box .ex-label{font-size:0.72rem;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+    .example-box p{margin:0;font-size:0.9rem;color:var(--mid);line-height:1.7;}
+    .lesson-nav{display:flex;gap:12px;margin-top:8px;}
+    .btn-back{background:transparent;color:var(--accent);border:2px solid var(--accent);padding:12px 24px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-back:hover{background:var(--accent);color:#fff;}
+    .btn-quiz{background:var(--accent);color:#fff;border:none;padding:12px 32px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;flex:2;}
+    .lesson-list-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .ll-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background 0.18s;margin-bottom:4px;}
+    .ll-item:hover{background:rgba(123,63,160,0.06);}
+    .ll-item.active{background:rgba(123,63,160,0.1);}
+    .ll-num{font-size:0.72rem;font-weight:700;color:var(--muted);min-width:20px;}
+    .ll-name{font-size:0.83rem;color:var(--mid);flex:1;line-height:1.4;}
+    .ll-item.active .ll-name{color:var(--accent);font-weight:600;}
+    .ll-done{font-size:0.9rem;}
+    .quiz-card-side{background:linear-gradient(135deg,var(--accent),#4a1a6a);border-radius:16px;padding:20px;color:#fff;margin-bottom:16px;}
+    .quiz-card-side h4{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:6px;}
+    .quiz-card-side p{font-size:0.8rem;opacity:0.85;margin-bottom:14px;line-height:1.5;}
+    .btn-quiz-side{background:rgba(255,255,255,0.2);color:#fff;border:1.5px solid rgba(255,255,255,0.4);padding:9px 20px;border-radius:30px;font-family:inherit;font-size:0.85rem;font-weight:600;cursor:pointer;width:100%;}
+    .prog-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);}
+    .prog-bar{height:6px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;margin:10px 0 6px;}
+    .prog-fill{height:100%;border-radius:10px;background:var(--accent);}
+    .prog-pct{font-size:0.75rem;color:var(--muted);}
+    .quiz-section{display:none;}
+    .quiz-section.active{display:block;}
+    .q-card{background:var(--card);border-radius:16px;padding:28px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .q-num{font-size:0.75rem;color:var(--muted);font-weight:600;margin-bottom:8px;}
+    .q-text{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:20px;line-height:1.4;}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media(max-width:600px){.options{grid-template-columns:1fr;}}
+    .opt-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);background:#fff;cursor:pointer;transition:all 0.18s;font-family:inherit;font-size:0.9rem;color:var(--dark);text-align:left;}
+    .opt-btn:hover:not(:disabled){border-color:var(--accent);background:rgba(123,63,160,0.04);}
+    .opt-letter{width:30px;height:30px;border-radius:8px;background:rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;}
+    .opt-btn:hover:not(:disabled) .opt-letter{background:var(--accent);color:#fff;}
+    .opt-btn.correct{border-color:var(--green);background:rgba(26,107,60,0.08);}
+    .opt-btn.correct .opt-letter{background:var(--green);color:#fff;}
+    .opt-btn.wrong{border-color:#c0392b;background:rgba(192,57,43,0.06);}
+    .opt-btn.wrong .opt-letter{background:#c0392b;color:#fff;}
+    .feedback{border-radius:12px;padding:12px 16px;margin-top:14px;font-size:0.88rem;font-weight:600;}
+    .feedback.ok{background:rgba(26,107,60,0.1);color:var(--green);}
+    .feedback.err{background:rgba(192,57,43,0.08);color:#c0392b;}
+    .btn-next-q{width:100%;background:var(--accent);color:#fff;border:none;padding:13px;border-radius:30px;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:14px;}
+    .result-box{background:var(--card);border-radius:20px;padding:40px;text-align:center;box-shadow:var(--shadow);}
+    .result-emoji{font-size:4rem;margin-bottom:12px;}
+    .result-score{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--accent);}
+    .result-label{font-size:1rem;color:var(--muted);margin-bottom:24px;}
+    .btn-retry{background:transparent;color:var(--accent);border:2px solid var(--accent);padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;margin-right:10px;}
+    .btn-dashboard{background:var(--green);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">📖</span> Ramaddiiwan</a>
+    <a class="nav-item active"><span class="icon">🏺</span> Seenaa fi Aadaa</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">🏺 Seenaa fi Aadaa</div>
+    <div class="lang-pill">
+      <button class="lp-btn active" onclick="setLang('om')">OM</button>
+      <button class="lp-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="breadcrumb"><a href="kakuu_dashboard.html">Dashboard</a> › <span id="bc-subject">Seenaa fi Aadaa</span> › <span id="bc-lesson">Sirna Gadaa</span></div>
+    <div class="lesson-hero">
+      <div class="lesson-hero-icon">🏺</div>
+      <div>
+        <h1 id="lesson-main-title">Sirna Gadaa: Dimokraasii Oromoo</h1>
+        <p id="lesson-main-desc">Sirna Gadaa — mana murtii, sirna bulchiinsaa fi dimokraasii uummata Oromoo bara durii irraa dhufe baradi!</p>
+        <div class="lesson-hero-meta">
+          <span class="hero-tag" id="hero-tag1">⏱ Daqiiqaa 40</span>
+          <span class="hero-tag" id="hero-tag2">📊 Sadarkaa Gidduu</span>
+          <span class="hero-tag" id="hero-tag3">🏺 Seenaa fi Aadaa</span>
+        </div>
+      </div>
+    </div>
+    <div class="lesson-layout">
+      <div>
+        <div id="lesson-section">
+          <div class="video-box">
+            <div class="video-inner">
+              <div class="play-btn">▶</div>
+              <div class="video-title" id="vid-title">Sirna Gadaa — Viidiyoo Barnoota</div>
+              <div class="video-dur">⏱ Daqiiqaa 20:00</div>
+            </div>
+          </div>
+          <div class="card lesson-body">
+            <h2 id="lb-h1">Sirni Gadaa Maali?</h2>
+            <p id="lb-p1">Sirni Gadaa sirna bulchiinsaa, seeraa, fi hawaasummaa uummata Oromoo dha. Kun sirna dimokraasii kan bara durii irraa dhufe — namoota Oromoo hundumaaf mirga qixxee kennuu fi wal-kabajuu irratti hundaa'e.</p>
+            <div class="example-box">
+              <div class="ex-label">📜 Seenaa Gabaabaa / Brief History</div>
+              <p>Sirni Gadaa waggaa 500 ol dura jalqabame jedhamee tilmaamama. UNESCO bara 2016 sirna addunyaa "Intangible Cultural Heritage" keessatti galmeesse — kun kabaja guddaa dha!</p>
+            </div>
+            <h2 id="lb-h2">Sadarkaalee Gadaa (Gadaa Grades)</h2>
+            <p id="lb-p2">Uummanni Oromoo sadarkaa waggaa 8-8 keessatti dabarsu — jalqaba daa'immummaa irraa hanga jaarsummaatti. Sadarkaan gurguddoon:</p>
+            <ul>
+              <li><span class="key-word">Dabballee</span> — Daa'imman (0-8 waggaa)</li>
+              <li><span class="key-word">Folle / Gamme</span> — Dargaggoo (8-16 waggaa)</li>
+              <li><span class="key-word">Qondala</span> — Dargaggoo guddaa (16-24 waggaa)</li>
+              <li><span class="key-word">Raba / Doorii</span> — Dhiira bilchaa (24-32 waggaa)</li>
+              <li><span class="key-word">Gadaa</span> — Yeroo bulchuu (32-40 waggaa) ← kun sadarkaa ol'aanaa dha!</li>
+              <li><span class="key-word">Yuba</span> — Jaarsummaa (40+ waggaa)</li>
+            </ul>
+            <h2 id="lb-h3">Abbaa Gadaa</h2>
+            <p id="lb-p3">Abbaan Gadaa hogganaa sirna Gadaa ti. Yeroo waggaa 8 qofaaf hogganuu danda'a — boodarra biraan bakka isaa fudhata. Kun aangoo nama tokko harkatti dhiisuu irraa eega.</p>
+            <div class="example-box">
+              <div class="ex-label">🌿 Aadaa fi Duudhaa / Culture & Values</div>
+              <p>
+                <strong>Nagaa</strong> — Nageenyaa fi tokkummaa<br/>
+                <strong>Ayyaana</strong> — Ayyaana, kabaja fi waaqa<br/>
+                <strong>Safuu</strong> — Seera aadaa fi dhugaa<br/>
+                <strong>Gada</strong> — Heeraa fi mirga hawaasaa
+              </p>
+            </div>
+            <h2 id="lb-h4">Irreechaa</h2>
+            <p id="lb-p4">Irreechaan ayyaana guddaa uummata Oromoo ti — Waaqayyoof galata kennuuf kabajamu. Bishaan fi muka fayyadamuun Waaqayyoo galateeffamu. Kun aadaa baay'ee galmee seenaa qabu dha.</p>
+          </div>
+          <div class="lesson-nav">
+            <button class="btn-back" onclick="window.location.href='kakuu_dashboard.html'">← Dashboard</button>
+            <button class="btn-quiz" onclick="startQuiz()" id="btn-quiz-lbl">🧠 Quiz Jalqabi →</button>
+          </div>
+        </div>
+        <div class="quiz-section" id="quiz-section">
+          <div id="quiz-content"></div>
+        </div>
+      </div>
+      <div>
+        <div class="lesson-list-card">
+          <div class="card-title" id="ll-title">📚 Ramaddiiwan Kutaa Kanaa</div>
+          <div class="ll-item active"><div class="ll-num">01</div><div class="ll-name" id="ll1">Sirna Gadaa</div><div class="ll-done">▶</div></div>
+          <div class="ll-item"><div class="ll-num">02</div><div class="ll-name" id="ll2">Irreechaa fi Ayyaanaalee</div><div class="ll-done">🔒</div></div>
+          <div class="ll-item"><div class="ll-num">03</div><div class="ll-name" id="ll3">Geerarsa fi Walaloo</div><div class="ll-done">🔒</div></div>
+          <div class="ll-item"><div class="ll-num">04</div><div class="ll-name" id="ll4">Seenaa Oromoo Durii</div><div class="ll-done">🔒</div></div>
+        </div>
+        <div class="quiz-card-side">
+          <h4 id="qc-title">🧠 Quiz Qophaa'eera!</h4>
+          <p id="qc-sub">Sirna Gadaa baractee jirta — beekumsa kee mirkaneessi!</p>
+          <button class="btn-quiz-side" onclick="startQuiz()" id="qc-btn">Quiz Jalqabi →</button>
+        </div>
+        <div class="prog-card">
+          <div class="card-title" id="prog-title">📊 Guddinni Kee</div>
+          <div style="font-size:0.85rem;color:var(--mid);" id="prog-sub">Seenaa fi Aadaa</div>
+          <div class="prog-bar"><div class="prog-fill" style="width:60%"></div></div>
+          <div class="prog-pct" id="prog-pct">60% — Ramaddii 20/34</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const T={
+  om:{
+    topbar:'🏺 Seenaa fi Aadaa', bc_subject:'Seenaa fi Aadaa', bc_lesson:'Sirna Gadaa',
+    main_title:'Sirna Gadaa: Dimokraasii Oromoo',
+    main_desc:'Sirna Gadaa — mana murtii, sirna bulchiinsaa fi dimokraasii uummata Oromoo bara durii irraa dhufe baradi!',
+    tag1:'⏱ Daqiiqaa 40', tag2:'📊 Sadarkaa Gidduu', tag3:'🏺 Seenaa fi Aadaa',
+    vid:'Sirna Gadaa — Viidiyoo Barnoota',
+    lb_h1:'Sirni Gadaa Maali?', lb_h2:'Sadarkaalee Gadaa', lb_h3:'Abbaa Gadaa', lb_h4:'Irreechaa',
+    btn_quiz:'🧠 Quiz Jalqabi →', ll_title:'📚 Ramaddiiwan Kutaa Kanaa',
+    ll1:'Sirna Gadaa', ll2:'Irreechaa fi Ayyaanaalee', ll3:'Geerarsa fi Walaloo', ll4:'Seenaa Oromoo Durii',
+    qc_title:'🧠 Quiz Qophaa\'eera!', qc_sub:'Sirna Gadaa baractee jirta — beekumsa kee mirkaneessi!', qc_btn:'Quiz Jalqabi →',
+    prog_title:'📊 Guddinni Kee', prog_sub:'Seenaa fi Aadaa', prog_pct:'60% — Ramaddii 20/34',
+    q_next:'Itti Aanee →', q_finish:'Xumuri ✅',
+    fb_correct:'✅ Sirrii dha! 🎉', fb_wrong:'❌ Dogoggoraa! Deebiin sirrii: ',
+    result_excellent:'Baay\'ee Gaarii! 🏆', result_good:'Gaarii! 👍', result_try:'Yaali Irra Deebi\'i 💪',
+    btn_retry:'🔄 Irra Deebi\'i', btn_dashboard:'🏠 Dashboard',
+    questions:[
+      {text:'Sirni Gadaa sirna akkamii ti?', opts:['Waraanaa','Bulchiinsaa fi dimokraasii','Daldalaa','Qonnaa'], ans:1, exp:'Sirni Gadaa sirna bulchiinsaa fi dimokraasii uummata Oromoo ti.'},
+      {text:'UNESCO sirna Gadaa galmee seenaa addunyaa irratti bara meeqatti galmeesse?', opts:['2010','2014','2016','2020'], ans:2, exp:'UNESCO bara 2016 sirna Gadaa "Intangible Cultural Heritage" irratti galmeesse.'},
+      {text:'Abbaan Gadaa yeroo meeqa bulchuu danda'a?', opts:['Waggaa 4','Waggaa 8','Waggaa 16','Guutuu jireenya isaa'], ans:1, exp:'Abbaan Gadaa waggaa 8 qofa bulchuu danda\'a.'},
+      {text:'Sadarkaan Gadaa "Dabballee" eenyu ilaallata?', opts:['Jaarsota','Dargaggoota','Daa\'imman','Bulchitootaa'], ans:2, exp:'"Dabballee" sadarkaa daa\'imman (0-8 waggaa) ti.'},
+      {text:'Irreechaan ayyaana maalii ti?', opts:['Waraanaa', 'Waaqayyoof galata kennuu','Daldala','Barnootaa'], ans:1, exp:'Irreechaan ayyaana Waaqayyoof galata kennuuf kabajamuu dha.'}
+    ]
+  },
+  en:{
+    topbar:'🏺 History & Culture', bc_subject:'History & Culture', bc_lesson:'Gadaa System',
+    main_title:'Gadaa System: Oromo Democracy',
+    main_desc:'Learn about the Gadaa System — the ancient governance, law, and democracy of the Oromo people!',
+    tag1:'⏱ 40 minutes', tag2:'📊 Intermediate', tag3:'🏺 History & Culture',
+    vid:'Gadaa System — Video Lesson',
+    lb_h1:'What is the Gadaa System?', lb_h2:'Gadaa Grades', lb_h3:'Abbaa Gadaa (Leader)', lb_h4:'Irreechaa',
+    btn_quiz:'🧠 Start Quiz →', ll_title:'📚 Lessons in This Subject',
+    ll1:'Gadaa System', ll2:'Irreechaa & Festivals', ll3:'Geerarsa & Poetry', ll4:'Ancient Oromo History',
+    qc_title:'🧠 Quiz Ready!', qc_sub:'You\'ve learned about Gadaa — test your knowledge!', qc_btn:'Start Quiz →',
+    prog_title:'📊 Your Progress', prog_sub:'History & Culture', prog_pct:'60% — Lesson 20/34',
+    q_next:'Next →', q_finish:'Finish ✅',
+    fb_correct:'✅ Correct! 🎉', fb_wrong:'❌ Wrong! The correct answer is: ',
+    result_excellent:'Excellent! 🏆', result_good:'Good Job! 👍', result_try:'Try Again 💪',
+    btn_retry:'🔄 Try Again', btn_dashboard:'🏠 Dashboard',
+    questions:[
+      {text:'What type of system is the Gadaa?', opts:['Military','Governance & democracy','Trade','Agriculture'], ans:1, exp:'The Gadaa System is a governance and democratic system of the Oromo people.'},
+      {text:'In what year did UNESCO recognize the Gadaa System?', opts:['2010','2014','2016','2020'], ans:2, exp:'UNESCO recognized the Gadaa System as Intangible Cultural Heritage in 2016.'},
+      {text:'How long can an Abbaa Gadaa (leader) serve?', opts:['4 years','8 years','16 years','Lifetime'], ans:1, exp:'An Abbaa Gadaa can only serve for 8 years.'},
+      {text:'Which age group is "Dabballee"?', opts:['Elders','Youth','Children','Leaders'], ans:2, exp:'"Dabballee" refers to children (0-8 years old).'},
+      {text:'What is Irreechaa?', opts:['A war ceremony','A thanksgiving to God','A trade festival','A school'], ans:1, exp:'Irreechaa is a thanksgiving ceremony to Waaqaa (God).'}
+    ]
+  }
+};
+let currentLang=localStorage.getItem('kakuu_lang')||'om';
+if(currentLang==='am')currentLang='om';
+let currentQ=0,score=0,answered=false;
+function setLang(lang){
+  currentLang=lang; localStorage.setItem('kakuu_lang',lang);
+  const t=T[lang];
+  document.getElementById('topbar-title').textContent=t.topbar;
+  document.getElementById('bc-subject').textContent=t.bc_subject;
+  document.getElementById('bc-lesson').textContent=t.bc_lesson;
+  document.getElementById('lesson-main-title').textContent=t.main_title;
+  document.getElementById('lesson-main-desc').textContent=t.main_desc;
+  document.getElementById('hero-tag1').textContent=t.tag1;
+  document.getElementById('hero-tag2').textContent=t.tag2;
+  document.getElementById('hero-tag3').textContent=t.tag3;
+  document.getElementById('vid-title').textContent=t.vid;
+  document.getElementById('lb-h1').textContent=t.lb_h1;
+  document.getElementById('lb-h2').textContent=t.lb_h2;
+  document.getElementById('lb-h3').textContent=t.lb_h3;
+  document.getElementById('lb-h4').textContent=t.lb_h4;
+  document.getElementById('btn-quiz-lbl').textContent=t.btn_quiz;
+  document.getElementById('ll-title').textContent=t.ll_title;
+  document.getElementById('ll1').textContent=t.ll1;
+  document.getElementById('ll2').textContent=t.ll2;
+  document.getElementById('ll3').textContent=t.ll3;
+  document.getElementById('ll4').textContent=t.ll4;
+  document.getElementById('qc-title').textContent=t.qc_title;
+  document.getElementById('qc-sub').textContent=t.qc_sub;
+  document.getElementById('qc-btn').textContent=t.qc_btn;
+  document.getElementById('prog-title').textContent=t.prog_title;
+  document.getElementById('prog-sub').textContent=t.prog_sub;
+  document.getElementById('prog-pct').textContent=t.prog_pct;
+  document.querySelectorAll('.lp-btn').forEach((b,i)=>b.classList.toggle('active',['om','en'][i]===lang));
+}
+function startQuiz(){currentQ=0;score=0;answered=false;document.getElementById('lesson-section').style.display='none';document.getElementById('quiz-section').classList.add('active');renderQ();}
+function renderQ(){const t=T[currentLang];const q=t.questions[currentQ];const isLast=currentQ===t.questions.length-1;document.getElementById('quiz-content').innerHTML=`<div class="q-card"><div class="q-num">${currentLang==='om'?'Gaaffii':'Question'} ${currentQ+1}/${t.questions.length}</div><div class="q-text">${q.text}</div><div class="options">${q.opts.map((o,i)=>`<button class="opt-btn" id="opt-${i}" onclick="answer(${i})"><div class="opt-letter">${['A','B','C','D'][i]}</div><span>${o}</span></button>`).join('')}</div><div id="feedback"></div></div><button class="btn-next-q" id="btn-next" style="display:none" onclick="nextQ()">${isLast?t.q_finish:t.q_next}</button>`;}
+function answer(idx){if(answered)return;answered=true;const t=T[currentLang];const q=t.questions[currentQ];const ok=idx===q.ans;if(ok)score++;document.querySelectorAll('.opt-btn').forEach((b,i)=>{b.disabled=true;if(i===q.ans)b.classList.add('correct');if(i===idx&&!ok)b.classList.add('wrong');});document.getElementById('feedback').innerHTML=`<div class="feedback ${ok?'ok':'err'}">${ok?t.fb_correct:t.fb_wrong+'<strong>'+q.opts[q.ans]+'</strong>'}<br/><small>${q.exp}</small></div>`;document.getElementById('btn-next').style.display='block';}
+function nextQ(){const t=T[currentLang];if(currentQ<t.questions.length-1){currentQ++;answered=false;renderQ();}else{showResult();}}
+function showResult(){const t=T[currentLang];const pct=Math.round((score/t.questions.length)*100);let emoji,label;if(pct>=80){emoji='🏆';label=t.result_excellent;}else if(pct>=60){emoji='⭐';label=t.result_good;}else{emoji='💪';label=t.result_try;}document.getElementById('quiz-content').innerHTML=`<div class="result-box"><div class="result-emoji">${emoji}</div><div class="result-score">${pct}%</div><div class="result-label">${label} — ${score}/${t.questions.length}</div><button class="btn-retry" onclick="startQuiz()">${t.btn_retry}</button><button class="btn-dashboard" onclick="window.location.href='kakuu_dashboard.html'">${t.btn_dashboard}</button></div>`;}
+(function(){const u=localStorage.getItem('kakuu_user');const tok=localStorage.getItem('kakuu_token');if(!u||!tok){window.location.href='index.html';return;}try{const user=JSON.parse(u);const name=user.name||user.email?.split('@')[0]||'Barataa';document.getElementById('sidebar-username').textContent=name;document.getElementById('sidebar-avatar').textContent=name.charAt(0).toUpperCase();}catch(e){window.location.href='index.html';}})();
+setLang(currentLang);
+</script>
+</body>
+</html>
