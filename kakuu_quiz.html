@@ -196,9 +196,9 @@
     <a class="nav-item" href="#"><span class="icon">🚪</span> <span>Ba'i</span></a>
   </nav>
   <div class="sidebar-user">
-    <div class="user-avatar">👩</div>
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
     <div class="user-info">
-      <div class="user-name">Faaxumaa T.</div>
+      <div class="user-name" id="sidebar-username">Barataa</div>
       <div class="user-role">Barattuun</div>
     </div>
   </div>
@@ -715,6 +715,22 @@ function showPage(id) {
 // ══════════════════════════════════════
 setLang(currentLang);
 showPage('intro');
+
+// Load real user from localStorage
+(function loadRealUser() {
+  const userJson = localStorage.getItem('kakuu_user');
+  const token = localStorage.getItem('kakuu_token');
+  if (!userJson || !token) { window.location.href = 'index.html'; return; }
+  try {
+    const user = JSON.parse(userJson);
+    const displayName = user.name || user.email?.split('@')[0] || 'Barataa';
+    const firstName = displayName.split(' ')[0];
+    const sidebarName = document.getElementById('sidebar-username');
+    if (sidebarName) sidebarName.textContent = displayName;
+    const avatar = document.getElementById('sidebar-avatar');
+    if (avatar) avatar.textContent = firstName.charAt(0).toUpperCase();
+  } catch (e) { window.location.href = 'index.html'; }
+})();
 </script>
 </body>
 </html>
