@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Contributor Ta'i</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);}
+    .content{padding:32px;}
+    .page-hero{background:linear-gradient(135deg,var(--green),#0d4a28);border-radius:20px;padding:36px;color:#fff;margin-bottom:32px;display:flex;align-items:center;gap:24px;}
+    .page-hero-icon{font-size:4rem;flex-shrink:0;}
+    .page-hero h1{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;margin-bottom:8px;}
+    .page-hero p{font-size:0.92rem;opacity:0.85;line-height:1.7;max-width:500px;}
+    .steps-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+    @media(max-width:700px){.steps-row{grid-template-columns:1fr;}}
+    .step-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);text-align:center;border:1.5px solid rgba(0,0,0,0.05);}
+    .step-num{width:36px;height:36px;border-radius:50%;background:var(--green);color:#fff;font-family:'Playfair Display',serif;font-size:1rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+    .step-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:6px;}
+    .step-desc{font-size:0.82rem;color:var(--muted);line-height:1.5;}
+    .form-card{background:var(--card);border-radius:20px;padding:32px;box-shadow:var(--shadow);border:1.5px solid rgba(0,0,0,0.05);max-width:600px;}
+    .form-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--dark);margin-bottom:24px;display:flex;align-items:center;gap:10px;}
+    .form-group{margin-bottom:20px;}
+    .form-label{display:block;font-size:0.85rem;font-weight:600;color:var(--mid);margin-bottom:8px;}
+    .form-input{width:100%;padding:13px 16px;border:1.5px solid rgba(0,0,0,0.1);border-radius:12px;font-family:inherit;font-size:0.92rem;color:var(--dark);outline:none;transition:border-color 0.2s;background:#fff;}
+    .form-input:focus{border-color:var(--green);}
+    .form-input::placeholder{color:var(--muted);}
+    textarea.form-input{resize:vertical;min-height:100px;}
+    select.form-input{cursor:pointer;}
+    .form-hint{font-size:0.75rem;color:var(--muted);margin-top:5px;}
+    .btn-submit{width:100%;background:var(--green);color:#fff;border:none;padding:15px;border-radius:40px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:background 0.2s,transform 0.15s;margin-top:8px;}
+    .btn-submit:hover{background:var(--green-light);transform:translateY(-2px);}
+    .btn-submit:disabled{background:var(--muted);cursor:not-allowed;transform:none;}
+    .message{border-radius:12px;padding:14px 18px;margin-top:16px;font-size:0.9rem;font-weight:600;display:none;}
+    .message.success{background:rgba(26,107,60,0.1);color:var(--green);border:1.5px solid rgba(26,107,60,0.2);}
+    .message.error{background:rgba(192,57,43,0.08);color:#c0392b;border:1.5px solid rgba(192,57,43,0.2);}
+    .already-contributor{background:linear-gradient(135deg,rgba(212,160,23,0.1),rgba(26,107,60,0.08));border:1.5px solid rgba(212,160,23,0.2);border-radius:16px;padding:24px;margin-bottom:24px;display:none;}
+    .already-contributor h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:6px;}
+    .already-contributor p{font-size:0.85rem;color:var(--mid);line-height:1.6;}
+    .status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:20px;font-size:0.78rem;font-weight:700;margin-top:10px;}
+    .status-badge.pending{background:rgba(212,160,23,0.15);color:var(--gold);}
+    .status-badge.approved{background:rgba(26,107,60,0.15);color:var(--green);}
+    .btn-upload{background:var(--green);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:12px;transition:background 0.2s;}
+    .btn-upload:hover{background:var(--green-light);}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">📖</span> Ramaddiiwan</a>
+    <a class="nav-item active"><span class="icon">✍️</span> Contributor Ta'i</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">✍️ Contributor Ta'i — Barnoota Maxxansi</div>
+  </div>
+
+  <div class="content">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <div class="page-hero-icon">✍️</div>
+      <div>
+        <h1>Barnoota Maxxansi — Addunyaaf Gadi</h1>
+        <p>Beekumsa kee qooduu barbaaddaa? Contributor ta'uun lesson Afaan Oromoo barreessuu fi upload gochuu dandeessa — fayyadamtoota addunyaa guutuu barsiisuu!</p>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title">Gaaffadhu</div>
+        <div class="step-desc">Form kana guutii contributor ta'uu gaaffadhu — maqaa, biyya fi expertise kee ibsi.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title">Eegi — Approve</div>
+        <div class="step-desc">Admin kee (Dereje) gaaffii kee ilaalee approve godha — guyyaa 1-3 fudhata.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title">Lesson Upload Godhi</div>
+        <div class="step-desc">Approve ta'ee booda lesson, quiz fi qabiyyee haaraa upload gochuu dandeessa!</div>
+      </div>
+    </div>
+
+    <!-- Already contributor check -->
+    <div class="already-contributor" id="already-contributor">
+      <h3>✅ Contributor Galmaa'ameetta!</h3>
+      <p id="contributor-status-text">Gaaffiin kee ergameera — approve eegaa jirta.</p>
+      <div class="status-badge pending" id="contributor-badge">⏳ Approval Eegaa</div>
+      <br/>
+      <button class="btn-upload" onclick="window.location.href='kakuu_upload.html'" id="btn-upload" style="display:none">
+        📤 Lesson Upload Godhi →
+      </button>
+    </div>
+
+    <!-- Form -->
+    <div class="form-card" id="contributor-form">
+      <div class="form-title">📝 Contributor Application</div>
+
+      <div class="form-group">
+        <label class="form-label">Maqaa Guutuu / Full Name *</label>
+        <input class="form-input" type="text" id="contributor-name" placeholder="Maqaa fi maqaa abbaa kee..." />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Biyya / Country *</label>
+        <select class="form-input" id="contributor-country">
+          <option value="">Biyya filadhu...</option>
+          <option value="Ethiopia">🇪🇹 Ethiopia / Itoophiyaa</option>
+          <option value="USA">🇺🇸 United States / Ameerikaa</option>
+          <option value="Taiwan">🇹🇼 Taiwan</option>
+          <option value="Kenya">🇰🇪 Kenya</option>
+          <option value="Canada">🇨🇦 Canada</option>
+          <option value="UK">🇬🇧 United Kingdom</option>
+          <option value="Australia">🇦🇺 Australia</option>
+          <option value="Germany">🇩🇪 Germany</option>
+          <option value="Other">🌍 Biyya biraa / Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Expertise / Beekumsa Qabdu *</label>
+        <select class="form-input" id="contributor-subject">
+          <option value="">Filadhu...</option>
+          <option value="afaan">📝 Afaan fi Barreeffama</option>
+          <option value="herrega">🔢 Herrega fi Saayinsii</option>
+          <option value="seenaa">🏺 Seenaa fi Aadaa</option>
+          <option value="dandeettii">🛠️ Dandeettii Hojii</option>
+          <option value="all">📚 Hunda</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Bio — Waa'ee Keessan Ibsaa *</label>
+        <textarea class="form-input" id="contributor-bio" placeholder="Maqaa keessan, hojii keessan, maaliif Kakuu Oromoo gargaaruu barbaaddu..."></textarea>
+        <div class="form-hint">Ibsa gabaabaa — barnoota maal barsiisuu akka dandeessan</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Afaan Oromoo Sirriitti Beektaa? *</label>
+        <select class="form-input" id="contributor-oromo-level">
+          <option value="">Filadhu...</option>
+          <option value="native">✅ Afaan harmee koo — sirriitti beeka</option>
+          <option value="fluent">✅ Sirriitti dubbisa fi barreessa</option>
+          <option value="intermediate">🟡 Gidduu — xiqqoo beeka</option>
+          <option value="learning">📚 Barachaa jira</option>
+        </select>
+      </div>
+
+      <button class="btn-submit" onclick="submitApplication()" id="submit-btn">
+        📤 Gaaffii Ergi →
+      </button>
+
+      <div class="message" id="form-message"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+const sdkScript = document.createElement('script');
+sdkScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(sdkScript);
+
+let supabaseClient = null;
+let currentUser = null;
+
+sdkScript.onload = async () => {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  await loadUser();
+};
+
+async function loadUser() {
+  const userJson = localStorage.getItem('kakuu_user');
+  const token = localStorage.getItem('kakuu_token');
+  if (!userJson || !token) { window.location.href = 'index.html'; return; }
+
+  try {
+    currentUser = JSON.parse(userJson);
+    const name = currentUser.name || currentUser.email?.split('@')[0] || 'Barataa';
+    document.getElementById('sidebar-username').textContent = name;
+    document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('contributor-name').value = name;
+
+    // Check already contributor?
+    await checkExistingApplication();
+  } catch(e) { window.location.href = 'index.html'; }
+}
+
+async function checkExistingApplication() {
+  if (!supabaseClient || !currentUser) return;
+
+  const { data, error } = await supabaseClient
+    .from('authors')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .single();
+
+  if (data) {
+    // Already applied
+    document.getElementById('contributor-form').style.display = 'none';
+    document.getElementById('already-contributor').style.display = 'block';
+
+    if (data.is_approved) {
+      document.getElementById('contributor-status-text').textContent = 'Gaaffiin kee approve ta\'ameera — lesson upload gochuu dandeessa!';
+      document.getElementById('contributor-badge').textContent = '✅ Approved!';
+      document.getElementById('contributor-badge').className = 'status-badge approved';
+      document.getElementById('btn-upload').style.display = 'inline-block';
+    } else {
+      document.getElementById('contributor-status-text').textContent = 'Gaaffiin kee ergameera — approve eegaa jirta. Guyyaa 1-3 fudhata.';
+    }
+  }
+}
+
+async function submitApplication() {
+  const name = document.getElementById('contributor-name').value.trim();
+  const country = document.getElementById('contributor-country').value;
+  const subject = document.getElementById('contributor-subject').value;
+  const bio = document.getElementById('contributor-bio').value.trim();
+  const oromoLevel = document.getElementById('contributor-oromo-level').value;
+  const btn = document.getElementById('submit-btn');
+  const msg = document.getElementById('form-message');
+
+  if (!name || !country || !subject || !bio || !oromoLevel) {
+    showMessage('⚠️ Maaloo, dirree hunda guuti.', true);
+    return;
+  }
+
+  if (!supabaseClient || !currentUser) {
+    showMessage('⚠️ Deebi\'ii login godhi.', true);
+    return;
+  }
+
+  btn.textContent = 'Eegaa...';
+  btn.disabled = true;
+
+  const { data, error } = await supabaseClient
+    .from('authors')
+    .insert([{
+      user_id: currentUser.id,
+      name: name,
+      bio: `${bio} | Biyya: ${country} | Expertise: ${subject} | Afaan Oromoo: ${oromoLevel}`,
+      country: country,
+      is_approved: false
+    }]);
+
+  if (error) {
+    showMessage('❌ Dogoggora uumame: ' + error.message, true);
+    btn.textContent = '📤 Gaaffii Ergi →';
+    btn.disabled = false;
+    return;
+  }
+
+  showMessage("✅ Gaaffiin kee milkaa'inaan ergame! Guyyaa 1-3 keessatti isin qunnamna.", false);
+  btn.textContent = '✅ Ergame!';
+
+  setTimeout(() => {
+    document.getElementById('contributor-form').style.display = 'none';
+    document.getElementById('already-contributor').style.display = 'block';
+  }, 2000);
+}
+
+function showMessage(text, isError) {
+  const msg = document.getElementById('form-message');
+  msg.textContent = text;
+  msg.style.display = 'block';
+  msg.className = 'message ' + (isError ? 'error' : 'success');
+}
+</script>
+</body>
+</html>
