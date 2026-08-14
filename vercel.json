@@ -1,10 +1,6 @@
 {
   "functions": {
-    "api/login.js": {
-      "memory": 128,
-      "maxDuration": 10
-    },
-    "api/register.js": {
+    "api/*.js": {
       "memory": 128,
       "maxDuration": 10
     }
