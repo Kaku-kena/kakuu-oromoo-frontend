@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;--red:#c0392b;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-section{font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(212,160,23,0.15);border-left-color:var(--gold);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .badge{background:var(--red);color:#fff;border-radius:20px;padding:1px 8px;font-size:0.7rem;font-weight:700;margin-left:auto;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:var(--gold);}
+    .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);}
+    .admin-badge{background:linear-gradient(135deg,var(--gold),#8b6000);color:#fff;border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:700;}
+    .content{padding:28px 32px;}
+
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px;}
+    .stat-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border-top:4px solid var(--accent,var(--green));}
+    .stat-icon{font-size:1.6rem;margin-bottom:10px;}
+    .stat-val{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--dark);}
+    .stat-label{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+
+    /* Tabs */
+    .tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid rgba(0,0,0,0.07);padding-bottom:0;}
+    .tab-btn{background:none;border:none;padding:12px 20px;font-family:inherit;font-size:0.9rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+    .tab-btn.active{color:var(--green);border-bottom-color:var(--green);}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
+
+    /* Table */
+    .data-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+    .data-table th{background:var(--dark);color:#fff;padding:12px 16px;font-size:0.78rem;font-weight:700;text-align:left;letter-spacing:0.05em;}
+    .data-table td{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:0.88rem;vertical-align:middle;}
+    .data-table tr:last-child td{border-bottom:none;}
+    .data-table tr:hover{background:rgba(26,107,60,0.02);}
+
+    /* Status badges */
+    .status{display:inline-flex;align-items:center;gap:4px;padding:3px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;}
+    .status.pending{background:rgba(212,160,23,0.12);color:var(--gold);}
+    .status.approved{background:rgba(26,107,60,0.12);color:var(--green);}
+    .status.rejected{background:rgba(192,57,43,0.1);color:var(--red);}
+
+    /* Action buttons */
+    .actions{display:flex;gap:8px;}
+    .btn-approve{background:var(--green);color:#fff;border:none;padding:6px 16px;border-radius:20px;font-family:inherit;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
+    .btn-approve:hover{background:var(--green-light);}
+    .btn-reject{background:transparent;color:var(--red);border:1.5px solid var(--red);padding:6px 16px;border-radius:20px;font-family:inherit;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-reject:hover{background:var(--red);color:#fff;}
+    .btn-view{background:rgba(26,107,60,0.1);color:var(--green);border:none;padding:6px 16px;border-radius:20px;font-family:inherit;font-size:0.78rem;font-weight:600;cursor:pointer;}
+
+    /* Loading */
+    .loading{text-align:center;padding:40px;color:var(--muted);font-size:0.9rem;}
+    .empty{text-align:center;padding:40px;color:var(--muted);}
+    .empty-icon{font-size:3rem;margin-bottom:12px;}
+
+    /* Lesson detail modal */
+    .modal{display:none;position:fixed;inset:0;z-index:999;background:rgba(14,26,20,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;}
+    .modal.open{display:flex;}
+    .modal-box{background:var(--cream);border-radius:20px;padding:32px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,0.3);}
+    .modal-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--dark);margin-bottom:16px;}
+    .modal-content{font-size:0.9rem;color:var(--mid);line-height:1.7;margin-bottom:20px;white-space:pre-wrap;}
+    .modal-actions{display:flex;gap:12px;}
+    .btn-close{background:transparent;color:var(--muted);border:1.5px solid rgba(0,0,0,0.1);padding:10px 24px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Admin Dashboard</small></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Admin</div>
+    <a class="nav-item active" onclick="switchTab('contributors')"><span class="icon">👥</span> Contributors <span class="badge" id="pending-badge">0</span></a>
+    <a class="nav-item" onclick="switchTab('lessons')"><span class="icon">📚</span> Lessons <span class="badge" id="lessons-badge">0</span></a>
+    <a class="nav-item" onclick="switchTab('users')"><span class="icon">👤</span> Users</a>
+    <div class="nav-section">Platform</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="index.html"><span class="icon">🌐</span> Homepage</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar">👑</div>
+    <div class="user-info">
+      <div class="user-name">Dereje</div>
+      <div class="user-role">Admin</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">⚙️ Kakuu Oromoo — Admin Dashboard</div>
+    <div class="admin-badge">👑 Admin</div>
+  </div>
+
+  <div class="content">
+
+    <!-- Stats -->
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card" style="--accent:var(--gold)">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-val" id="stat-pending">0</div>
+        <div class="stat-label">Contributors Eegaa</div>
+      </div>
+      <div class="stat-card" style="--accent:var(--green)">
+        <div class="stat-icon">✅</div>
+        <div class="stat-val" id="stat-approved-contrib">0</div>
+        <div class="stat-label">Contributors Approved</div>
+      </div>
+      <div class="stat-card" style="--accent:#7b3fa0">
+        <div class="stat-icon">📚</div>
+        <div class="stat-val" id="stat-lessons-pending">0</div>
+        <div class="stat-label">Lessons Eegaa</div>
+      </div>
+      <div class="stat-card" style="--accent:var(--green)">
+        <div class="stat-icon">🌟</div>
+        <div class="stat-val" id="stat-lessons-approved">0</div>
+        <div class="stat-label">Lessons Live</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('contributors')" id="tab-contributors">👥 Contributors</button>
+      <button class="tab-btn" onclick="switchTab('lessons')" id="tab-lessons">📚 Lessons</button>
+      <button class="tab-btn" onclick="switchTab('users')" id="tab-users">👤 Users</button>
+    </div>
+
+    <!-- Contributors Tab -->
+    <div class="tab-content active" id="content-contributors">
+      <div class="loading" id="contributors-loading">⏳ Loading...</div>
+      <div class="empty" id="contributors-empty" style="display:none">
+        <div class="empty-icon">👥</div>
+        <p>Contributors hin jiru ammaaf.</p>
+      </div>
+      <table class="data-table" id="contributors-table" style="display:none">
+        <thead>
+          <tr>
+            <th>Maqaa</th>
+            <th>Biyya</th>
+            <th>Bio</th>
+            <th>Haala</th>
+            <th>Tarkaanfii</th>
+          </tr>
+        </thead>
+        <tbody id="contributors-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Lessons Tab -->
+    <div class="tab-content" id="content-lessons">
+      <div class="loading" id="lessons-loading">⏳ Loading...</div>
+      <div class="empty" id="lessons-empty" style="display:none">
+        <div class="empty-icon">📚</div>
+        <p>Lessons hin jiru ammaaf.</p>
+      </div>
+      <table class="data-table" id="lessons-table" style="display:none">
+        <thead>
+          <tr>
+            <th>Mata-duree</th>
+            <th>Kutaa</th>
+            <th>Sadarkaa</th>
+            <th>Haala</th>
+            <th>Tarkaanfii</th>
+          </tr>
+        </thead>
+        <tbody id="lessons-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-content" id="content-users">
+      <div class="empty">
+        <div class="empty-icon">👤</div>
+        <p>Users ilaaluuf Supabase Dashboard fayyadami:</p>
+        <br/>
+        <a href="https://supabase.com/dashboard/project/hfwaboxrnuckrxocishn/auth/users" target="_blank" style="color:var(--green);font-weight:600;">
+          → Supabase Auth Users bani
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Lesson Detail Modal -->
+<div class="modal" id="lesson-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-lesson-title">Lesson</div>
+    <div style="margin-bottom:12px;">
+      <span class="status" id="modal-lesson-status"></span>
+      <span style="font-size:0.8rem;color:var(--muted);margin-left:10px;" id="modal-lesson-subject"></span>
+    </div>
+    <div class="modal-content" id="modal-lesson-content"></div>
+    <div class="modal-actions">
+      <button class="btn-close" onclick="closeModal()">Cufuu</button>
+      <button class="btn-approve" id="modal-approve-btn" onclick="approveLessonFromModal()">✅ Approve</button>
+      <button class="btn-reject" id="modal-reject-btn" onclick="rejectLessonFromModal()">❌ Reject</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+const sdkScript = document.createElement('script');
+sdkScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(sdkScript);
+
+let supabaseClient = null;
+let currentLesson = null;
+
+sdkScript.onload = async () => {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  await loadStats();
+  await loadContributors();
+};
+
+// ── TABS ──
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('content-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+
+  if (tab === 'contributors') loadContributors();
+  if (tab === 'lessons') loadLessons();
+}
+
+// ── STATS ──
+async function loadStats() {
+  if (!supabaseClient) return;
+
+  const { data: pending } = await supabaseClient.from('authors').select('id').eq('is_approved', false);
+  const { data: approved } = await supabaseClient.from('authors').select('id').eq('is_approved', true);
+  const { data: lessonsPending } = await supabaseClient.from('lessons').select('id').eq('status', 'pending');
+  const { data: lessonsApproved } = await supabaseClient.from('lessons').select('id').eq('status', 'approved');
+
+  document.getElementById('stat-pending').textContent = pending?.length || 0;
+  document.getElementById('stat-approved-contrib').textContent = approved?.length || 0;
+  document.getElementById('stat-lessons-pending').textContent = lessonsPending?.length || 0;
+  document.getElementById('stat-lessons-approved').textContent = lessonsApproved?.length || 0;
+  document.getElementById('pending-badge').textContent = pending?.length || 0;
+  document.getElementById('lessons-badge').textContent = lessonsPending?.length || 0;
+}
+
+// ── CONTRIBUTORS ──
+async function loadContributors() {
+  if (!supabaseClient) return;
+  document.getElementById('contributors-loading').style.display = 'block';
+  document.getElementById('contributors-table').style.display = 'none';
+  document.getElementById('contributors-empty').style.display = 'none';
+
+  const { data, error } = await supabaseClient
+    .from('authors')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  document.getElementById('contributors-loading').style.display = 'none';
+
+  if (!data || data.length === 0) {
+    document.getElementById('contributors-empty').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('contributors-table').style.display = 'table';
+  const tbody = document.getElementById('contributors-tbody');
+  tbody.innerHTML = data.map(author => `
+    <tr>
+      <td><strong>${author.name}</strong><br/><span style="font-size:0.75rem;color:var(--muted)">${author.created_at?.split('T')[0]}</span></td>
+      <td>${author.country || '—'}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${author.bio || ''}">${author.bio?.substring(0,60) || '—'}...</td>
+      <td><span class="status ${author.is_approved ? 'approved' : 'pending'}">${author.is_approved ? '✅ Approved' : '⏳ Eegaa'}</span></td>
+      <td>
+        <div class="actions">
+          ${!author.is_approved ? `<button class="btn-approve" onclick="approveContributor('${author.id}')">✅ Approve</button>` : ''}
+          ${author.is_approved ? `<button class="btn-reject" onclick="rejectContributor('${author.id}')">❌ Kaasi</button>` : `<button class="btn-reject" onclick="rejectContributor('${author.id}')">❌ Reject</button>`}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function approveContributor(id) {
+  if (!supabaseClient) return;
+  const { error } = await supabaseClient.from('authors').update({ is_approved: true }).eq('id', id);
+  if (!error) { alert('✅ Contributor approved!'); await loadContributors(); await loadStats(); }
+  else alert('❌ Rakkoo: ' + error.message);
+}
+
+async function rejectContributor(id) {
+  if (!supabaseClient) return;
+  if (!confirm('Contributor kana reject/kaasuu barbaadda?')) return;
+  const { error } = await supabaseClient.from('authors').delete().eq('id', id);
+  if (!error) { alert('✅ Contributor haqame!'); await loadContributors(); await loadStats(); }
+  else alert('❌ Rakkoo: ' + error.message);
+}
+
+// ── LESSONS ──
+async function loadLessons() {
+  if (!supabaseClient) return;
+  document.getElementById('lessons-loading').style.display = 'block';
+  document.getElementById('lessons-table').style.display = 'none';
+  document.getElementById('lessons-empty').style.display = 'none';
+
+  const { data, error } = await supabaseClient
+    .from('lessons')
+    .select('*, authors(name)')
+    .order('created_at', { ascending: false });
+
+  document.getElementById('lessons-loading').style.display = 'none';
+
+  if (!data || data.length === 0) {
+    document.getElementById('lessons-empty').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('lessons-table').style.display = 'table';
+  const tbody = document.getElementById('lessons-tbody');
+  tbody.innerHTML = data.map(lesson => `
+    <tr>
+      <td>
+        <strong>${lesson.title}</strong><br/>
+        <span style="font-size:0.75rem;color:var(--muted)">${lesson.authors?.name || 'Unknown'}</span>
+      </td>
+      <td>${subjectLabel(lesson.subject)}</td>
+      <td>${lesson.level || 'jalqabaa'}</td>
+      <td><span class="status ${lesson.status}">${statusLabel(lesson.status)}</span></td>
+      <td>
+        <div class="actions">
+          <button class="btn-view" onclick="viewLesson(${JSON.stringify(lesson).replace(/"/g, '&quot;')})">👁 Ilaali</button>
+          ${lesson.status !== 'approved' ? `<button class="btn-approve" onclick="approveLesson('${lesson.id}')">✅</button>` : ''}
+          ${lesson.status !== 'rejected' ? `<button class="btn-reject" onclick="rejectLesson('${lesson.id}')">❌</button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function subjectLabel(subject) {
+  const labels = { afaan:'📝 Afaan', herrega:'🔢 Herrega', seenaa:'🏺 Seenaa', dandeettii:'🛠️ Dandeettii' };
+  return labels[subject] || subject;
+}
+
+function statusLabel(status) {
+  const labels = { pending:'⏳ Eegaa', approved:'✅ Live', rejected:'❌ Rejected' };
+  return labels[status] || status;
+}
+
+function viewLesson(lesson) {
+  currentLesson = lesson;
+  document.getElementById('modal-lesson-title').textContent = lesson.title;
+  document.getElementById('modal-lesson-status').textContent = statusLabel(lesson.status);
+  document.getElementById('modal-lesson-status').className = 'status ' + lesson.status;
+  document.getElementById('modal-lesson-subject').textContent = subjectLabel(lesson.subject);
+  document.getElementById('modal-lesson-content').textContent = lesson.content;
+  document.getElementById('modal-approve-btn').style.display = lesson.status !== 'approved' ? 'block' : 'none';
+  document.getElementById('modal-reject-btn').style.display = lesson.status !== 'rejected' ? 'block' : 'none';
+  document.getElementById('lesson-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('lesson-modal').classList.remove('open');
+  currentLesson = null;
+}
+
+async function approveLessonFromModal() {
+  if (currentLesson) { await approveLesson(currentLesson.id); closeModal(); }
+}
+
+async function rejectLessonFromModal() {
+  if (currentLesson) { await rejectLesson(currentLesson.id); closeModal(); }
+}
+
+async function approveLesson(id) {
+  if (!supabaseClient) return;
+  const { error } = await supabaseClient.from('lessons').update({ status: 'approved' }).eq('id', id);
+  if (!error) { alert('✅ Lesson approved — Live ta\'e!'); await loadLessons(); await loadStats(); }
+  else alert('❌ Rakkoo: ' + error.message);
+}
+
+async function rejectLesson(id) {
+  if (!supabaseClient) return;
+  if (!confirm('Lesson kana reject gochuu barbaadda?')) return;
+  const { error } = await supabaseClient.from('lessons').update({ status: 'rejected' }).eq('id', id);
+  if (!error) { alert('✅ Lesson rejected!'); await loadLessons(); await loadStats(); }
+  else alert('❌ Rakkoo: ' + error.message);
+}
+</script>
+</body>
+</html>
