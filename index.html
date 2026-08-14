@@ -831,6 +831,69 @@
     document.getElementById('auth-message').style.display = 'none';
   }
 
+  // ════════════════════════════════════════
+  // SUPABASE JS SDK — Kallattiin Browser
+  // ════════════════════════════════════════
+  const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+  // Load Supabase SDK
+  const supabaseScript = document.createElement('script');
+  supabaseScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  document.head.appendChild(supabaseScript);
+
+  let supabaseClient = null;
+  supabaseScript.onload = () => {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  };
+
+  function switchAuthTab(tab) {
+    const regForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+    const tabReg = document.getElementById('tab-register');
+    const tabLogin = document.getElementById('tab-login');
+    hideAuthMessage();
+
+    if (tab === 'register') {
+      regForm.style.display = 'block';
+      loginForm.style.display = 'none';
+      tabReg.style.background = 'var(--green)';
+      tabReg.style.color = '#fff';
+      tabReg.style.border = 'none';
+      tabLogin.style.background = 'transparent';
+      tabLogin.style.color = 'var(--green)';
+      tabLogin.style.border = '2px solid var(--green)';
+    } else {
+      regForm.style.display = 'none';
+      loginForm.style.display = 'block';
+      tabLogin.style.background = 'var(--green)';
+      tabLogin.style.color = '#fff';
+      tabLogin.style.border = 'none';
+      tabReg.style.background = 'transparent';
+      tabReg.style.color = 'var(--green)';
+      tabReg.style.border = '2px solid var(--green)';
+    }
+  }
+
+  function showAuthMessage(text, isError) {
+    const msg = document.getElementById('auth-message');
+    msg.textContent = text;
+    msg.style.display = 'block';
+    if (isError) {
+      msg.style.background = 'rgba(192,57,43,0.1)';
+      msg.style.color = '#c0392b';
+      msg.style.border = '1.5px solid rgba(192,57,43,0.2)';
+    } else {
+      msg.style.background = 'rgba(26,107,60,0.1)';
+      msg.style.color = 'var(--green)';
+      msg.style.border = '1.5px solid rgba(26,107,60,0.2)';
+    }
+  }
+
+  function hideAuthMessage() {
+    document.getElementById('auth-message').style.display = 'none';
+  }
+
   async function doRegister() {
     const name = document.getElementById('reg-name').value.trim();
     const email = document.getElementById('reg-email').value.trim();
@@ -842,27 +905,31 @@
       return;
     }
 
+    if (!supabaseClient) {
+      showAuthMessage('⚠️ Eegaa — booda yaali.', true);
+      return;
+    }
+
     btn.textContent = 'Eegaa...';
     btn.disabled = true;
 
     try {
-      const res = await fetch(`/api/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: name } }
       });
-      const data = await res.json();
 
-      if (res.ok) {
-        showAuthMessage('✅ ' + (data.message || "Galmaa'uun milkaa'eera!"), false);
+      if (error) {
+        showAuthMessage('❌ ' + error.message, true);
+      } else {
+        showAuthMessage("✅ Galmaa'uu milkaa'eera! Amma seeni.", false);
         document.getElementById('reg-name').value = '';
         document.getElementById('reg-email').value = '';
         document.getElementById('reg-password').value = '';
-      } else {
-        showAuthMessage('❌ ' + (data.error || 'Dogoggora uumame.'), true);
       }
     } catch (err) {
-      showAuthMessage('❌ Server waliin walitti hidhamuu hin dandeenye. Booda yaali.', true);
+      showAuthMessage('❌ Dogoggora uumame. Booda yaali.', true);
     }
 
     btn.textContent = "Galmaa'i →";
@@ -879,30 +946,36 @@
       return;
     }
 
+    if (!supabaseClient) {
+      showAuthMessage('⚠️ Eegaa — booda yaali.', true);
+      return;
+    }
+
     btn.textContent = 'Eegaa...';
     btn.disabled = true;
 
     try {
-      const res = await fetch(`/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
       });
-      const data = await res.json();
 
-      if (res.ok) {
-        showAuthMessage('✅ ' + (data.message || 'Simat!'), false);
-        // Save token & user for dashboard use
-        if (data.token) localStorage.setItem('kakuu_token', data.token);
-        if (data.user) localStorage.setItem('kakuu_user', JSON.stringify(data.user));
+      if (error) {
+        showAuthMessage('❌ ' + error.message, true);
+      } else {
+        showAuthMessage('✅ Simat! Kakuu Oromoo seentanii jirtu.', false);
+        if (data.session) localStorage.setItem('kakuu_token', data.session.access_token);
+        if (data.user) localStorage.setItem('kakuu_user', JSON.stringify({
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.full_name
+        }));
         setTimeout(() => {
           window.location.href = 'kakuu_dashboard.html';
         }, 1200);
-      } else {
-        showAuthMessage('❌ ' + (data.error || 'Email ykn jecha-darbii dogoggoraa dha.'), true);
       }
     } catch (err) {
-      showAuthMessage('❌ Server waliin walitti hidhamuu hin dandeenye. Booda yaali.', true);
+      showAuthMessage('❌ Dogoggora uumame. Booda yaali.', true);
     }
 
     btn.textContent = 'Seeni →';
