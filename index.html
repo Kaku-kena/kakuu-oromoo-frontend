@@ -782,7 +782,7 @@
   // ════════════════════════════════════════
   // BACKEND CONNECTION — Kakuu Oromoo API
   // ════════════════════════════════════════
-  const API_BASE = 'https://kakuu-oromoo-backend--kakuuoromoo.replit.app';
+  const API_BASE = '';
 
   function switchAuthTab(tab) {
     const regForm = document.getElementById('register-form');
@@ -846,7 +846,7 @@
     btn.disabled = true;
 
     try {
-      const res = await fetch(`${API_BASE}/api/auth/register`, {
+      const res = await fetch(`/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
@@ -883,7 +883,7 @@
     btn.disabled = true;
 
     try {
-      const res = await fetch(`${API_BASE}/api/auth/login`, {
+      const res = await fetch(`/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
