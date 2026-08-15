@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Lesson Upload</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);}
+    .content{padding:28px 32px;}
+
+    /* Hero */
+    .page-hero{background:linear-gradient(135deg,var(--green),#0d4a28);border-radius:20px;padding:32px;color:#fff;margin-bottom:28px;display:flex;align-items:center;gap:20px;}
+    .page-hero-icon{font-size:3.5rem;flex-shrink:0;}
+    .page-hero h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:6px;}
+    .page-hero p{font-size:0.88rem;opacity:0.85;line-height:1.6;}
+
+    /* Not approved warning */
+    .warning-card{background:rgba(212,160,23,0.08);border:1.5px solid rgba(212,160,23,0.2);border-radius:16px;padding:24px;margin-bottom:24px;display:none;}
+    .warning-card h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:8px;}
+    .warning-card p{font-size:0.88rem;color:var(--mid);line-height:1.6;}
+
+    /* Layout */
+    .upload-layout{display:grid;grid-template-columns:1fr 320px;gap:24px;}
+    @media(max-width:900px){.upload-layout{grid-template-columns:1fr;}}
+
+    /* Form */
+    .form-card{background:var(--card);border-radius:20px;padding:28px;box-shadow:var(--shadow);border:1.5px solid rgba(0,0,0,0.05);}
+    .form-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:20px;}
+    .form-group{margin-bottom:18px;}
+    .form-label{display:block;font-size:0.85rem;font-weight:600;color:var(--mid);margin-bottom:8px;}
+    .form-input{width:100%;padding:12px 16px;border:1.5px solid rgba(0,0,0,0.1);border-radius:12px;font-family:inherit;font-size:0.92rem;color:var(--dark);outline:none;transition:border-color 0.2s;background:#fff;}
+    .form-input:focus{border-color:var(--green);}
+    .form-input::placeholder{color:var(--muted);}
+    textarea.form-input{resize:vertical;min-height:120px;}
+    select.form-input{cursor:pointer;}
+    .form-hint{font-size:0.75rem;color:var(--muted);margin-top:5px;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
+
+    /* Quiz section */
+    .quiz-section{background:rgba(26,107,60,0.04);border:1.5px solid rgba(26,107,60,0.1);border-radius:16px;padding:20px;margin-top:20px;}
+    .quiz-section-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+    .quiz-q{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;border:1.5px solid rgba(0,0,0,0.06);}
+    .quiz-q-num{font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:10px;}
+    .options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+    @media(max-width:500px){.options-grid{grid-template-columns:1fr;}}
+    .opt-label{font-size:0.78rem;font-weight:600;color:var(--mid);margin-bottom:4px;}
+    .correct-select{width:100%;padding:10px 12px;border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;font-family:inherit;font-size:0.85rem;color:var(--dark);background:#fff;margin-top:10px;}
+
+    /* Submit */
+    .btn-submit{width:100%;background:var(--green);color:#fff;border:none;padding:15px;border-radius:40px;font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:20px;}
+    .btn-submit:hover{background:var(--green-light);transform:translateY(-2px);}
+    .btn-submit:disabled{background:var(--muted);cursor:not-allowed;transform:none;}
+    .message{border-radius:12px;padding:14px 18px;margin-top:16px;font-size:0.9rem;font-weight:600;display:none;}
+    .message.success{background:rgba(26,107,60,0.1);color:var(--green);border:1.5px solid rgba(26,107,60,0.2);}
+    .message.error{background:rgba(192,57,43,0.08);color:#c0392b;border:1.5px solid rgba(192,57,43,0.2);}
+
+    /* Sidebar info */
+    .info-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;border:1.5px solid rgba(0,0,0,0.05);}
+    .info-card-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:12px;}
+    .info-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;}
+    .info-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+    .info-text{font-size:0.82rem;color:var(--mid);line-height:1.5;}
+    .my-lessons-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);}
+    .lesson-item{padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.06);}
+    .lesson-item:last-child{border-bottom:none;}
+    .lesson-item-title{font-size:0.88rem;font-weight:600;color:var(--dark);}
+    .lesson-item-status{font-size:0.75rem;margin-top:4px;}
+    .lesson-item-status.pending{color:var(--gold);}
+    .lesson-item-status.approved{color:var(--green);}
+    .lesson-item-status.rejected{color:#c0392b;}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="kakuu_contributor.html"><span class="icon">✍️</span> Contributor</a>
+    <a class="nav-item active"><span class="icon">📤</span> Lesson Upload</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Contributor</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">📤 Lesson Upload — Barnoota Haaraa Maxxansi</div>
+  </div>
+
+  <div class="content">
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <div class="page-hero-icon">📤</div>
+      <div>
+        <h1>Barnoota Haaraa Upload Godhi</h1>
+        <p>Lesson barreessii submit godhi — Admin approve godhe booda fayyadamtoota addunyaa guutuu argatu!</p>
+      </div>
+    </div>
+
+    <!-- Not approved warning -->
+    <div class="warning-card" id="not-approved-warning">
+      <h3>⚠️ Approval Eegaa</h3>
+      <p>Ammaaf contributor ta'uu gaaffatte garuu approve hin taane. Admin kee gaaffii kee erga ilaalee booda approve godha — guyyaa 1-3 fudhata. Approve ta'ee booda asitti deebi'ii lesson upload gochuu dandeessa!</p>
+    </div>
+
+    <div class="upload-layout" id="upload-layout">
+
+      <!-- LEFT: Form -->
+      <div>
+        <!-- Lesson Info -->
+        <div class="form-card">
+          <div class="form-title">📝 Lesson Odeeffannoo</div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Mata-duree (Afaan Oromoo) *</label>
+              <input class="form-input" type="text" id="lesson-title" placeholder="Fkn: Qubee fi Dubbisa"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Title (English)</label>
+              <input class="form-input" type="text" id="lesson-title-en" placeholder="Fkn: Alphabet & Reading"/>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Kutaa / Subject *</label>
+              <select class="form-input" id="lesson-subject">
+                <option value="">Filadhu...</option>
+                <option value="afaan">📝 Afaan fi Barreeffama</option>
+                <option value="herrega">🔢 Herrega fi Saayinsii</option>
+                <option value="seenaa">🏺 Seenaa fi Aadaa</option>
+                <option value="dandeettii">🛠️ Dandeettii Hojii</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sadarkaa / Level *</label>
+              <select class="form-input" id="lesson-level">
+                <option value="jalqabaa">📗 Jalqabaa (Beginner)</option>
+                <option value="gidduu">📘 Gidduu (Intermediate)</option>
+                <option value="ol-aanaa">📙 Ol-aanaa (Advanced)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Barnoota (Afaan Oromoo) *</label>
+            <textarea class="form-input" id="lesson-content" rows="8" placeholder="Barnoota dhugaa asitti barreessi — ibsa guutuu, fakkeenya, fi odeeffannoo barbaachisaa..."></textarea>
+            <div class="form-hint">Barnoota bal'aa barreessi — gara xiqqaatti kutaa 3 of keessaa qabaachuu qaba</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Barnoota (English)</label>
+            <textarea class="form-input" id="lesson-content-en" rows="5" placeholder="English translation of the lesson (optional but recommended)..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Yeroo / Duration (Daqiiqaa keessatti)</label>
+            <input class="form-input" type="number" id="lesson-duration" value="30" min="5" max="120"/>
+            <div class="form-hint">Barnoota kana barachuuf daqiiqaa meeqa fudhata?</div>
+          </div>
+        </div>
+
+        <!-- Quiz Questions -->
+        <div class="form-card" style="margin-top:20px;">
+          <div class="form-title">🧠 Quiz Gaaffilee (Optional — garuu barbaachisaa!)</div>
+          <p style="font-size:0.85rem;color:var(--muted);margin-bottom:20px;">Gaaffilee 3-5 dabaluu gorsa — fayyadamtoota barnoota kee fayyadamuu jajjabeessa!</p>
+
+          <!-- Q1 -->
+          <div class="quiz-section">
+            <div class="quiz-section-title">🔢 Gaaffii 1</div>
+            <div class="quiz-q">
+              <div class="quiz-q-num">Gaaffii</div>
+              <input class="form-input" type="text" id="q1-text" placeholder="Gaaffii kee asitti barreessi..."/>
+              <div class="options-grid" style="margin-top:12px;">
+                <div>
+                  <div class="opt-label">A</div>
+                  <input class="form-input" type="text" id="q1-a" placeholder="Deebii A..."/>
+                </div>
+                <div>
+                  <div class="opt-label">B</div>
+                  <input class="form-input" type="text" id="q1-b" placeholder="Deebii B..."/>
+                </div>
+                <div>
+                  <div class="opt-label">C</div>
+                  <input class="form-input" type="text" id="q1-c" placeholder="Deebii C..."/>
+                </div>
+                <div>
+                  <div class="opt-label">D</div>
+                  <input class="form-input" type="text" id="q1-d" placeholder="Deebii D..."/>
+                </div>
+              </div>
+              <select class="correct-select" id="q1-correct">
+                <option value="">Deebii sirrii filadhu...</option>
+                <option value="a">A — Sirrii</option>
+                <option value="b">B — Sirrii</option>
+                <option value="c">C — Sirrii</option>
+                <option value="d">D — Sirrii</option>
+              </select>
+              <input class="form-input" type="text" id="q1-exp" placeholder="Ibsa gabaabaa — maaliif deebiin sirrii?" style="margin-top:10px;"/>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-section" style="margin-top:16px;">
+            <div class="quiz-section-title">🔢 Gaaffii 2</div>
+            <div class="quiz-q">
+              <input class="form-input" type="text" id="q2-text" placeholder="Gaaffii 2..."/>
+              <div class="options-grid" style="margin-top:12px;">
+                <div><div class="opt-label">A</div><input class="form-input" type="text" id="q2-a" placeholder="A..."/></div>
+                <div><div class="opt-label">B</div><input class="form-input" type="text" id="q2-b" placeholder="B..."/></div>
+                <div><div class="opt-label">C</div><input class="form-input" type="text" id="q2-c" placeholder="C..."/></div>
+                <div><div class="opt-label">D</div><input class="form-input" type="text" id="q2-d" placeholder="D..."/></div>
+              </div>
+              <select class="correct-select" id="q2-correct">
+                <option value="">Deebii sirrii filadhu...</option>
+                <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
+              </select>
+              <input class="form-input" type="text" id="q2-exp" placeholder="Ibsa..." style="margin-top:10px;"/>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-section" style="margin-top:16px;">
+            <div class="quiz-section-title">🔢 Gaaffii 3</div>
+            <div class="quiz-q">
+              <input class="form-input" type="text" id="q3-text" placeholder="Gaaffii 3..."/>
+              <div class="options-grid" style="margin-top:12px;">
+                <div><div class="opt-label">A</div><input class="form-input" type="text" id="q3-a" placeholder="A..."/></div>
+                <div><div class="opt-label">B</div><input class="form-input" type="text" id="q3-b" placeholder="B..."/></div>
+                <div><div class="opt-label">C</div><input class="form-input" type="text" id="q3-c" placeholder="C..."/></div>
+                <div><div class="opt-label">D</div><input class="form-input" type="text" id="q3-d" placeholder="D..."/></div>
+              </div>
+              <select class="correct-select" id="q3-correct">
+                <option value="">Deebii sirrii filadhu...</option>
+                <option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>
+              </select>
+              <input class="form-input" type="text" id="q3-exp" placeholder="Ibsa..." style="margin-top:10px;"/>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitLesson()" id="submit-btn">
+          📤 Lesson Submit Godhi →
+        </button>
+        <div class="message" id="form-message"></div>
+      </div>
+
+      <!-- RIGHT: Info & My Lessons -->
+      <div>
+        <div class="info-card">
+          <div class="info-card-title">💡 Qajeelfama</div>
+          <div class="info-item">
+            <div class="info-icon">📝</div>
+            <div class="info-text">Barnoota Afaan Oromoo sirrii fi hubatamaa ta'e barreessi</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🔍</div>
+            <div class="info-text">Submit godhee booda Admin ilaalee approve godha — guyyaa 1-3</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">✅</div>
+            <div class="info-text">Approve ta'ee booda fayyadamtoota addunyaa guutuu argatu</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🧠</div>
+            <div class="info-text">Quiz dabaluun barnoota cimsa — fayyadamtoota barachuu jajjabeessa</div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🌍</div>
+            <div class="info-text">Barnoota kee biyyoota hedduu irraa argamu — addunyaaf gadi!</div>
+          </div>
+        </div>
+
+        <div class="my-lessons-card">
+          <div class="info-card-title">📚 Lessons Koo</div>
+          <div id="my-lessons-list">
+            <p style="font-size:0.85rem;color:var(--muted);">Loading...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+const sdkScript = document.createElement('script');
+sdkScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(sdkScript);
+
+let supabaseClient = null;
+let currentUser = null;
+let authorData = null;
+
+sdkScript.onload = async () => {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  await loadUser();
+};
+
+async function loadUser() {
+  const userJson = localStorage.getItem('kakuu_user');
+  const token = localStorage.getItem('kakuu_token');
+  if (!userJson || !token) { window.location.href = 'index.html'; return; }
+
+  try {
+    currentUser = JSON.parse(userJson);
+    const name = currentUser.name || currentUser.email?.split('@')[0] || 'Barataa';
+    document.getElementById('sidebar-username').textContent = name;
+    document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+
+    await checkApprovalStatus();
+    await loadMyLessons();
+  } catch(e) { window.location.href = 'index.html'; }
+}
+
+async function checkApprovalStatus() {
+  if (!supabaseClient || !currentUser) return;
+
+  const { data } = await supabaseClient
+    .from('authors')
+    .select('*')
+    .eq('user_id', currentUser.id)
+    .single();
+
+  if (!data) {
+    // Not a contributor at all
+    window.location.href = 'kakuu_contributor.html';
+    return;
+  }
+
+  authorData = data;
+
+  if (!data.is_approved) {
+    document.getElementById('not-approved-warning').style.display = 'block';
+    document.getElementById('upload-layout').style.display = 'none';
+  }
+}
+
+async function loadMyLessons() {
+  if (!supabaseClient || !authorData) {
+    document.getElementById('my-lessons-list').innerHTML = '<p style="font-size:0.85rem;color:var(--muted);">Lessons hin jiru.</p>';
+    return;
+  }
+
+  const { data } = await supabaseClient
+    .from('lessons')
+    .select('*')
+    .eq('author_id', authorData.id)
+    .order('created_at', { ascending: false });
+
+  if (!data || data.length === 0) {
+    document.getElementById('my-lessons-list').innerHTML = '<p style="font-size:0.85rem;color:var(--muted);">Ammaaf lesson hin jiru — jalqabaa upload godhi!</p>';
+    return;
+  }
+
+  document.getElementById('my-lessons-list').innerHTML = data.map(lesson => `
+    <div class="lesson-item">
+      <div class="lesson-item-title">${lesson.title}</div>
+      <div class="lesson-item-status ${lesson.status}">
+        ${lesson.status === 'pending' ? '⏳ Approve eegaa' : lesson.status === 'approved' ? '✅ Live!' : '❌ Rejected'}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function submitLesson() {
+  const title = document.getElementById('lesson-title').value.trim();
+  const titleEn = document.getElementById('lesson-title-en').value.trim();
+  const subject = document.getElementById('lesson-subject').value;
+  const level = document.getElementById('lesson-level').value;
+  const content = document.getElementById('lesson-content').value.trim();
+  const contentEn = document.getElementById('lesson-content-en').value.trim();
+  const duration = parseInt(document.getElementById('lesson-duration').value) || 30;
+  const btn = document.getElementById('submit-btn');
+
+  if (!title || !subject || !content) {
+    showMessage('⚠️ Maaloo, mata-duree, kutaa fi barnoota guuti.', true);
+    return;
+  }
+
+  if (!supabaseClient || !authorData) {
+    showMessage('⚠️ Author profile hin argamne. Contributor page deebi\'i.', true);
+    return;
+  }
+
+  btn.textContent = 'Eegaa — upload godhamaa...';
+  btn.disabled = true;
+
+  // Insert lesson
+  const { data: lessonData, error: lessonError } = await supabaseClient
+    .from('lessons')
+    .insert([{
+      title,
+      title_en: titleEn || null,
+      content,
+      content_en: contentEn || null,
+      subject,
+      level,
+      duration_minutes: duration,
+      author_id: authorData.id,
+      status: 'pending'
+    }])
+    .select()
+    .single();
+
+  if (lessonError) {
+    showMessage('❌ Lesson upload hin milkoofne: ' + lessonError.message, true);
+    btn.textContent = '📤 Lesson Submit Godhi →';
+    btn.disabled = false;
+    return;
+  }
+
+  // Insert quiz questions (if filled)
+  const questions = [];
+  for (let i = 1; i <= 3; i++) {
+    const text = document.getElementById(`q${i}-text`)?.value.trim();
+    const a = document.getElementById(`q${i}-a`)?.value.trim();
+    const b = document.getElementById(`q${i}-b`)?.value.trim();
+    const c = document.getElementById(`q${i}-c`)?.value.trim();
+    const d = document.getElementById(`q${i}-d`)?.value.trim();
+    const correct = document.getElementById(`q${i}-correct`)?.value;
+    const exp = document.getElementById(`q${i}-exp`)?.value.trim();
+
+    if (text && a && b && c && d && correct) {
+      questions.push({
+        lesson_id: lessonData.id,
+        question: text,
+        option_a: a,
+        option_b: b,
+        option_c: c,
+        option_d: d,
+        correct_answer: correct,
+        explanation: exp || null
+      });
+    }
+  }
+
+  if (questions.length > 0) {
+    await supabaseClient.from('quiz_questions').insert(questions);
+  }
+
+  showMessage(`✅ Lesson "${title}" milkaa'inaan submit godhe! Admin approve godhe booda live ta'a.`, false);
+  btn.textContent = '✅ Submit Ta\'e!';
+
+  // Clear form
+  setTimeout(() => {
+    document.getElementById('lesson-title').value = '';
+    document.getElementById('lesson-title-en').value = '';
+    document.getElementById('lesson-content').value = '';
+    document.getElementById('lesson-content-en').value = '';
+    btn.textContent = '📤 Lesson Submit Godhi →';
+    btn.disabled = false;
+    loadMyLessons();
+  }, 3000);
+}
+
+function showMessage(text, isError) {
+  const msg = document.getElementById('form-message');
+  msg.textContent = text;
+  msg.style.display = 'block';
+  msg.className = 'message ' + (isError ? 'error' : 'success');
+}
+</script>
+</body>
+</html>
