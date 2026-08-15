@@ -465,6 +465,14 @@
         </div>
       </div>
 
+      <!-- ══ LESSONS HAARAA DATABASE IRRAA ══ -->
+      <div style="margin-top:28px;" id="db-lessons-section">
+        <div class="card-title" style="margin-bottom:16px">🌟 <span>Lessons Haaraa — Contributors Irraa</span></div>
+        <div id="db-lessons-loading" style="font-size:0.88rem;color:var(--muted);padding:16px 0;">⏳ Lessons load godhamaa...</div>
+        <div id="db-lessons-empty" style="display:none;font-size:0.88rem;color:var(--muted);padding:16px 0;">📚 Lessons haaraa hin jiru ammaaf.</div>
+        <div id="db-lessons-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;"></div>
+      </div>
+
       <!-- ══ CALCULATOR ══ -->
       <div class="calc-section">
         <div class="calc-card">
@@ -846,6 +854,61 @@ function doLogout() {
   localStorage.removeItem('kakuu_token');
   localStorage.removeItem('kakuu_user');
   window.location.href = 'index.html';
+}
+
+// ════════════════════════════════════════
+// SUPABASE — Lessons Database Irraa Load
+// ════════════════════════════════════════
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+const dbScript = document.createElement('script');
+dbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(dbScript);
+
+dbScript.onload = async () => {
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  await loadDbLessons(supabase);
+};
+
+async function loadDbLessons(supabase) {
+  try {
+    const { data, error } = await supabase
+      .from('lessons')
+      .select('*, authors(name)')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    document.getElementById('db-lessons-loading').style.display = 'none';
+
+    if (error || !data || data.length === 0) {
+      document.getElementById('db-lessons-empty').style.display = 'block';
+      return;
+    }
+
+    const subjectIcons = { afaan:'📝', herrega:'🔢', seenaa:'🏺', dandeettii:'🛠️' };
+    const subjectColors = { afaan:'var(--green)', herrega:'#c0892a', seenaa:'#7b3fa0', dandeettii:'#1a7a8a' };
+    const subjectPages = { afaan:'kakuu_afaan_qubee.html', herrega:'kakuu_herrega.html', seenaa:'kakuu_seenaa.html', dandeettii:'kakuu_dandeettii.html' };
+
+    document.getElementById('db-lessons-grid').innerHTML = data.map(lesson => `
+      <div style="background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border-top:4px solid ${subjectColors[lesson.subject] || 'var(--green)'};cursor:pointer;transition:transform 0.2s;" 
+           onclick="window.location.href='${subjectPages[lesson.subject] || 'kakuu_dashboard.html'}'"
+           onmouseover="this.style.transform='translateY(-3px)'" 
+           onmouseout="this.style.transform='translateY(0)'">
+        <div style="font-size:1.6rem;margin-bottom:10px;">${subjectIcons[lesson.subject] || '📚'}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:6px;">${lesson.title}</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;">✍️ ${lesson.authors?.name || 'Kakuu Oromoo'} · ⏱ ${lesson.duration_minutes || 30} daqiiqaa</div>
+        <div style="font-size:0.75rem;font-weight:600;color:${subjectColors[lesson.subject] || 'var(--green)'};">
+          ${subjectIcons[lesson.subject]} ${lesson.subject.charAt(0).toUpperCase() + lesson.subject.slice(1)} · ${lesson.level || 'Jalqabaa'}
+        </div>
+      </div>
+    `).join('');
+
+  } catch(e) {
+    document.getElementById('db-lessons-loading').style.display = 'none';
+    document.getElementById('db-lessons-empty').style.display = 'block';
+  }
 }
 
 // ════════════════════════════════════════
