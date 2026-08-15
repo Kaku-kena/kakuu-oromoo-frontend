@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Barnoota</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;--accent:var(--green);}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);}
+    .content{padding:28px 32px;}
+    .breadcrumb{font-size:0.78rem;color:var(--muted);margin-bottom:16px;}
+    .breadcrumb a{color:var(--green);cursor:pointer;text-decoration:none;}
+
+    /* Loading */
+    .loading-screen{text-align:center;padding:80px 40px;}
+    .loading-icon{font-size:3rem;margin-bottom:16px;animation:spin 2s linear infinite;}
+    @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+    /* Hero */
+    .lesson-hero{background:linear-gradient(135deg,var(--accent),#0d4a28);border-radius:20px;padding:32px;color:#fff;margin-bottom:28px;}
+    .lesson-hero h1{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;margin-bottom:10px;line-height:1.3;}
+    .lesson-hero-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;}
+    .hero-tag{background:rgba(255,255,255,0.2);border-radius:20px;padding:4px 14px;font-size:0.75rem;font-weight:600;}
+
+    /* Layout */
+    .lesson-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;}
+    @media(max-width:900px){.lesson-layout{grid-template-columns:1fr;}}
+
+    /* Content */
+    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;border:1.5px solid rgba(0,0,0,0.05);}
+    .lesson-content{font-size:0.95rem;color:var(--mid);line-height:1.9;white-space:pre-wrap;}
+
+    /* Nav buttons */
+    .lesson-nav{display:flex;gap:12px;margin-top:16px;}
+    .btn-back{background:transparent;color:var(--green);border:2px solid var(--green);padding:12px 24px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-back:hover{background:var(--green);color:#fff;}
+    .btn-quiz{background:var(--green);color:#fff;border:none;padding:12px 32px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;flex:2;}
+
+    /* Sidebar */
+    .info-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .info-card-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:12px;}
+    .info-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+    .info-text{font-size:0.85rem;color:var(--mid);line-height:1.5;}
+
+    /* Quiz */
+    .quiz-section{display:none;}
+    .quiz-section.active{display:block;}
+    .q-card{background:var(--card);border-radius:16px;padding:28px;box-shadow:var(--shadow);margin-bottom:16px;}
+    .q-num{font-size:0.75rem;color:var(--muted);font-weight:600;margin-bottom:8px;}
+    .q-text{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:20px;line-height:1.4;}
+    .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    @media(max-width:600px){.options{grid-template-columns:1fr;}}
+    .opt-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;border:2px solid rgba(0,0,0,0.08);background:#fff;cursor:pointer;transition:all 0.18s;font-family:inherit;font-size:0.9rem;color:var(--dark);text-align:left;}
+    .opt-btn:hover:not(:disabled){border-color:var(--green);background:rgba(26,107,60,0.04);}
+    .opt-letter{width:30px;height:30px;border-radius:8px;background:rgba(0,0,0,0.05);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;}
+    .opt-btn:hover:not(:disabled) .opt-letter{background:var(--green);color:#fff;}
+    .opt-btn.correct{border-color:var(--green);background:rgba(26,107,60,0.08);}
+    .opt-btn.correct .opt-letter{background:var(--green);color:#fff;}
+    .opt-btn.wrong{border-color:#c0392b;background:rgba(192,57,43,0.06);}
+    .opt-btn.wrong .opt-letter{background:#c0392b;color:#fff;}
+    .feedback{border-radius:12px;padding:12px 16px;margin-top:14px;font-size:0.88rem;font-weight:600;}
+    .feedback.ok{background:rgba(26,107,60,0.1);color:var(--green);}
+    .feedback.err{background:rgba(192,57,43,0.08);color:#c0392b;}
+    .btn-next-q{width:100%;background:var(--green);color:#fff;border:none;padding:13px;border-radius:30px;font-family:inherit;font-size:0.95rem;font-weight:700;cursor:pointer;margin-top:14px;}
+    .result-box{background:var(--card);border-radius:20px;padding:40px;text-align:center;box-shadow:var(--shadow);}
+    .result-emoji{font-size:4rem;margin-bottom:12px;}
+    .result-score{font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:var(--green);}
+    .result-label{font-size:1rem;color:var(--muted);margin-bottom:24px;}
+    .btn-retry{background:transparent;color:var(--green);border:2px solid var(--green);padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;margin-right:10px;}
+    .btn-dashboard{background:var(--green);color:#fff;border:none;padding:12px 28px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;}
+    .prog-bar{height:5px;background:rgba(0,0,0,0.07);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+    .prog-fill{height:100%;border-radius:10px;background:linear-gradient(to right,var(--green),var(--gold));transition:width 0.4s;}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item active"><span class="icon">📖</span> Barnoota</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">📖 Barnoota</div>
+  </div>
+
+  <div class="content">
+    <div class="breadcrumb">
+      <a href="kakuu_dashboard.html">Dashboard</a> › <span id="bc-lesson">Barnoota</span>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-icon">🌿</div>
+      <p style="color:var(--muted);">Barnoota load godhamaa...</p>
+    </div>
+
+    <!-- Lesson Content -->
+    <div id="lesson-main" style="display:none;">
+
+      <!-- Hero -->
+      <div class="lesson-hero" id="lesson-hero">
+        <h1 id="lesson-title">Barnoota</h1>
+        <div class="lesson-hero-meta">
+          <span class="hero-tag" id="hero-subject">📝 Afaan</span>
+          <span class="hero-tag" id="hero-level">📊 Jalqabaa</span>
+          <span class="hero-tag" id="hero-duration">⏱ 30 daqiiqaa</span>
+          <span class="hero-tag" id="hero-author">✍️ Kakuu Oromoo</span>
+        </div>
+      </div>
+
+      <div class="lesson-layout">
+        <!-- LEFT -->
+        <div>
+          <!-- Lesson section -->
+          <div id="lesson-section">
+            <div class="card">
+              <div class="lesson-content" id="lesson-content">Barnoota load godhamaa...</div>
+            </div>
+            <div class="lesson-nav">
+              <button class="btn-back" onclick="window.location.href='kakuu_dashboard.html'">← Dashboard</button>
+              <button class="btn-quiz" onclick="startQuiz()" id="btn-quiz-lbl">🧠 Quiz Jalqabi →</button>
+            </div>
+          </div>
+
+          <!-- Quiz section -->
+          <div class="quiz-section" id="quiz-section">
+            <div class="prog-bar"><div class="prog-fill" id="quiz-progress" style="width:0%"></div></div>
+            <div id="quiz-content"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div>
+          <div class="info-card">
+            <div class="info-card-title">📌 Barnoota Kana Irraa</div>
+            <div class="info-item">
+              <span style="font-size:1.1rem;">✍️</span>
+              <div class="info-text">Barsiisaa: <strong id="info-author">Kakuu Oromoo</strong></div>
+            </div>
+            <div class="info-item">
+              <span style="font-size:1.1rem;">⏱</span>
+              <div class="info-text">Yeroo: <strong id="info-duration">30 daqiiqaa</strong></div>
+            </div>
+            <div class="info-item">
+              <span style="font-size:1.1rem;">📊</span>
+              <div class="info-text">Sadarkaa: <strong id="info-level">Jalqabaa</strong></div>
+            </div>
+            <div class="info-item">
+              <span style="font-size:1.1rem;">🧠</span>
+              <div class="info-text" id="info-quiz-count">Quiz: load godhamaa...</div>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="info-card-title">💡 Gorsa</div>
+            <div class="info-item">
+              <span>📖</span>
+              <div class="info-text">Barnoota sirriitti dubbisi — booda quiz yaali!</div>
+            </div>
+            <div class="info-item">
+              <span>🔄</span>
+              <div class="info-text">Quiz yeroo hedduu yaali — beekumsi cimuu danda'a!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-screen" style="display:none;text-align:center;padding:80px 40px;">
+      <div style="font-size:3rem;margin-bottom:16px;">❌</div>
+      <p style="color:var(--muted);">Barnoota hin argamne. Dashboard deebi'i.</p>
+      <button class="btn-back" style="margin-top:20px;" onclick="window.location.href='kakuu_dashboard.html'">← Dashboard</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+const subjectIcons = { afaan:'📝', herrega:'🔢', seenaa:'🏺', dandeettii:'🛠️' };
+const subjectColors = { afaan:'var(--green)', herrega:'#c0892a', seenaa:'#7b3fa0', dandeettii:'#1a7a8a' };
+
+let quizQuestions = [];
+let currentQ = 0;
+let score = 0;
+let answered = false;
+let lessonId = null;
+
+// Load SDK
+const sdkScript = document.createElement('script');
+sdkScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(sdkScript);
+
+sdkScript.onload = async () => {
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Auth check
+  const userJson = localStorage.getItem('kakuu_user');
+  const token = localStorage.getItem('kakuu_token');
+  if (!userJson || !token) { window.location.href = 'index.html'; return; }
+
+  try {
+    const user = JSON.parse(userJson);
+    const name = user.name || user.email?.split('@')[0] || 'Barataa';
+    document.getElementById('sidebar-username').textContent = name;
+    document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+  } catch(e) { window.location.href = 'index.html'; return; }
+
+  // Get lesson ID from URL
+  const params = new URLSearchParams(window.location.search);
+  lessonId = params.get('id');
+
+  if (!lessonId) {
+    showError();
+    return;
+  }
+
+  await loadLesson(supabase, lessonId);
+};
+
+async function loadLesson(supabase, id) {
+  // Load lesson
+  const { data: lesson, error } = await supabase
+    .from('lessons')
+    .select('*, authors(name)')
+    .eq('id', id)
+    .eq('status', 'approved')
+    .single();
+
+  if (error || !lesson) { showError(); return; }
+
+  // Set accent color based on subject
+  document.documentElement.style.setProperty('--accent', subjectColors[lesson.subject] || 'var(--green)');
+
+  // Fill content
+  document.getElementById('lesson-title').textContent = lesson.title;
+  document.getElementById('topbar-title').textContent = '📖 ' + lesson.title;
+  document.getElementById('bc-lesson').textContent = lesson.title;
+  document.getElementById('lesson-content').textContent = lesson.content;
+  document.getElementById('hero-subject').textContent = (subjectIcons[lesson.subject] || '📚') + ' ' + lesson.subject.charAt(0).toUpperCase() + lesson.subject.slice(1);
+  document.getElementById('hero-level').textContent = '📊 ' + (lesson.level || 'Jalqabaa');
+  document.getElementById('hero-duration').textContent = '⏱ ' + (lesson.duration_minutes || 30) + ' daqiiqaa';
+  document.getElementById('hero-author').textContent = '✍️ ' + (lesson.authors?.name || 'Kakuu Oromoo');
+  document.getElementById('info-author').textContent = lesson.authors?.name || 'Kakuu Oromoo';
+  document.getElementById('info-duration').textContent = (lesson.duration_minutes || 30) + ' daqiiqaa';
+  document.getElementById('info-level').textContent = lesson.level || 'Jalqabaa';
+
+  // Load quiz questions
+  const { data: questions } = await supabase
+    .from('quiz_questions')
+    .select('*')
+    .eq('lesson_id', id);
+
+  quizQuestions = questions || [];
+  document.getElementById('info-quiz-count').textContent = 'Quiz: Gaaffii ' + quizQuestions.length;
+
+  if (quizQuestions.length === 0) {
+    document.getElementById('btn-quiz-lbl').textContent = '← Dashboard';
+    document.getElementById('btn-quiz-lbl').onclick = () => window.location.href = 'kakuu_dashboard.html';
+  }
+
+  // Show lesson
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('lesson-main').style.display = 'block';
+}
+
+function showError() {
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('error-screen').style.display = 'block';
+}
+
+// Quiz
+function startQuiz() {
+  if (quizQuestions.length === 0) return;
+  currentQ = 0; score = 0; answered = false;
+  document.getElementById('lesson-section').style.display = 'none';
+  document.getElementById('quiz-section').classList.add('active');
+  renderQ();
+}
+
+function renderQ() {
+  const q = quizQuestions[currentQ];
+  const isLast = currentQ === quizQuestions.length - 1;
+  const pct = Math.round((currentQ / quizQuestions.length) * 100);
+  document.getElementById('quiz-progress').style.width = pct + '%';
+
+  const opts = [
+    { key: 'a', text: q.option_a },
+    { key: 'b', text: q.option_b },
+    { key: 'c', text: q.option_c },
+    { key: 'd', text: q.option_d }
+  ];
+
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="q-card">
+      <div class="q-num">Gaaffii ${currentQ + 1} / ${quizQuestions.length} &nbsp;·&nbsp; ⭐ ${score}</div>
+      <div class="q-text">${q.question}</div>
+      <div class="options">
+        ${opts.map((o, i) => `
+          <button class="opt-btn" id="opt-${o.key}" onclick="answer('${o.key}')">
+            <div class="opt-letter">${['A','B','C','D'][i]}</div>
+            <span>${o.text}</span>
+          </button>`).join('')}
+      </div>
+      <div id="feedback"></div>
+    </div>
+    <button class="btn-next-q" id="btn-next" style="display:none" onclick="nextQ()">
+      ${isLast ? 'Xumuri ✅' : 'Itti Aanee →'}
+    </button>
+  `;
+}
+
+function answer(key) {
+  if (answered) return;
+  answered = true;
+  const q = quizQuestions[currentQ];
+  const ok = key === q.correct_answer;
+  if (ok) score++;
+
+  ['a','b','c','d'].forEach(k => {
+    const btn = document.getElementById('opt-' + k);
+    if (btn) {
+      btn.disabled = true;
+      if (k === q.correct_answer) btn.classList.add('correct');
+      if (k === key && !ok) btn.classList.add('wrong');
+    }
+  });
+
+  const optTexts = { a: q.option_a, b: q.option_b, c: q.option_c, d: q.option_d };
+  document.getElementById('feedback').innerHTML = `
+    <div class="feedback ${ok ? 'ok' : 'err'}">
+      ${ok ? '✅ Sirrii dha! 🎉' : '❌ Dogoggoraa! Deebiin sirrii: <strong>' + optTexts[q.correct_answer] + '</strong>'}
+      ${q.explanation ? '<br/><small>' + q.explanation + '</small>' : ''}
+    </div>`;
+  document.getElementById('btn-next').style.display = 'block';
+}
+
+function nextQ() {
+  if (currentQ < quizQuestions.length - 1) {
+    currentQ++; answered = false; renderQ();
+  } else { showResult(); }
+}
+
+function showResult() {
+  const pct = Math.round((score / quizQuestions.length) * 100);
+  let emoji, label;
+  if (pct >= 80) { emoji = '🏆'; label = "Baay'ee Gaarii!"; }
+  else if (pct >= 60) { emoji = '⭐'; label = 'Gaarii!'; }
+  else { emoji = '💪'; label = "Irra Deebi'i!"; }
+
+  document.getElementById('quiz-progress').style.width = '100%';
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="result-box">
+      <div class="result-emoji">${emoji}</div>
+      <div class="result-score">${pct}%</div>
+      <div class="result-label">${label} — ${score}/${quizQuestions.length}</div>
+      <button class="btn-retry" onclick="startQuiz()">🔄 Irra Deebi'i</button>
+      <button class="btn-dashboard" onclick="window.location.href='kakuu_dashboard.html'">🏠 Dashboard</button>
+    </div>`;
+}
+</script>
+</body>
+</html>

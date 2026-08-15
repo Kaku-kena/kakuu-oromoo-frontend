@@ -893,7 +893,7 @@ async function loadDbLessons(supabase) {
 
     document.getElementById('db-lessons-grid').innerHTML = data.map(lesson => `
       <div style="background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border-top:4px solid ${subjectColors[lesson.subject] || 'var(--green)'};cursor:pointer;transition:transform 0.2s;" 
-           onclick="window.location.href='${subjectPages[lesson.subject] || 'kakuu_dashboard.html'}'"
+           onclick="window.location.href='kakuu_lesson.html?id=${lesson.id}'"
            onmouseover="this.style.transform='translateY(-3px)'" 
            onmouseout="this.style.transform='translateY(0)'">
         <div style="font-size:1.6rem;margin-bottom:10px;">${subjectIcons[lesson.subject] || '📚'}</div>
