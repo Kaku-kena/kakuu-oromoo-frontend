@@ -253,6 +253,15 @@ sdkScript.onload = async () => {
       window.location.href = 'kakuu_dashboard.html';
       return;
     }
+
+    // ── Secret Code Check ──
+    const adminCode = prompt('🔐 Admin code galchi:');
+    if (adminCode !== 'Kakuu2009*#$12') {
+      alert('❌ Code dogoggoraa — mirga hin qabdu!');
+      window.location.href = 'kakuu_dashboard.html';
+      return;
+    }
+
   } catch(e) {
     window.location.href = 'index.html';
     return;
