@@ -226,8 +226,38 @@ document.head.appendChild(sdkScript);
 let supabaseClient = null;
 let currentLesson = null;
 
+// ════════════════════════════════════════
+// ADMIN EMAILS — Kanneen qofa seenuu danda'u
+// ════════════════════════════════════════
+const ADMIN_EMAILS = [
+  'miiltoooromiyaa6@gmail.com',
+];
+
 sdkScript.onload = async () => {
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ── Admin Protection ──
+  const userJson = localStorage.getItem('kakuu_user');
+  const token = localStorage.getItem('kakuu_token');
+
+  if (!userJson || !token) {
+    alert('⚠️ Maaloo login godhi!');
+    window.location.href = 'index.html';
+    return;
+  }
+
+  try {
+    const user = JSON.parse(userJson);
+    if (!ADMIN_EMAILS.includes(user.email)) {
+      alert('❌ Mirga hin qabdu — Admin qofa!');
+      window.location.href = 'kakuu_dashboard.html';
+      return;
+    }
+  } catch(e) {
+    window.location.href = 'index.html';
+    return;
+  }
+
   await loadStats();
   await loadContributors();
 };
