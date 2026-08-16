@@ -4,6 +4,16 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kakuu Oromoo — Lesson Upload</title>
+  <script>
+    // Kallattiin check — SDK eeguu hin barbaachisu
+    (function() {
+      const token = localStorage.getItem('kakuu_token');
+      const user = localStorage.getItem('kakuu_user');
+      if (!token || !user) {
+        window.location.href = 'index.html';
+      }
+    })();
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
   <style>
     :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--cream:#faf6ee;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;}

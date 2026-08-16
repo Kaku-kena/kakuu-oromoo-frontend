@@ -4,6 +4,15 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kakuu Oromoo — Dashboard</title>
+  <script>
+    (function() {
+      const token = localStorage.getItem('kakuu_token');
+      const user = localStorage.getItem('kakuu_user');
+      if (!token || !user) {
+        window.location.href = 'index.html';
+      }
+    })();
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&family=Noto+Sans+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
