@@ -523,7 +523,7 @@
       </div>
       <div class="stat">
         <div class="stat-num">200+</div>
-        <div class="stat-label">Ramaddiiwwan</div>
+        <div class="stat-label">Ramaddiiwan</div>
       </div>
       <div class="stat">
         <div class="stat-num">5,000+</div>
@@ -569,7 +569,7 @@
 
     <div class="subject-card" style="--accent:#1a7a8a">
       <div class="subject-icon">🛠️</div>
-      <div class="subject-title">Ogummaawwan </div>
+      <div class="subject-title">Ogummaa Hojii</div>
       <div class="subject-subtitle">Vocational Skills</div>
       <div class="subject-desc">Qonnaa ammayyaa, daldala, fayyaa uummataa fi teeknoloojii — ogummaa jireenya guyyuu ilaallatu.</div>
       <div class="subject-lessons">📚 67 Ramaddii</div>
@@ -581,7 +581,7 @@
 <!-- LESSONS PREVIEW -->
 <section class="section lesson-section" id="lessons">
   <div class="section-label">Ramaddii Dhiyoo</div>
-  <h2 class="section-title" style="color:var(--cream)">Ramaddiiwwan Filatamoo</h2>
+  <h2 class="section-title" style="color:var(--cream)">Ramaddiiwan Filatamoo</h2>
   <p class="section-sub">Kutaalee haaraa fi barattoota baay'een fayyadaman:</p>
 
   <div class="lessons-list reveal">
@@ -635,7 +635,7 @@
 <!-- FEATURES -->
 <section class="section" id="features">
   <div class="section-label">Amaloota Platformii</div>
-  <h2 class="section-title">Kakuu Oromoo?</h2>
+  <h2 class="section-title">Maaliif Kakuu Oromoo?</h2>
   <div class="divider"></div>
 
   <div class="features-grid reveal">
@@ -647,7 +647,7 @@
     <div class="feature-item">
       <div class="feature-icon">📱</div>
       <div class="feature-title">Yeroo Kamiyyuu</div>
-      <div class="feature-desc">Moobaayila yookiin kompitara.</div>
+      <div class="feature-desc">Moobaayila yookiin kompitara irratti — interneetii malee illee hojjeta.</div>
     </div>
     <div class="feature-item">
       <div class="feature-icon">🎯</div>
@@ -661,7 +661,7 @@
     </div>
     <div class="feature-item">
       <div class="feature-icon">👥</div>
-      <div class="feature-title">Waliin barachuu</div>
+      <div class="feature-title">Hawaasa Barataa</div>
       <div class="feature-desc">Barattoota kaan waliin mari'adhaa, gaaffii kaasaa, beekumsa qoodadhaa.</div>
     </div>
     <div class="feature-item">
@@ -681,7 +681,7 @@
   <div class="testimonial-grid reveal">
     <div class="testimonial-card">
       <div class="testimonial-stars">★★★★★</div>
-      <div class="testimonial-text">"Afaan Oromootiin barnoota akkanaa argachuun gammachuu guddaa dha. Daa'imman koo wajjin taa'uudhaan baradha — salphaa fi nama hawwata."</div>
+      <div class="testimonial-text">"Afaan Oromootiin barnoota akkanaa argachuun gammachuu guddaa dha. Daa'imman koo wajjin taa'uudhaan baradha — salphaa fi nama hawwatu."</div>
       <div class="testimonial-author">
         <div class="author-avatar">👩</div>
         <div>
@@ -721,11 +721,11 @@
 <section class="cta-section" id="enroll">
   <div class="section-label" style="justify-content:center">Itti Makamaa</div>
   <h2 class="section-title">Barnoota Keessan Har'uma Jalqabaa</h2>
-  <p class="section-sub" id="auth-sub">Email keessan galchaa — yeroo muraasa keessatti acount bilisaa banadhaa.</p>
+  <p class="section-sub" id="auth-sub">Email keessan galchaa — yeroo muraasa keessatti koontii bilisaa banina.</p>
 
   <div style="max-width:420px; margin:0 auto;">
 
-    <!-- Tabs 
+    <!-- Tabs -->
     <div style="display:flex; gap:8px; margin-bottom:20px; justify-content:center;">
       <button id="tab-register" onclick="switchAuthTab('register')" style="background:var(--green); color:#fff; border:none; padding:10px 28px; border-radius:30px; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer;">Galmaa'i</button>
       <button id="tab-login" onclick="switchAuthTab('login')" style="background:transparent; color:var(--green); border:2px solid var(--green); padding:8px 28px; border-radius:30px; font-family:inherit; font-size:0.9rem; font-weight:600; cursor:pointer;">Seeni</button>
@@ -735,14 +735,41 @@
     <div id="register-form">
       <input class="cta-input" type="text" id="reg-name" placeholder="Maqaa keessan…" style="width:100%; margin-bottom:12px;" />
       <input class="cta-input" type="email" id="reg-email" placeholder="Email keessan galchaa…" style="width:100%; margin-bottom:12px;" />
-      <input class="cta-input" type="password" id="reg-password" placeholder="Jecha-darbii (password)…" style="width:100%; margin-bottom:14px;" />
+      
+      <!-- Password field + show/hide -->
+      <div style="position:relative; margin-bottom:6px;">
+        <input class="cta-input" type="password" id="reg-password" placeholder="Jecha-darbii (password)…" style="width:100%; padding-right:48px;" oninput="checkPasswordStrength()"/>
+        <button type="button" onclick="togglePassword('reg-password', 'reg-eye')" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="reg-eye">👁</button>
+      </div>
+
+      <!-- Password strength -->
+      <div style="margin-bottom:6px;">
+        <div style="height:4px;background:rgba(0,0,0,0.1);border-radius:4px;overflow:hidden;">
+          <div id="strength-bar" style="height:100%;width:0%;border-radius:4px;transition:all 0.3s;"></div>
+        </div>
+        <div id="strength-text" style="font-size:0.72rem;margin-top:4px;color:var(--muted);"></div>
+      </div>
+
+      <!-- Password requirements -->
+      <div id="pw-requirements" style="background:rgba(0,0,0,0.03);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:0.75rem;display:none;">
+        <div id="req-length" style="color:#c0392b;">❌ Xiqqa 8 character</div>
+        <div id="req-upper" style="color:#c0392b;">❌ Qubee guddaa tokko (A-Z)</div>
+        <div id="req-number" style="color:#c0392b;">❌ Lakkoofsa tokko (0-9)</div>
+      </div>
+
       <button onclick="doRegister()" class="btn-primary" style="width:100%; border:none; cursor:pointer;" id="reg-btn">Galmaa'i →</button>
     </div>
 
     <!-- Login Form -->
     <div id="login-form" style="display:none;">
       <input class="cta-input" type="email" id="login-email" placeholder="Email keessan…" style="width:100%; margin-bottom:12px;" />
-      <input class="cta-input" type="password" id="login-password" placeholder="Jecha-darbii (password)…" style="width:100%; margin-bottom:14px;" />
+      
+      <!-- Password field + show/hide -->
+      <div style="position:relative; margin-bottom:14px;">
+        <input class="cta-input" type="password" id="login-password" placeholder="Jecha-darbii (password)…" style="width:100%; padding-right:48px;"/>
+        <button type="button" onclick="togglePassword('login-password', 'login-eye')" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;" id="login-eye">👁</button>
+      </div>
+      
       <button onclick="doLogin()" class="btn-primary" style="width:100%; border:none; cursor:pointer;" id="login-btn">Seeni →</button>
     </div>
 
@@ -832,6 +859,70 @@
   }
 
   // ════════════════════════════════════════
+  // PASSWORD — Show/Hide + Strength Check
+  // ════════════════════════════════════════
+  function togglePassword(fieldId, eyeId) {
+    const field = document.getElementById(fieldId);
+    const eye = document.getElementById(eyeId);
+    if (field.type === 'password') {
+      field.type = 'text';
+      eye.textContent = '🙈';
+    } else {
+      field.type = 'password';
+      eye.textContent = '👁';
+    }
+  }
+
+  function checkPasswordStrength() {
+    const pw = document.getElementById('reg-password').value;
+    const bar = document.getElementById('strength-bar');
+    const text = document.getElementById('strength-text');
+    const reqs = document.getElementById('pw-requirements');
+
+    // Show requirements
+    reqs.style.display = pw.length > 0 ? 'block' : 'none';
+
+    // Check requirements
+    const hasLength = pw.length >= 8;
+    const hasUpper = /[A-Z]/.test(pw);
+    const hasNumber = /[0-9]/.test(pw);
+
+    document.getElementById('req-length').style.color = hasLength ? 'var(--green)' : '#c0392b';
+    document.getElementById('req-length').textContent = (hasLength ? '✅' : '❌') + ' Xiqqa 8 character';
+    document.getElementById('req-upper').style.color = hasUpper ? 'var(--green)' : '#c0392b';
+    document.getElementById('req-upper').textContent = (hasUpper ? '✅' : '❌') + ' Qubee guddaa tokko (A-Z)';
+    document.getElementById('req-number').style.color = hasNumber ? 'var(--green)' : '#c0392b';
+    document.getElementById('req-number').textContent = (hasNumber ? '✅' : '❌') + ' Lakkoofsa tokko (0-9)';
+
+    // Strength score
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (pw.length >= 12) score++;
+    if (hasUpper) score++;
+    if (hasNumber) score++;
+    if (/[!@#$%^&*]/.test(pw)) score++;
+
+    const levels = [
+      { pct: '20%', color: '#e74c3c', label: '🔴 Baay\'ee laafaa' },
+      { pct: '40%', color: '#e67e22', label: '🟠 Laafaa' },
+      { pct: '60%', color: '#f1c40f', label: '🟡 Gidduu' },
+      { pct: '80%', color: '#2ecc71', label: '🟢 Cimaa' },
+      { pct: '100%', color: '#1a6b3c', label: '💪 Baay\'ee cimaa!' },
+    ];
+
+    if (pw.length === 0) {
+      bar.style.width = '0%';
+      text.textContent = '';
+    } else {
+      const level = levels[Math.min(score - 1, 4)] || levels[0];
+      bar.style.width = level.pct;
+      bar.style.background = level.color;
+      text.textContent = level.label;
+      text.style.color = level.color;
+    }
+  }
+
+  // ════════════════════════════════════════
   // SUPABASE JS SDK — Kallattiin Browser
   // ════════════════════════════════════════
   const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
@@ -902,6 +993,20 @@
 
     if (!name || !email || !password) {
       showAuthMessage('⚠️ Maaloo, dirree hunda guuti.', true);
+      return;
+    }
+
+    // Password validation
+    if (password.length < 8) {
+      showAuthMessage('⚠️ Jecha-darbii xiqqa 8 character qabaachuu qaba!', true);
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      showAuthMessage('⚠️ Jecha-darbii qubee guddaa (A-Z) tokko qabaachuu qaba!', true);
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      showAuthMessage('⚠️ Jecha-darbii lakkoofsa (0-9) tokko qabaachuu qaba!', true);
       return;
     }
 
