@@ -491,32 +491,65 @@
             <div class="calc-result" id="calc-result">0</div>
           </div>
           <div class="calc-buttons">
-            <!-- Row 1 -->
             <button class="calc-btn clear" onclick="calcClear()">C</button>
             <button class="calc-btn clear" onclick="calcDel()">⌫</button>
             <button class="calc-btn op" onclick="calcOp('%')">%</button>
             <button class="calc-btn op" onclick="calcOp('÷')">÷</button>
-            <!-- Row 2 -->
             <button class="calc-btn num" onclick="calcNum('7')">7</button>
             <button class="calc-btn num" onclick="calcNum('8')">8</button>
             <button class="calc-btn num" onclick="calcNum('9')">9</button>
             <button class="calc-btn op" onclick="calcOp('×')">×</button>
-            <!-- Row 3 -->
             <button class="calc-btn num" onclick="calcNum('4')">4</button>
             <button class="calc-btn num" onclick="calcNum('5')">5</button>
             <button class="calc-btn num" onclick="calcNum('6')">6</button>
             <button class="calc-btn op" onclick="calcOp('−')">−</button>
-            <!-- Row 4 -->
             <button class="calc-btn num" onclick="calcNum('1')">1</button>
             <button class="calc-btn num" onclick="calcNum('2')">2</button>
             <button class="calc-btn num" onclick="calcNum('3')">3</button>
             <button class="calc-btn op" onclick="calcOp('+')">+</button>
-            <!-- Row 5 -->
             <button class="calc-btn num zero" onclick="calcNum('0')">0</button>
             <button class="calc-btn num" onclick="calcDot()">.</button>
             <button class="calc-btn eq" onclick="calcEqual()">=</button>
           </div>
           <div class="calc-op-label" data-i18n="calc_ops">+ Ida'uu &nbsp;·&nbsp; − Hir'isuu &nbsp;·&nbsp; × Baay'isuu &nbsp;·&nbsp; ÷ Hiruu</div>
+        </div>
+      </div>
+
+      <!-- ══ AI TUTOR CHATBOT ══ -->
+      <div style="margin-top:28px;">
+        <div style="background:var(--card);border-radius:20px;padding:24px;box-shadow:var(--shadow);border:1.5px solid rgba(0,0,0,0.05);max-width:520px;">
+          <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;">
+            <span>🤖 AI Tutor — Gaaffii Kee Gaafadhu</span>
+            <span id="ai-limit-display" style="font-family:'Source Serif 4',serif;font-size:0.72rem;font-weight:400;color:var(--muted);">Gaaffii hafe: 10/10</span>
+          </div>
+
+          <!-- Chat messages -->
+          <div id="chat-messages" style="height:260px;overflow-y:auto;border:1.5px solid rgba(0,0,0,0.06);border-radius:14px;padding:14px;margin-bottom:12px;background:rgba(0,0,0,0.02);">
+            <div style="background:linear-gradient(135deg,var(--green),var(--green-light));color:#fff;border-radius:12px 12px 12px 2px;padding:12px 16px;font-size:0.88rem;line-height:1.6;margin-bottom:8px;max-width:85%;">
+              🌿 Nagaa! Ani AI Tutor Kakuu Oromoo — gaaffii Afaan Oromoo, Herrega, Seenaa, ykn waan biraa gaafachuu dandeessa!
+            </div>
+          </div>
+
+          <!-- Input -->
+          <div style="display:flex;gap:8px;">
+            <input 
+              type="text" 
+              id="chat-input" 
+              placeholder="Gaaffii kee asitti barreessi..." 
+              style="flex:1;padding:11px 16px;border:1.5px solid rgba(0,0,0,0.1);border-radius:30px;font-family:inherit;font-size:0.88rem;outline:none;background:#fff;"
+              onkeydown="if(event.key==='Enter') sendChatMessage()"
+            />
+            <button onclick="sendChatMessage()" id="chat-send-btn" style="background:var(--green);color:#fff;border:none;padding:11px 20px;border-radius:30px;font-family:inherit;font-size:0.88rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:background 0.2s;">
+              Ergi →
+            </button>
+          </div>
+
+          <!-- Quick questions -->
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button onclick="askQuick('Lakkoofsa Afaan Oromootiin 1-10 naaf ibsi')" style="background:rgba(26,107,60,0.07);color:var(--green);border:1px solid rgba(26,107,60,0.15);padding:5px 12px;border-radius:20px;font-family:inherit;font-size:0.75rem;cursor:pointer;">📝 Lakkoofsa 1-10</button>
+            <button onclick="askQuick('Sirni Gadaa maal?')" style="background:rgba(26,107,60,0.07);color:var(--green);border:1px solid rgba(26,107,60,0.15);padding:5px 12px;border-radius:20px;font-family:inherit;font-size:0.75rem;cursor:pointer;">🏺 Sirna Gadaa</button>
+            <button onclick="askQuick('Qubee Afaan Oromoo meeqa?')" style="background:rgba(26,107,60,0.07);color:var(--green);border:1px solid rgba(26,107,60,0.15);padding:5px 12px;border-radius:20px;font-family:inherit;font-size:0.75rem;cursor:pointer;">📖 Qubee</button>
+          </div>
         </div>
       </div>
 
@@ -864,6 +897,135 @@ function doLogout() {
   localStorage.removeItem('kakuu_user');
   window.location.href = 'index.html';
 }
+
+// ════════════════════════════════════════
+// AI TUTOR CHATBOT — Claude API + Rate Limit
+// ════════════════════════════════════════
+let chatHistory = [];
+const AI_DAILY_LIMIT = 10;
+
+function getAIUsage() {
+  const today = new Date().toDateString();
+  const data = JSON.parse(localStorage.getItem('kakuu_ai_usage') || '{}');
+  if (data.date !== today) {
+    return { date: today, count: 0 };
+  }
+  return data;
+}
+
+function updateAIUsage() {
+  const usage = getAIUsage();
+  usage.count++;
+  localStorage.setItem('kakuu_ai_usage', JSON.stringify(usage));
+  return usage.count;
+}
+
+function getRemainingQuestions() {
+  const usage = getAIUsage();
+  return Math.max(0, AI_DAILY_LIMIT - usage.count);
+}
+
+function updateLimitDisplay() {
+  const remaining = getRemainingQuestions();
+  const limitEl = document.getElementById('ai-limit-display');
+  if (limitEl) {
+    limitEl.textContent = `Gaaffii hafe: ${remaining}/${AI_DAILY_LIMIT}`;
+    limitEl.style.color = remaining <= 3 ? '#c0392b' : 'var(--muted)';
+  }
+}
+
+function addMessage(text, isUser) {
+  const messages = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.style.cssText = isUser
+    ? 'background:rgba(26,107,60,0.08);border:1.5px solid rgba(26,107,60,0.1);border-radius:12px 12px 2px 12px;padding:10px 14px;font-size:0.88rem;line-height:1.6;margin-bottom:8px;max-width:85%;margin-left:auto;color:var(--dark);'
+    : 'background:linear-gradient(135deg,var(--green),var(--green-light));color:#fff;border-radius:12px 12px 12px 2px;padding:12px 16px;font-size:0.88rem;line-height:1.6;margin-bottom:8px;max-width:85%;';
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function addTyping() {
+  const messages = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.id = 'typing-indicator';
+  div.style.cssText = 'background:rgba(0,0,0,0.06);border-radius:12px;padding:10px 16px;font-size:0.88rem;color:var(--muted);margin-bottom:8px;max-width:85%;';
+  div.textContent = '🤖 Yaadaa jira...';
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function removeTyping() {
+  const typing = document.getElementById('typing-indicator');
+  if (typing) typing.remove();
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const btn = document.getElementById('chat-send-btn');
+  const userMsg = input.value.trim();
+  if (!userMsg) return;
+
+  // Rate limit check
+  const remaining = getRemainingQuestions();
+  if (remaining <= 0) {
+    addMessage('⚠️ Har\'a gaaffii ' + AI_DAILY_LIMIT + ' gaafatte — boru irra deebi\'i! (Guyyaa haaraa = gaaffii haaraa)', false);
+    return;
+  }
+
+  addMessage(userMsg, true);
+  chatHistory.push({ role: 'user', content: userMsg });
+  input.value = '';
+  btn.disabled = true;
+  btn.textContent = '...';
+  addTyping();
+
+  // Update usage
+  updateAIUsage();
+  updateLimitDisplay();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `Ati AI Tutor Kakuu Oromoo dha — platform barnootaa bilisaa Afaan Oromoo. Gaaffilee barnoota irratti deebii gabaabaa fi hubatamaa kennaa. Kutaaleen: Afaan fi Barreeffama, Herrega fi Saayinsii, Seenaa fi Aadaa Oromoo, Dandeettii Hojii. Afaan Oromootiin deebii kennaa yeroo hunda — yoo Ingiliffaan gaafatame, Ingiliffaan deebii kennaa. Deebii kee gabaabaa (kutaa 3-5 qofa) fi salphaa godhi. Kakuu Oromoo website: kakuuoromoo.com`,
+        messages: chatHistory.slice(-10) // Last 10 messages only
+      })
+    });
+
+    const data = await response.json();
+    removeTyping();
+
+    const aiReply = data.content?.[0]?.text || 'Dhiifama, dogoggora uumame. Irra deebi\'ii yaali!';
+    addMessage(aiReply, false);
+    chatHistory.push({ role: 'assistant', content: aiReply });
+
+    // Show remaining
+    const rem = getRemainingQuestions();
+    if (rem <= 3 && rem > 0) {
+      addMessage(`💡 Gaaffii ${rem} qofa hafe har\'aaf.`, false);
+    }
+
+  } catch (err) {
+    removeTyping();
+    updateAIUsage(); // Don't count failed requests
+    addMessage('❌ Dogoggora uumame — internet mirkaneessii irra deebi\'ii yaali!', false);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Ergi →';
+}
+
+function askQuick(question) {
+  document.getElementById('chat-input').value = question;
+  sendChatMessage();
+}
+
+// Initialize limit display
+setTimeout(updateLimitDisplay, 500);
 
 // ════════════════════════════════════════
 // SUPABASE — Lessons Database Irraa Load
