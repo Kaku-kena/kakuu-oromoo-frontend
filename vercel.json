@@ -1,1 +1,10 @@
-{}
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{"type": "host", "value": "www.kakuuoromoo.com"}],
+      "destination": "https://kakuuoromoo.com/$1",
+      "permanent": true
+    }
+  ]
+}
