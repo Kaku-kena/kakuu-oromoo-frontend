@@ -569,7 +569,7 @@
 
     <div class="subject-card" style="--accent:#1a7a8a">
       <div class="subject-icon">🛠️</div>
-      <div class="subject-title">Ogummaa Hojii</div>
+      <div class="subject-title">Ogummawwan</div>
       <div class="subject-subtitle">Vocational Skills</div>
       <div class="subject-desc">Qonnaa ammayyaa, daldala, fayyaa uummataa fi teeknoloojii — ogummaa jireenya guyyuu ilaallatu.</div>
       <div class="subject-lessons">📚 67 Ramaddii</div>
@@ -1068,7 +1068,7 @@
       if (error) {
         showAuthMessage('❌ ' + error.message, true);
       } else {
-        showAuthMessage('✅ Simat! Kakuu Oromoo seentanii jirtu.', false);
+        showAuthMessage('✅ Ana dhufu! Kakuu Oromoo seentanii jirtu.', false);
         if (data.session) localStorage.setItem('kakuu_token', data.session.access_token);
         if (data.user) localStorage.setItem('kakuu_user', JSON.stringify({
           id: data.user.id,
