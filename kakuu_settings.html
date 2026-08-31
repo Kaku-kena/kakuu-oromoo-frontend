@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Qindaa'ina</title>
+  <script>(function(){if(!localStorage.getItem('kakuu_token')||!localStorage.getItem('kakuu_user')){window.location.href='index.html';}})();</script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;}
+    .content{padding:28px 32px;max-width:600px;}
+    .card{background:var(--card);border-radius:16px;padding:24px;box-shadow:var(--shadow);margin-bottom:20px;border:1.5px solid rgba(0,0,0,0.05);}
+    .card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;margin-bottom:20px;color:var(--dark);display:flex;align-items:center;gap:8px;}
+    .form-group{margin-bottom:16px;}
+    .form-label{display:block;font-size:0.82rem;font-weight:600;color:var(--mid);margin-bottom:6px;}
+    .form-input{width:100%;padding:11px 14px;border:1.5px solid rgba(0,0,0,0.1);border-radius:10px;font-family:inherit;font-size:0.9rem;outline:none;transition:border-color 0.2s;position:relative;}
+    .form-input:focus{border-color:var(--green);}
+    .pw-wrap{position:relative;}
+    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;}
+    .btn-save{background:var(--green);color:#fff;border:none;padding:12px 32px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:background 0.2s;}
+    .btn-save:hover{background:var(--green-light);}
+    .btn-danger{background:transparent;color:#c0392b;border:2px solid #c0392b;padding:12px 32px;border-radius:30px;font-family:inherit;font-size:0.9rem;font-weight:600;cursor:pointer;transition:all 0.2s;}
+    .btn-danger:hover{background:#c0392b;color:#fff;}
+    .message{border-radius:10px;padding:12px 16px;margin-top:12px;font-size:0.85rem;font-weight:600;display:none;}
+    .message.success{background:rgba(26,107,60,0.1);color:var(--green);}
+    .message.error{background:rgba(192,57,43,0.08);color:#c0392b;}
+    .setting-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.05);}
+    .setting-row:last-child{border-bottom:none;}
+    .setting-label{font-size:0.88rem;color:var(--dark);font-weight:600;}
+    .setting-desc{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+    .toggle{width:44px;height:24px;border-radius:12px;background:rgba(0,0,0,0.1);border:none;cursor:pointer;position:relative;transition:background 0.2s;}
+    .toggle.on{background:var(--green);}
+    .toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+    .toggle.on::after{transform:translateX(20px);}
+    .strength-bar{height:4px;background:rgba(0,0,0,0.08);border-radius:4px;overflow:hidden;margin-top:6px;}
+    .strength-fill{height:100%;border-radius:4px;transition:all 0.3s;width:0%;}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item" href="kakuu_ramaddiiwan.html"><span class="icon">📖</span> Ramaddiiwan</a>
+    <a class="nav-item" href="kakuu_profile.html"><span class="icon">👤</span> Profile</a>
+    <a class="nav-item active"><span class="icon">⚙️</span> Qindaa'ina</a>
+    <a class="nav-item" href="kakuu_ragaalee.html"><span class="icon">🏅</span> Ragaalee</a>
+    <a class="nav-item" onclick="doLogout()" style="cursor:pointer;"><span class="icon">🚪</span> Ba'i</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">⚙️ Qindaa'ina</div>
+  </div>
+  <div class="content">
+
+    <!-- Password Change -->
+    <div class="card">
+      <div class="card-title">🔐 Jecha-darbii Jijjiiri</div>
+
+      <div class="form-group">
+        <label class="form-label">Jecha-darbii Haaraa</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="new-password" placeholder="Jecha-darbii haaraa..." oninput="checkStrength()"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('new-password', this)">👁</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+        <div id="strength-text" style="font-size:0.72rem;color:var(--muted);margin-top:3px;"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Irra Deebi'ii Galchi</label>
+        <div class="pw-wrap">
+          <input class="form-input" type="password" id="confirm-password" placeholder="Irra deebi'ii galchi..."/>
+          <button class="pw-toggle" type="button" onclick="togglePw('confirm-password', this)">👁</button>
+        </div>
+      </div>
+
+      <button class="btn-save" onclick="changePassword()">🔐 Jijjiiri</button>
+      <div class="message" id="pw-message"></div>
+    </div>
+
+    <!-- Preferences -->
+    <div class="card">
+      <div class="card-title">🌍 Filannoo</div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Afaan</div>
+          <div class="setting-desc">Dashboard afaan filadhu</div>
+        </div>
+        <select class="form-input" style="width:120px;" id="lang-select" onchange="saveLang()">
+          <option value="om">Afaan Oromo</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Beeksisa (Notifications)</div>
+          <div class="setting-desc">Lesson haaraa yeroo argamu</div>
+        </div>
+        <button class="toggle" id="notif-toggle" onclick="toggleSetting('notif')"></button>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card" style="border:1.5px solid rgba(192,57,43,0.2);">
+      <div class="card-title" style="color:#c0392b;">⚠️ Koontii Haquuu</div>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">Koontii kee haquun data hunda ni balleessa — deebi'uu hin danda'amu!</p>
+      <button class="btn-danger" onclick="confirmDelete()">🗑️ Koontii Haquu</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+
+const sdkScript = document.createElement('script');
+sdkScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(sdkScript);
+
+let supabase;
+
+sdkScript.onload = () => {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const userJson = localStorage.getItem('kakuu_user');
+  if (!userJson) { window.location.href = 'index.html'; return; }
+  const user = JSON.parse(userJson);
+  const name = user.name || user.email?.split('@')[0] || 'Barataa';
+  document.getElementById('sidebar-username').textContent = name;
+  document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+
+  // Load settings
+  const lang = localStorage.getItem('kakuu_lang') || 'om';
+  document.getElementById('lang-select').value = lang;
+
+  const notif = localStorage.getItem('kakuu_notif') === 'true';
+  if (notif) document.getElementById('notif-toggle').classList.add('on');
+};
+
+function togglePw(id, btn) {
+  const field = document.getElementById(id);
+  field.type = field.type === 'password' ? 'text' : 'password';
+  btn.textContent = field.type === 'password' ? '👁' : '🙈';
+}
+
+function checkStrength() {
+  const pw = document.getElementById('new-password').value;
+  const fill = document.getElementById('strength-fill');
+  const text = document.getElementById('strength-text');
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[!@#$%]/.test(pw)) score++;
+  const levels = [
+    {w:'20%',c:'#e74c3c',l:'🔴 Laafaa'},
+    {w:'40%',c:'#e67e22',l:'🟠 Gidduu gadii'},
+    {w:'60%',c:'#f1c40f',l:'🟡 Gidduu'},
+    {w:'80%',c:'#2ecc71',l:'🟢 Cimaa'},
+    {w:'100%',c:'#1a6b3c',l:'💪 Baay\'ee cimaa!'}
+  ];
+  if (pw.length === 0) { fill.style.width='0%'; text.textContent=''; return; }
+  const lv = levels[Math.min(score-1,4)] || levels[0];
+  fill.style.width = lv.w;
+  fill.style.background = lv.c;
+  text.textContent = lv.l;
+  text.style.color = lv.c;
+}
+
+async function changePassword() {
+  const pw = document.getElementById('new-password').value;
+  const confirm = document.getElementById('confirm-password').value;
+  const msg = document.getElementById('pw-message');
+
+  if (!pw || pw.length < 8) { showMsg('pw-message','⚠️ Jecha-darbii xiqqa 8 character!', true); return; }
+  if (pw !== confirm) { showMsg('pw-message','⚠️ Jecha-darbii lameenuu wal-hin-fakkaatu!', true); return; }
+
+  const { error } = await supabase.auth.updateUser({ password: pw });
+  if (error) { showMsg('pw-message','❌ ' + error.message, true); return; }
+
+  showMsg('pw-message','✅ Jecha-darbii haaromfame!', false);
+  document.getElementById('new-password').value = '';
+  document.getElementById('confirm-password').value = '';
+}
+
+function saveLang() {
+  const lang = document.getElementById('lang-select').value;
+  localStorage.setItem('kakuu_lang', lang);
+}
+
+function toggleSetting(key) {
+  const btn = document.getElementById(key + '-toggle');
+  btn.classList.toggle('on');
+  localStorage.setItem('kakuu_' + key, btn.classList.contains('on'));
+}
+
+function showMsg(id, text, isError) {
+  const msg = document.getElementById(id);
+  msg.textContent = text;
+  msg.style.display = 'block';
+  msg.className = 'message ' + (isError ? 'error' : 'success');
+}
+
+function confirmDelete() {
+  if (confirm('⚠️ Dhuguma koontii kee haquuf barbaadda? Kun data hunda ni balleessa!')) {
+    alert('Koontii haquuf admin qunnamuu: miiltoooromiyaa6@gmail.com');
+  }
+}
+
+function doLogout() {
+  localStorage.removeItem('kakuu_token');
+  localStorage.removeItem('kakuu_user');
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="om">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kakuu Oromoo — Ramaddiiwan</title>
+  <script>(function(){if(!localStorage.getItem('kakuu_token')||!localStorage.getItem('kakuu_user')){window.location.href='index.html';}})();</script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--green:#1a6b3c;--green-light:#2e9d5e;--gold:#d4a017;--dark:#0e1a14;--mid:#3a5244;--muted:#7a9585;--bg:#f3f6f4;--card:#ffffff;--shadow:0 4px 24px rgba(10,40,20,0.09);--sidebar-w:240px;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Source Serif 4',Georgia,serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+    .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:50;}
+    .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid rgba(255,255,255,0.07);font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:#fff;}
+    .sidebar-logo span{color:var(--gold);}
+    .sidebar-logo small{display:block;font-size:0.7rem;color:rgba(255,255,255,0.35);font-weight:400;margin-top:2px;}
+    .sidebar-nav{flex:1;padding:16px 0;}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:11px 24px;color:rgba(255,255,255,0.55);font-size:0.9rem;cursor:pointer;transition:all 0.18s;border-left:3px solid transparent;text-decoration:none;}
+    .nav-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+    .nav-item.active{color:#fff;background:rgba(46,157,94,0.15);border-left-color:var(--green-light);}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+    .sidebar-user{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px;}
+    .user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--green-light));display:flex;align-items:center;justify-content:center;font-size:1rem;}
+    .user-info .user-name{font-size:0.85rem;font-weight:600;color:#fff;}
+    .user-info .user-role{font-size:0.7rem;color:rgba(255,255,255,0.35);}
+    .main{margin-left:var(--sidebar-w);flex:1;}
+    .topbar{background:var(--card);border-bottom:1.5px solid rgba(0,0,0,0.06);padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;}
+    .topbar-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;}
+    .content{padding:28px 32px;}
+    .page-hero{background:linear-gradient(135deg,var(--green),#0d4a28);border-radius:20px;padding:28px 32px;color:#fff;margin-bottom:28px;}
+    .page-hero h1{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;margin-bottom:6px;}
+    .page-hero p{font-size:0.88rem;opacity:0.85;}
+    .filters{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+    .filter-btn{background:var(--card);border:1.5px solid rgba(0,0,0,0.08);padding:8px 18px;border-radius:30px;font-family:inherit;font-size:0.82rem;font-weight:600;cursor:pointer;color:var(--mid);transition:all 0.2s;}
+    .filter-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
+    .lessons-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+    .lesson-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:var(--shadow);border-top:4px solid var(--accent,var(--green));cursor:pointer;transition:transform 0.2s;}
+    .lesson-card:hover{transform:translateY(-3px);}
+    .lesson-icon{font-size:1.8rem;margin-bottom:10px;}
+    .lesson-title{font-family:'Playfair Display',serif;font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:6px;}
+    .lesson-meta{font-size:0.75rem;color:var(--muted);margin-bottom:10px;}
+    .lesson-subject{font-size:0.72rem;font-weight:700;color:var(--accent,var(--green));background:rgba(26,107,60,0.08);padding:3px 10px;border-radius:20px;display:inline-block;}
+    .loading{text-align:center;padding:60px;color:var(--muted);}
+    .empty{text-align:center;padding:60px;}
+    .empty-icon{font-size:3rem;margin-bottom:12px;}
+    .search-box{background:var(--card);border:1.5px solid rgba(0,0,0,0.08);padding:11px 18px;border-radius:30px;font-family:inherit;font-size:0.88rem;width:100%;max-width:320px;outline:none;margin-bottom:20px;}
+    .search-box:focus{border-color:var(--green);}
+  </style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="sidebar-logo">🌿 Kakuu <span>Oromoo</span><small>Beekumsa Afaan Keessaniin</small></div>
+  <nav class="sidebar-nav">
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Mana</div>
+    <a class="nav-item" href="kakuu_dashboard.html"><span class="icon">🏠</span> Dashboard</a>
+    <a class="nav-item active"><span class="icon">📖</span> Ramaddiiwan</a>
+    <a class="nav-item" href="kakuu_profile.html"><span class="icon">👤</span> Profile</a>
+    <a class="nav-item" href="kakuu_settings.html"><span class="icon">⚙️</span> Qindaa'ina</a>
+    <a class="nav-item" href="kakuu_ragaalee.html"><span class="icon">🏅</span> Ragaalee</a>
+    <div style="font-size:0.65rem;font-weight:700;letter-spacing:0.12em;color:rgba(255,255,255,0.25);text-transform:uppercase;padding:16px 24px 6px;">Contribute</div>
+    <a class="nav-item" href="kakuu_contributor.html"><span class="icon">✍️</span> Contributor Ta'i</a>
+    <a class="nav-item" onclick="doLogout()" style="cursor:pointer;margin-top:auto;"><span class="icon">🚪</span> Ba'i</a>
+  </nav>
+  <div class="sidebar-user">
+    <div class="user-avatar" id="sidebar-avatar">👤</div>
+    <div class="user-info">
+      <div class="user-name" id="sidebar-username">Barataa</div>
+      <div class="user-role">Barattuun</div>
+    </div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title">📖 Ramaddiiwan — Lessons Hunda</div>
+  </div>
+  <div class="content">
+
+    <div class="page-hero">
+      <h1>📖 Ramaddiiwan Hunda</h1>
+      <p>Kutaalee 4 keessaa lessons hunda asitti argatta — database irraa kallattiin!</p>
+    </div>
+
+    <!-- Search -->
+    <input class="search-box" type="text" id="search-input" placeholder="🔍 Barnoota barbaadi..." oninput="filterLessons()"/>
+
+    <!-- Filters -->
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all', this)">📚 Hunda</button>
+      <button class="filter-btn" onclick="setFilter('afaan', this)">📝 Afaan</button>
+      <button class="filter-btn" onclick="setFilter('herrega', this)">🔢 Herrega</button>
+      <button class="filter-btn" onclick="setFilter('seenaa', this)">🏺 Seenaa</button>
+      <button class="filter-btn" onclick="setFilter('dandeettii', this)">🛠️ Dandeettii</button>
+    </div>
+
+    <!-- Lessons Grid -->
+    <div id="lessons-loading" class="loading">⏳ Lessons load godhamaa...</div>
+    <div id="lessons-empty" class="empty" style="display:none;">
+      <div class="empty-icon">📚</div>
+      <p style="color:var(--muted);">Lessons hin argamne.</p>
+    </div>
+    <div class="lessons-grid" id="lessons-grid"></div>
+
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://hfwaboxrnuckrxocishn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhmd2Fib3hybnVja3J4b2Npc2huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNjMyMTgsImV4cCI6MjA5NjkzOTIxOH0.IgoASUpxlVnIBH7Ncz88m2LUwMIHm-8vlKPShaXdPho';
+const subjectIcons = {afaan:'📝',herrega:'🔢',seenaa:'🏺',dandeettii:'🛠️'};
+const subjectColors = {afaan:'var(--green)',herrega:'#c0892a',seenaa:'#7b3fa0',dandeettii:'#1a7a8a'};
+const subjectLabels = {afaan:'Afaan fi Barreeffama',herrega:'Herrega fi Saayinsii',seenaa:'Seenaa fi Aadaa',dandeettii:'Dandeettii Hojii'};
+
+let allLessons = [];
+let currentFilter = 'all';
+
+const sdkScript = document.createElement('script');
+sdkScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+document.head.appendChild(sdkScript);
+
+sdkScript.onload = async () => {
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // Auth
+  const userJson = localStorage.getItem('kakuu_user');
+  try {
+    const user = JSON.parse(userJson);
+    const name = user.name || user.email?.split('@')[0] || 'Barataa';
+    document.getElementById('sidebar-username').textContent = name;
+    document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+  } catch(e) {}
+
+  // Load lessons
+  const { data, error } = await supabase
+    .from('lessons')
+    .select('*, authors(name)')
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false });
+
+  document.getElementById('lessons-loading').style.display = 'none';
+
+  if (!data || data.length === 0) {
+    document.getElementById('lessons-empty').style.display = 'block';
+    return;
+  }
+
+  allLessons = data;
+  renderLessons(allLessons);
+};
+
+function renderLessons(lessons) {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const filtered = lessons.filter(l => {
+    const matchSubject = currentFilter === 'all' || l.subject === currentFilter;
+    const matchSearch = !search || l.title.toLowerCase().includes(search) || (l.content || '').toLowerCase().includes(search);
+    return matchSubject && matchSearch;
+  });
+
+  if (filtered.length === 0) {
+    document.getElementById('lessons-empty').style.display = 'block';
+    document.getElementById('lessons-grid').innerHTML = '';
+    return;
+  }
+
+  document.getElementById('lessons-empty').style.display = 'none';
+  document.getElementById('lessons-grid').innerHTML = filtered.map(lesson => `
+    <div class="lesson-card" style="--accent:${subjectColors[lesson.subject] || 'var(--green)'}" onclick="window.location.href='kakuu_lesson.html?id=${lesson.id}'">
+      <div class="lesson-icon">${subjectIcons[lesson.subject] || '📚'}</div>
+      <div class="lesson-title">${lesson.title}</div>
+      <div class="lesson-meta">✍️ ${lesson.authors?.name || 'Kakuu Oromoo'} &nbsp;·&nbsp; ⏱ ${lesson.duration_minutes || 30} daqiiqaa &nbsp;·&nbsp; 📊 ${lesson.level || 'Jalqabaa'}</div>
+      <div class="lesson-subject">${subjectLabels[lesson.subject] || lesson.subject}</div>
+    </div>
+  `).join('');
+}
+
+function setFilter(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLessons(allLessons);
+}
+
+function filterLessons() {
+  renderLessons(allLessons);
+}
+
+function doLogout() {
+  localStorage.removeItem('kakuu_token');
+  localStorage.removeItem('kakuu_user');
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>
